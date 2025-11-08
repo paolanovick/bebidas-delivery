@@ -5,8 +5,8 @@ import {
   agregarBebida,
   editarBebida,
   eliminarBebida,
-} from "../backend/controllers/bebidasController.js";
-import { verificarToken } from "../backend/middleware/auth.js";
+} from "../controllers/bebidasController.js";
+import { verificarToken } from "../middleware/auth.js";
 
 const router = express.Router();
 

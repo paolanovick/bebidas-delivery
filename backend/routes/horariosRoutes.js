@@ -1,10 +1,10 @@
 import express from "express";
-import { verificarToken } from "../backend/middleware/auth.js";
+import { verificarToken } from "../middleware/auth.js";
 import {
   obtenerConfiguracion,
   actualizarConfiguracion,
   obtenerSlotsDisponibles,
-} from "../backend/controllers/horariosController.js";
+} from "../controllers/horariosController.js";
 
 const router = express.Router();
 

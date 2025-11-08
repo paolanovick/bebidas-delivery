@@ -7,9 +7,9 @@ import {
   eliminarPedido,
   eliminarTodosPedidos,
   eliminarHistorialUsuario,
-} from "../backend/controllers/pedidosController.js";
-import { verificarToken } from "../backend/middleware/auth.js"; // ← Importar verificarToken
-import esAdmin from "../backend/middleware/esAdmin.js";
+} from "../controllers/pedidosController.js";
+import { verificarToken } from "../middleware/auth.js"; // ← Importar verificarToken
+import esAdmin from "../middleware/esAdmin.js";
 
 const router = express.Router();
 
