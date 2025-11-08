@@ -4,12 +4,13 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { conectarDB } from "./config/db.js";
-import bebidasRoutes from "./routes/bebidasRoutes.js";
-import usuariosRoutes from "./routes/usuariosRoutes.js";
-import pedidosRoutes from "./routes/pedidosRoutes.js";
-import horariosRoutes from "./routes/horariosRoutes.js";
-import geoRouter from "./routes/geo.js";
+import { conectarDB } from "./backend/config/db.js";
+
+import bebidasRoutes from "./backend/routes/bebidasRoutes.js";
+import usuariosRoutes from "./backend/routes/usuariosRoutes.js";
+import pedidosRoutes from "./backend/routes/pedidosRoutes.js";
+import horariosRoutes from "./backend/routes/horariosRoutes.js";
+import geoRouter from "./backend/routes/geo.js";
 
 dotenv.config();
 conectarDB();
