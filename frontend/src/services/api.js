@@ -118,6 +118,22 @@ export const obtenerMisPedidos = async () => {
   return res.json();
 };
 
+export const eliminarPedido = async (id) => {
+  const token = getToken();
+  const res = await fetch(`${API_URL_PEDIDOS}/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.mensaje || "Error al eliminar pedido");
+  }
+
+  return res.json();
+};
+
+
 /* ============================
    HORARIOS
 ============================ */
