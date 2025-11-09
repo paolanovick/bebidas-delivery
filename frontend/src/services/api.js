@@ -1,10 +1,12 @@
 // src/services/api.js
 // src/services/api.js
-const BASE_URL = process.env.REACT_APP_API_URL;
+// src/services/api.js
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+console.log('🔍 BASE_URL configurada:', BASE_URL); // ← Debug
 
-// Todas las rutas ahora usan el dominio del backend en producción
 const API_URL_BEBIDAS = `${BASE_URL}/bebidas`;
+// ... resto del código
 const API_URL_USUARIOS = `${BASE_URL}/usuarios`;
 const API_URL_PEDIDOS = `${BASE_URL}/pedidos`;
 const API_URL_HORARIOS = `${BASE_URL}/horarios`;
@@ -24,10 +26,30 @@ const getToken = () => localStorage.getItem("token");
 ============================ */
 
 // Obtener todas las bebidas
+// Obtener todas las bebidas
 export const getBebidas = async () => {
-  const res = await fetch(API_URL_BEBIDAS);
-  if (!res.ok) throw new Error("Error al obtener bebidas");
-  return res.json();
+  try {
+    console.log('📡 Fetching desde:', API_URL_BEBIDAS);
+    
+    const res = await fetch(API_URL_BEBIDAS);
+    
+    console.log('📊 Status:', res.status);
+    console.log('📊 Content-Type:', res.headers.get('content-type'));
+    
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('❌ Error response:', text);
+      throw new Error(`Error ${res.status}: ${text.substring(0, 100)}`);
+    }
+    
+    const data = await res.json();
+    console.log('✅ Bebidas recibidas:', data);
+    return data;
+    
+  } catch (error) {
+    console.error('❌ Error completo:', error);
+    throw error;
+  }
 };
 
 
