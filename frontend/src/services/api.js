@@ -1,12 +1,11 @@
 // src/services/api.js
-// ✅ URL DEL BACKEND EN RENDER
-const BASE_URL = "https://el-danes-api.onrender.com/api";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-// ✅ ENDPOINTS
 const API_URL_BEBIDAS = `${BASE_URL}/bebidas`;
 const API_URL_USUARIOS = `${BASE_URL}/usuarios`;
 const API_URL_PEDIDOS = `${BASE_URL}/pedidos`;
 const API_URL_HORARIOS = `${BASE_URL}/horarios`;
+
 
 
 // Obtener token del localStorage
