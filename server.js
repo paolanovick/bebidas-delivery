@@ -9,7 +9,7 @@ import pedidosRoutes from "./backend/routes/pedidosRoutes.js";
 import horariosRoutes from "./backend/routes/horariosRoutes.js";
 import geoRouter from "./backend/routes/geo.js";
 
-import Bebida from "./backend/models/Bebida.js"; // ✅ RUTA CORRECTA
+
 
 dotenv.config();
 conectarDB();
