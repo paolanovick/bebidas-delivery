@@ -34,4 +34,5 @@ const PedidoSchema = new mongoose.Schema({
   horaEntrega: { type: String, required: true }, // Ej: "14:00 - 15:00"
 });
 
-export default mongoose.model("Pedido", PedidoSchema);
+export default mongoose.model("Pedido", pedidoSchema, "pedidos");
+

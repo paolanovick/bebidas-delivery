@@ -8,4 +8,5 @@ const usuarioSchema = new mongoose.Schema({
   creadoEn: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("Usuario", usuarioSchema);
+export default mongoose.model("Usuario", usuarioSchema, "usuarios");
+
