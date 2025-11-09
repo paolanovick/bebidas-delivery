@@ -12,21 +12,21 @@ const Footer = () => {
             alt="Logo"
             className="w-32 h-auto object-contain drop-shadow-md"
           />
-          <p class="text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed">
             Bebidas seleccionadas con amor 🍷 Calidad, sabor y buena onda.
           </p>
 
           {/* Redes Sociales */}
           <div className="flex gap-4 mt-2">
-            <a href="#" className="hover:text-[#590707] transition">
+            <button className="hover:text-[#590707] transition">
               <Facebook size={22} />
-            </a>
-            <a href="#" className="hover:text-[#590707] transition">
+            </button>
+            <button className="hover:text-[#590707] transition">
               <Instagram size={22} />
-            </a>
-            <a href="#" className="hover:text-[#590707] transition">
+            </button>
+            <button className="hover:text-[#590707] transition">
               <Twitter size={22} />
-            </a>
+            </button>
           </div>
         </div>
 
