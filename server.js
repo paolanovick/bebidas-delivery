@@ -13,28 +13,9 @@ dotenv.config();
 conectarDB();
 
 const app = express();
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Permitir requests sin origin (Postman, apps móviles)
-      if (!origin) return callback(null, true);
 
-      // Permitir localhost para desarrollo
-      if (origin.includes("localhost")) return callback(null, true);
-
-      // Permitir cualquier subdominio de vercel.app
-      if (origin.endsWith(".vercel.app")) return callback(null, true);
-
-      // Bloquear otros orígenes
-      callback(new Error("No permitido por CORS"));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-
+// ✅ CORS abierto para testing
+app.use(cors());
 
 app.use(express.json());
 
@@ -45,17 +26,29 @@ app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/horarios", horariosRoutes);
 app.use("/api/geo", geoRouter);
 
+// Rutas de prueba
+app.get("/", (req, res) => {
+  res.json({
+    mensaje: "API de Bebidas Delivery funcionando 🚀",
+    endpoints: [
+      "/api/bebidas",
+      "/api/usuarios",
+      "/api/pedidos",
+      "/api/horarios",
+      "/api/geo",
+    ],
+  });
+});
+
 app.get("/api", (req, res) => {
   res.json({ mensaje: "API funcionando correctamente" });
 });
 
-// ✅ Para desarrollo local
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  });
-}
+// ✅ SIEMPRE escuchar en un puerto (requerido por Render)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+});
 
-// ✅ Exportar para Vercel
+// Exportar para otras plataformas (no afecta a Render)
 export default app;
