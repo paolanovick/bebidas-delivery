@@ -1,6 +1,7 @@
 // src/services/api.js
 // src/services/api.js
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = process.env.REACT_APP_API_URL;
+
 
 // Todas las rutas ahora usan el dominio del backend en producción
 const API_URL_BEBIDAS = `${BASE_URL}/bebidas`;
