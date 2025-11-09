@@ -13,7 +13,7 @@ const Footer = () => {
             className="w-32 h-auto object-contain drop-shadow-md"
           />
           <p className="text-sm leading-relaxed">
-            Bebidas seleccionadas con amor 🍷 Calidad, sabor y buena onda.
+            Bebidas seleccionadas con calidad.
           </p>
 
           {/* Redes Sociales */}
