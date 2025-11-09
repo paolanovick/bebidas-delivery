@@ -95,7 +95,16 @@ const Footer = () => {
       </div>
 
       <div className="text-center py-4 border-t border-[#590707] text-sm">
-        © {new Date().getFullYear()} Mi Tienda - Todos los derechos reservados.
+        © {new Date().getFullYear()}{" "}
+        <a
+          href="https://concodigoart.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#590707] font-semibold hover:underline hover:text-[#A30404] transition"
+        >
+          Con Código Art
+        </a>{" "}
+        - Todos los derechos reservados.
       </div>
     </footer>
   );
