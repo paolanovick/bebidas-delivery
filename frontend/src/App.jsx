@@ -22,6 +22,7 @@ import Pedido from "./pages/Pedido";
 import { CarritoProvider } from "./context/CarritoContext"; // ✅ IMPORTAR// <-- AGREGA ESTA IMPORTACIÓN
 import { BebidasProvider } from "./context/BebidasContext";
 import Inicio from "./pages/Inicio";
+import Footer from "./components/Footer";
 
 
 
@@ -99,8 +100,8 @@ function App() {
            <div className="max-w-7xl mx-auto p-6">
              <Routes>
                <Route path="/" element={<Inicio />} />
-               <Route path="/inicio" element={<Inicio />} /> 
-               
+               <Route path="/inicio" element={<Inicio />} />
+
                <Route
                  path="/login"
                  element={usuario ? <Navigate to="/tienda" /> : <Login />}
@@ -174,6 +175,7 @@ function App() {
                />
              </Routes>
            </div>
+           <Footer />
          </div>
        </CarritoProvider>
      </BebidasProvider>
