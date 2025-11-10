@@ -13,7 +13,7 @@ dotenv.config();
 conectarDB();
 
 const app = express();
-
+app.use(express.json());
 // ✅ CORS CORRECTO Y COMPLETO
 app.use(
   cors({
