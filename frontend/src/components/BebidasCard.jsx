@@ -19,6 +19,7 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
       )}
 
       <h3 className="text-xl font-bold text-[#04090C] mb-2">{bebida.nombre}</h3>
+
       {bebida.descripcion && (
         <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
       )}
@@ -27,6 +28,7 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
         ${new Intl.NumberFormat("es-AR").format(bebida.precio)}
       </p>
 
+      {/* Botones de Editar / Eliminar solo si se usan acá */}
       <div className="mt-4 flex gap-3">
         <button
           onClick={() => onEdit(bebida)}
