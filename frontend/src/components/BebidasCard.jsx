@@ -18,17 +18,23 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
         </div>
       )}
 
-      <h3 className="text-xl font-bold text-[#04090C] mb-2">{bebida.nombre}</h3>
+      <div className="flex-1">
+        <h3 className="text-xl font-bold text-[#04090C] mb-2">
+          {bebida.nombre}
+        </h3>
+        {bebida.descripcion && (
+          <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
+        )}
 
-      {bebida.descripcion && (
-        <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
-      )}
+        <p className="text-[#590707] font-semibold text-3xl mb-2 tracking-wide">
+          ${new Intl.NumberFormat("es-AR").format(bebida.precio)}
+        </p>
 
-      <p className="text-[#590707] font-semibold text-3xl mb-5 tracking-wide">
-        ${new Intl.NumberFormat("es-AR").format(bebida.precio)}
-      </p>
+        <p className="text-[#736D66] text-sm bg-[#CDC7BD] px-3 py-1 rounded-full w-max">
+          Stock: {bebida.stock}
+        </p>
+      </div>
 
-      {/* Botones de Editar / Eliminar solo si se usan acá */}
       <div className="mt-4 flex gap-3">
         <button
           onClick={() => onEdit(bebida)}
