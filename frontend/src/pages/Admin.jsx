@@ -196,6 +196,7 @@ const handleAdd = async (bebida) => {
               bebidas={bebidas}
               onEdit={setEditing}
               onDelete={handleDelete}
+              showStock={true}
             />
           </div>
         )}
