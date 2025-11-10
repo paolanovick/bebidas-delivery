@@ -26,6 +26,7 @@ const ConfiguracionHorariosSchema = new mongoose.Schema({
 
 export default mongoose.model(
   "ConfiguracionHorario",
-  configuracionHorarioSchema,
+  ConfiguracionHorariosSchema,
   "configuracionhorarios"
 );
+
