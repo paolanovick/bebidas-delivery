@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const usuarioSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
@@ -8,5 +9,9 @@ const usuarioSchema = new mongoose.Schema({
   creadoEn: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("Usuario", usuarioSchema, "usuarios");
+// ✅ Método para verificar contraseña
+usuarioSchema.methods.comprobarPassword = function (contrasenaFormulario) {
+  return bcrypt.compare(contrasenaFormulario, this.contrasena);
+};
 
+export default mongoose.model("Usuario", usuarioSchema, "usuarios");
