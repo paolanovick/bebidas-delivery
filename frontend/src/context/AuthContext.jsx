@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 
@@ -13,13 +12,16 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
+
         if (decoded.exp * 1000 < Date.now()) {
           localStorage.removeItem("token");
           setUsuario(null);
           setLoading(false);
           return;
         }
-        setUsuario(decoded);
+
+        // ✅ Guardamos solo lo necesario
+        setUsuario({ id: decoded.id, rol: decoded.rol });
       } catch {
         localStorage.removeItem("token");
         setUsuario(null);
@@ -31,14 +33,15 @@ export const AuthProvider = ({ children }) => {
   const login = (token) => {
     localStorage.setItem("token", token);
     const decoded = jwtDecode(token);
-    setUsuario(decoded);
+
+    // ✅ Guardamos el rol correctamente
+    setUsuario({ id: decoded.id, rol: decoded.rol });
   };
 
   const logout = () => {
-    // 🔴 NO usamos useCarrito acá
     localStorage.removeItem("token");
-    localStorage.removeItem("carrito"); // limpia carrito persistido
-    window.dispatchEvent(new CustomEvent("carrito:updated")); // aviso opcional
+    localStorage.removeItem("carrito");
+    window.dispatchEvent(new CustomEvent("carrito:updated"));
     setUsuario(null);
   };
 
