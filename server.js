@@ -17,14 +17,13 @@ const app = express();
 // ✅ CORS CORRECTO Y COMPLETO
 app.use(
   cors({
-    origin: true,
-    credentials: true,
+    origin: "*", // ✅ Permite cualquier dominio (necesario para Vercel)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-app.options("*", cors());
+
 
 
 

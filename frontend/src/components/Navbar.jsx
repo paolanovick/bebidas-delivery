@@ -205,11 +205,10 @@ const Navbar = () => {
               {usuario && (
                 <button
                   onClick={() => {
-                    vaciarCarrito();
-                    logout();
-                    setMenuOpen(false);
+                    vaciarCarrito(); // ✅ Vacía el carrito
+                    logout(); // ✅ Cierra sesión
                   }}
-                  className="px-3 py-2 rounded-md bg-[#590707] text-white font-semibold"
+                  className="px-4 py-2 rounded-md bg-[#590707] text-white font-semibold shadow-md hover:bg-[#A30404] transition duration-300"
                 >
                   Cerrar Sesión
                 </button>
