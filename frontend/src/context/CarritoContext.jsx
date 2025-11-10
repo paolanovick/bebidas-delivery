@@ -50,9 +50,7 @@ export function CarritoProvider({ children }) {
 
   // ✅ NUEVO: Vaciar el carrito
   const vaciarCarrito = () => {
-    setCarrito([]);
-    localStorage.removeItem("carrito");
-    window.dispatchEvent(new CustomEvent("carrito:updated"));
+    guardarCarrito([]); // ✅ Limpia todo
   };
 
   return (
@@ -63,7 +61,7 @@ export function CarritoProvider({ children }) {
         modificarCantidad,
         eliminar,
         guardarCarrito,
-        vaciarCarrito, // 👈 LO EXPONEMOS
+        vaciarCarrito, // 👈 AGREGADO
       }}
     >
       {children}
