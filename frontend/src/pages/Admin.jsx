@@ -65,6 +65,18 @@ const handleAdd = async (bebida) => {
     setSeccion(nuevaSeccion);
     setMenuAbierto(false);
   };
+  const token = localStorage.getItem("token");
+
+  fetch("https://el-danes-api.onrender.com/api/bebidas/fix-stock", {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log("✅ LISTO:", data))
+    .catch((err) => console.error("❌ ERROR:", err));
+
 
   return (
     <div className="flex min-h-screen bg-[#CDC7BD]">
