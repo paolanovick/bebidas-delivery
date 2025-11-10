@@ -1,7 +1,7 @@
 // components/BebidasList.jsx
 import React from "react";
 
-const BebidasList = ({ bebidas, onEdit, onDelete }) => {
+const BebidasList = ({ bebidas, onEdit, onDelete, showStock }) => {
   if (bebidas.length === 0) {
     return (
       <div className="bg-white shadow-xl rounded-xl p-8 text-center border border-[#CDC7BD]">
@@ -28,7 +28,7 @@ const BebidasList = ({ bebidas, onEdit, onDelete }) => {
             <th className="py-3 px-4 text-left">Nombre</th>
             <th className="py-3 px-4 text-left">Categoría</th>
             <th className="py-3 px-4 text-left">Precio</th>
-            <th className="py-3 px-4 text-left">Stock</th>
+            {showStock && <th className="py-3 px-4 text-left">Stock</th>}
             <th className="py-3 px-4 text-left">Acciones</th>
           </tr>
         </thead>
@@ -39,7 +39,6 @@ const BebidasList = ({ bebidas, onEdit, onDelete }) => {
               key={b._id}
               className="border-b hover:bg-[#F2ECE4] transition-colors text-[#04090C]"
             >
-              {/* Imagen */}
               <td className="py-3 px-4">
                 <img
                   src={b.imagen}
@@ -52,19 +51,12 @@ const BebidasList = ({ bebidas, onEdit, onDelete }) => {
                 />
               </td>
 
-              {/* Nombre */}
               <td className="py-3 px-4 font-semibold">{b.nombre}</td>
-
-              {/* Categoría */}
               <td className="py-3 px-4">{b.categoria}</td>
-
-              {/* Precio */}
               <td className="py-3 px-4">${b.precio}</td>
 
-              {/* Stock */}
-              <td className="py-3 px-4">{b.stock ?? "-"}</td>
+              {showStock && <td className="py-3 px-4">{b.stock ?? "-"}</td>}
 
-              {/* Acciones */}
               <td className="py-3 px-4 flex gap-2">
                 <button
                   onClick={() => onEdit(b)}

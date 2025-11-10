@@ -4,7 +4,6 @@ import React from "react";
 const BebidasCard = ({ bebida, onEdit, onDelete }) => {
   return (
     <div className="bg-white shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-2xl transition-all border border-[#CDC7BD] hover:border-[#A30404]">
-      {/* Imagen de la bebida */}
       {bebida.imagen && (
         <div className="mb-4">
           <img
@@ -19,26 +18,15 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
         </div>
       )}
 
-      {/* Información de la bebida */}
-      <div className="flex-1">
-        <h3 className="text-xl font-bold text-[#04090C] mb-2">
-          {bebida.nombre}
-        </h3>
-        {bebida.descripcion && (
-          <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
-        )}
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-[#590707] font-semibold text-3xl mb-5 tracking-wide">
-            ${new Intl.NumberFormat("es-AR").format(bebida.precio)}
-          </p>
+      <h3 className="text-xl font-bold text-[#04090C] mb-2">{bebida.nombre}</h3>
+      {bebida.descripcion && (
+        <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
+      )}
 
-          <p className="text-[#736D66] text-sm bg-[#CDC7BD] px-3 py-1 rounded-full">
-            Stock: {bebida.stock}
-          </p>
-        </div>
-      </div>
+      <p className="text-[#590707] font-semibold text-3xl mb-5 tracking-wide">
+        ${new Intl.NumberFormat("es-AR").format(bebida.precio)}
+      </p>
 
-      {/* Botones */}
       <div className="mt-4 flex gap-3">
         <button
           onClick={() => onEdit(bebida)}
