@@ -32,13 +32,17 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      precio: Number(formData.precio),
+      stock: Number(formData.stock), // ✅ IMPORTANTE
+    });
 
     setFormData({
       nombre: "",
       descripcion: "",
       precio: "",
-      stock: "",
+      stock: 0, // ✅
       imagen: "",
       categoria: "",
     });
