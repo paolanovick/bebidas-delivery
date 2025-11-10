@@ -13,29 +13,22 @@ dotenv.config();
 conectarDB();
 
 const app = express();
+
+// ✅ CORS CORRECTO (solo este!)
 app.use(
   cors({
-    origin: ["https://el-danes.vercel.app", "http://localhost:3000"], // ← tu dominio FRONT
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
-
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-// ✅ CORS
-app.use(
-  cors({
-    origin: true,
+    origin: [
+      "https://bebidas-delivery-2k1wtw3j7-paola-novicks-projects.vercel.app",
+      "http://localhost:3000",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-
-
-
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ✅ Rutas
 app.use("/api/bebidas", bebidasRoutes);
