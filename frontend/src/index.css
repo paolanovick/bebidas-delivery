@@ -4,15 +4,13 @@
 
 @import url('https://unpkg.com/leaflet/dist/leaflet.css');
 
-
 body {
   margin: 0;
-  font-family: 'Cormorant Garamond', serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
