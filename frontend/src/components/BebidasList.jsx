@@ -1,7 +1,7 @@
 // components/BebidasList.jsx
 import React from "react";
 
-const BebidasList = ({ bebidas, onEdit, onDelete, showStock }) => {
+const BebidasList = ({ bebidas, onEdit, onDelete, showStock = false }) => {
   if (bebidas.length === 0) {
     return (
       <div className="bg-white shadow-xl rounded-xl p-8 text-center border border-[#CDC7BD]">
@@ -28,7 +28,10 @@ const BebidasList = ({ bebidas, onEdit, onDelete, showStock }) => {
             <th className="py-3 px-4 text-left">Nombre</th>
             <th className="py-3 px-4 text-left">Categoría</th>
             <th className="py-3 px-4 text-left">Precio</th>
+
+            {/* ✅ Mostrar columna stock solo si showStock = true */}
             {showStock && <th className="py-3 px-4 text-left">Stock</th>}
+
             <th className="py-3 px-4 text-left">Acciones</th>
           </tr>
         </thead>
@@ -52,9 +55,14 @@ const BebidasList = ({ bebidas, onEdit, onDelete, showStock }) => {
               </td>
 
               <td className="py-3 px-4 font-semibold">{b.nombre}</td>
-              <td className="py-3 px-4">{b.categoria}</td>
-              <td className="py-3 px-4">${b.precio}</td>
 
+              <td className="py-3 px-4">{b.categoria}</td>
+
+              <td className="py-3 px-4">
+                ${new Intl.NumberFormat("es-AR").format(b.precio)}
+              </td>
+
+              {/* ✅ Mostrar el stock solo en admin */}
               {showStock && <td className="py-3 px-4">{b.stock ?? "-"}</td>}
 
               <td className="py-3 px-4 flex gap-2">
