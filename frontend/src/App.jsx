@@ -23,10 +23,7 @@ import { CarritoProvider } from "./context/CarritoContext"; // ✅ IMPORTAR// <-
 import { BebidasProvider } from "./context/BebidasContext";
 import Inicio from "./pages/Inicio";
 import Footer from "./components/Footer";
-
-
-
-// API
+import { Toaster } from "react-hot-toast";
 import {
   getBebidas,
   agregarBebida,
@@ -176,6 +173,7 @@ function App() {
              </Routes>
            </div>
            <Footer />
+           <Toaster position="top-right" />
          </div>
        </CarritoProvider>
      </BebidasProvider>
