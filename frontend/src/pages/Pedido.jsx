@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCarrito } from "../context/CarritoContext"; // ⬅️ IMPORTANTE
+import { useCarrito } from "../context/CarritoContext";
 import { crearPedido, obtenerSlotsDisponibles } from "../services/api";
 import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
-
-/**
- * Pedido.jsx — Página de pedidos para negocio de bebidas
- *
- * - Usa CarritoContext para sincronizar numerito del navbar
- * - Inputs con texto negro
- * - Mapa: el componente MapaEntrega geocodifica en Tandil cuando cambia 'direccion'
- * - Un solo botón: guarda en backend + abre WhatsApp + vacía carrito + redirige
- */
 
 const ADMIN_WHATSAPP = "5491151215750";
 
 export default function Pedido() {
   const navigate = useNavigate();
   const { usuario } = useAuth();
-
-  // ===================== Carrito (Contexto Global) =====================
   const { carrito, guardarCarrito } = useCarrito();
 
   const cambiarCantidad = (id, nuevaCantidad) => {
@@ -29,12 +18,12 @@ export default function Pedido() {
     const actualizado = carrito.map((item) =>
       (item._id || item.id) === id ? { ...item, cantidad: nuevaCantidad } : item
     );
-    guardarCarrito(actualizado); // ⬅️ actualiza numerito del navbar en vivo
+    guardarCarrito(actualizado);
   };
 
   const eliminarItem = (id) => {
     const nuevo = carrito.filter((item) => (item._id || item.id) !== id);
-    guardarCarrito(nuevo); // ⬅️ actualiza numerito del navbar en vivo
+    guardarCarrito(nuevo);
   };
 
   const total = carrito.reduce(
@@ -42,15 +31,15 @@ export default function Pedido() {
     0
   );
 
-  // ===================== Datos de entrega =====================
+  // Datos
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [coordenadas, setCoordenadas] = useState(null); // { lat, lng }
+  const [email, setEmail] = useState(""); // ✅ AGREGADO
+  const [coordenadas, setCoordenadas] = useState(null);
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
   const [comentarios, setComentarios] = useState("");
 
-  // Geolocalización inicial (si el usuario acepta)
   useEffect(() => {
     if (!coordenadas && "geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -66,7 +55,6 @@ export default function Pedido() {
     }
   }, [coordenadas]);
 
-  // ===================== Slots por fecha =====================
   const [slots, setSlots] = useState([]);
   const [cargandoSlots, setCargandoSlots] = useState(false);
 
@@ -87,7 +75,6 @@ export default function Pedido() {
 
         if (activo) {
           setSlots(lista);
-          // Si la hora ya no está disponible → limpiar
           if (!lista.some((s) => s.hora === hora && s.disponible !== false)) {
             setHora("");
           }
@@ -103,34 +90,30 @@ export default function Pedido() {
     };
 
     cargarSlots();
-    return () => {
-      activo = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fecha]); // 👈 mantenemos SOLO fecha
-  // 👈 SOLO depende de la fecha
+    return () => (activo = false);
+  }, [fecha, hora]);
 
-  // ===================== Validaciones =====================
+  // Validaciones
   const telSoloDigitos = telefono.replace(/\D/g, "");
   const validoDireccion = direccion.trim().length >= 5;
-  const validoTelefono = telSoloDigitos.length >= 10; // AR
-  const validoFecha = Boolean(fecha);
-  const validoHora = Boolean(hora);
+  const validoTelefono = telSoloDigitos.length >= 10;
+  const validoEmail = email.includes("@"); // ✅ AGREGADO
 
   const puedeConfirmar =
     carrito.length > 0 &&
     validoDireccion &&
     validoTelefono &&
-    validoFecha &&
-    validoHora;
+    validoEmail && // ✅ AGREGADO
+    Boolean(fecha) &&
+    Boolean(hora);
 
-  // ===================== Un solo botón: guardar + WhatsApp =====================
   const confirmarYEnviar = async () => {
     if (!usuario) return navigate("/login");
     if (!puedeConfirmar) return;
 
     const pedido = {
       usuarioId: usuario.id || usuario._id,
+      email, // ✅ AGREGADO
       items: carrito.map((i) => ({
         bebida: i._id || i.id,
         nombre: i.nombre || i.titulo,
@@ -146,7 +129,6 @@ export default function Pedido() {
       total,
     };
 
-    // mensaje de WhatsApp
     const ubicacion = coordenadas
       ? `https://www.google.com/maps?q=${coordenadas.lat},${coordenadas.lng}`
       : "Sin ubicación";
@@ -162,24 +144,19 @@ export default function Pedido() {
 
     const mensaje = `Nuevo Pedido 🛵\n\n${textoProductos}\n\nTotal: $${total.toLocaleString(
       "es-AR"
-    )}\n\nDirección: ${direccion}\nTeléfono: ${telefono}\nFecha y Hora: ${fecha} ${hora}\n\nLink a ubicación\n${ubicacion}\n\nNotas\n${
+    )}\n\nDirección: ${direccion}\nTeléfono: ${telefono}\nEmail: ${email}\nFecha y Hora: ${fecha} ${hora}\n\nUbicación\n${ubicacion}\n\nNotas\n${
       comentarios || "Sin notas"
     }`;
 
     try {
-      // 1) Guardar en backend
       await crearPedido(pedido);
 
-      // 2) Abrir WhatsApp
       window.open(
         `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(mensaje)}`,
         "_blank"
       );
 
-      // 3) Vaciar carrito (impacta numerito del navbar)
       guardarCarrito([]);
-
-      // 4) Navegar a mis pedidos
       navigate("/mis-pedidos");
     } catch (err) {
       alert("Error al confirmar el pedido");
@@ -187,7 +164,6 @@ export default function Pedido() {
     }
   };
 
-  // ===================== UI =====================
   return (
     <div className="min-h-screen bg-[#CDC7BD] py-10 px-6">
       <h1 className="text-3xl font-bold text-center text-[#590707] mb-8 flex gap-2 justify-center">
@@ -207,7 +183,6 @@ export default function Pedido() {
             key={id}
             className="bg-white rounded-2xl shadow-md p-4 mb-4 flex items-center gap-4 border border-[#e6e2dc]"
           >
-            {/* Imagen */}
             {item.imagen && (
               <img
                 src={item.imagen}
@@ -216,21 +191,19 @@ export default function Pedido() {
               />
             )}
 
-            {/* Info */}
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-lg text-[#04090C] truncate">
                 {item.nombre || item.titulo}
               </p>
+
               <p className="text-sm text-[#736D66]">
                 ${Number(item.precio).toLocaleString("es-AR")} c/u
               </p>
 
-              {/* Botones cantidad */}
               <div className="flex items-center gap-3 mt-2">
                 <button
                   onClick={() => cambiarCantidad(id, (item.cantidad || 0) - 1)}
                   className="w-8 h-8 flex items-center justify-center bg-[#A30404] text-white rounded-full hover:bg-[#590707] transition"
-                  aria-label="Disminuir cantidad"
                 >
                   -
                 </button>
@@ -242,27 +215,23 @@ export default function Pedido() {
                 <button
                   onClick={() => cambiarCantidad(id, (item.cantidad || 0) + 1)}
                   className="w-8 h-8 flex items-center justify-center bg-[#590707] text-white rounded-full hover:bg-[#A30404] transition"
-                  aria-label="Aumentar cantidad"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Precio Final + Eliminar */}
             <div className="text-right">
               <p className="font-bold text-[#590707] text-lg">
                 $
                 {(Number(item.precio) * Number(item.cantidad)).toLocaleString(
-                  "es-AR",
-                  { minimumFractionDigits: 0 }
+                  "es-AR"
                 )}
               </p>
 
               <button
                 onClick={() => eliminarItem(id)}
                 className="mt-2 text-red-600 hover:text-red-800 transition"
-                aria-label={`Eliminar ${item.nombre}`}
               >
                 <Trash2 size={20} />
               </button>
@@ -275,41 +244,37 @@ export default function Pedido() {
         Total: ${total.toLocaleString("es-AR")}
       </div>
 
-      {/* Datos de entrega */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
-        <label className="font-semibold text-[#04090C]">
-          Dirección <span className="text-red-600">*</span>
-        </label>
+        <label className="font-semibold text-[#04090C]">Dirección *</label>
         <input
           value={direccion}
           onChange={(e) => setDireccion(e.target.value)}
-          className={`w-full p-2 border rounded mb-4 text-[#04090C] bg-white ${
-            direccion && !validoDireccion ? "border-red-500" : ""
-          }`}
+          className="w-full p-2 border rounded mb-4 text-[#04090C] bg-white"
           placeholder="Ej.: Pasaje Vázquez 123, Tandil"
         />
 
-        <label className="font-semibold text-[#04090C]">
-          Teléfono <span className="text-red-600">*</span>
-        </label>
+        <label className="font-semibold text-[#04090C]">Teléfono *</label>
         <input
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
-          className={`p-2 border rounded w-full text-[#04090C] bg-white mb-4 ${
-            telefono && !validoTelefono ? "border-red-500" : ""
-          }`}
+          className="p-2 border rounded w-full text-[#04090C] bg-white mb-4"
           inputMode="tel"
           placeholder="Con código de área"
         />
 
-        {/* El mapa se centra al escribir dirección (Tandil por defecto) */}
+        <label className="font-semibold text-[#04090C]">Email *</label>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="p-2 border rounded w-full text-[#04090C] bg-white mb-4"
+          placeholder="ej: cliente@gmail.com"
+        />
+
         <MapaEntrega onLocationSelect={setCoordenadas} direccion={direccion} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
-            <label className="font-semibold text-[#04090C]">
-              Fecha <span className="text-red-600">*</span>
-            </label>
+            <label className="font-semibold text-[#04090C]">Fecha *</label>
             <input
               type="date"
               value={fecha}
@@ -319,9 +284,7 @@ export default function Pedido() {
           </div>
 
           <div>
-            <label className="font-semibold text-[#04090C]">
-              Hora <span className="text-red-600">*</span>
-            </label>
+            <label className="font-semibold text-[#04090C]">Hora *</label>
             <select
               value={hora}
               onChange={(e) => setHora(e.target.value)}
@@ -358,7 +321,6 @@ export default function Pedido() {
         />
       </div>
 
-      {/* Un solo botón */}
       <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
           onClick={confirmarYEnviar}
