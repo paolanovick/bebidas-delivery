@@ -6,12 +6,14 @@ import { crearPedido, obtenerSlotsDisponibles } from "../services/api";
 import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
 
-const ADMIN_WHATSAPP = "5491151215750";
+const ADMIN_WHATSAPP = "5492494538707";
 
 export default function Pedido() {
   const navigate = useNavigate();
   const { usuario } = useAuth();
-  const { carrito, guardarCarrito } = useCarrito();
+
+  // ✅ ACÁ IMPORTAMOS VACIAREl CARRITO
+  const { carrito, guardarCarrito, vaciarCarrito } = useCarrito();
 
   const cambiarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return eliminarItem(id);
@@ -31,10 +33,9 @@ export default function Pedido() {
     0
   );
 
-  // Datos
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState(""); // ✅ AGREGADO
+  const [email, setEmail] = useState("");
   const [coordenadas, setCoordenadas] = useState(null);
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
@@ -93,17 +94,16 @@ export default function Pedido() {
     return () => (activo = false);
   }, [fecha, hora]);
 
-  // Validaciones
   const telSoloDigitos = telefono.replace(/\D/g, "");
   const validoDireccion = direccion.trim().length >= 5;
   const validoTelefono = telSoloDigitos.length >= 10;
-  const validoEmail = email.includes("@"); // ✅ AGREGADO
+  const validoEmail = email.includes("@");
 
   const puedeConfirmar =
     carrito.length > 0 &&
     validoDireccion &&
     validoTelefono &&
-    validoEmail && // ✅ AGREGADO
+    validoEmail &&
     Boolean(fecha) &&
     Boolean(hora);
 
@@ -113,7 +113,7 @@ export default function Pedido() {
 
     const pedido = {
       usuarioId: usuario.id || usuario._id,
-      email, // ✅ AGREGADO
+      email,
       items: carrito.map((i) => ({
         bebida: i._id || i.id,
         nombre: i.nombre || i.titulo,
@@ -156,7 +156,9 @@ export default function Pedido() {
         "_blank"
       );
 
-      guardarCarrito([]);
+      // ✅ AQUÍ EL CAMBIO CORRECTO
+      vaciarCarrito();
+
       navigate("/mis-pedidos");
     } catch (err) {
       alert("Error al confirmar el pedido");
