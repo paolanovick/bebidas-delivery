@@ -1,6 +1,6 @@
 // src/services/api.js
 
-const BASE = "https://eldanes.online/api";  // ✅ CORRECTO
+const BASE = "/api";  // ✅ Usa el mismo dominio que el frontendCon www
 
 export const API_URL_BEBIDAS = `${BASE}/bebidas`;
 export const API_URL_USUARIOS = `${BASE}/usuarios`;
