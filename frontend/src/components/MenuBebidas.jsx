@@ -25,7 +25,7 @@ export default function MenuBebidas() {
     "Aperitivos",
     "Energéticas",
     "Aguas",
-    "Combos", // ✅ NUEVA
+    "Combos",
     "Mayoristas",
     "Ofertas",
     "Regalos",
@@ -36,45 +36,40 @@ export default function MenuBebidas() {
 
   const subcategoriasVinos = ["Todas", "Tinto", "Blanco", "Rosé"];
 
-  // ✅ FILTRO CON CATEGORÍAS MÚLTIPLES Y SUBCATEGORÍAS
- const bebidasFiltradas = bebidas.filter((b) => {
-   // ✅ Asegura compatibilidad entre campo singular y plural
-   const categoriasProducto = Array.isArray(b.categorias)
-     ? b.categorias
-     : b.categoria
-     ? [b.categoria]
-     : [];
+  // ✅ FILTRO COMPATIBLE CON AMBOS FORMATOS
+  const bebidasFiltradas = bebidas.filter((b) => {
+    // Compatibilidad: convierte 'categoria' (string) en 'categorias' (array)
+    let categoriasProducto = [];
 
-   // ✅ Normaliza las categorías de vinos
-   let categoriaNormalizada = categoria;
-   if (
-     categoria === "Vinos Tintos" ||
-     categoria === "Vinos Blancos" ||
-     categoria === "Vinos Rosé"
-   ) {
-     categoriaNormalizada = "Vinos";
-   }
+    if (Array.isArray(b.categorias) && b.categorias.length > 0) {
+      categoriasProducto = b.categorias;
+    } else if (b.categoria) {
+      categoriasProducto = [b.categoria];
+    }
 
-   const matchCat =
-     categoriaNormalizada === "Todas" ||
-     categoriasProducto.includes(categoriaNormalizada);
+    // Filtro de categoría (case-insensitive)
+    const matchCat =
+      categoria === "Todas" ||
+      categoriasProducto.some(
+        (cat) => cat.toLowerCase() === categoria.toLowerCase()
+      );
 
-   const matchSubcat =
-     subcategoria === "Todas" ||
-     !b.subcategoria ||
-     b.subcategoria === subcategoria;
+    // Filtro de subcategoría
+    const matchSubcat =
+      subcategoria === "Todas" ||
+      !b.subcategoria ||
+      b.subcategoria === subcategoria;
 
-   const q = busqueda.toLowerCase();
-   const matchTxt =
-     (b.nombre || "").toLowerCase().includes(q) ||
-     (b.descripcion || "").toLowerCase().includes(q);
+    // Búsqueda por texto
+    const q = busqueda.toLowerCase();
+    const matchTxt =
+      !q ||
+      (b.nombre || "").toLowerCase().includes(q) ||
+      (b.descripcion || "").toLowerCase().includes(q);
 
-   return matchCat && matchSubcat && matchTxt;
- });
+    return matchCat && matchSubcat && matchTxt;
+  });
 
-
-
-  // ✅ PRODUCTOS ESTRELLA (no están en el filtro normal)
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
   const handleAgregar = (b) => {
@@ -84,7 +79,6 @@ export default function MenuBebidas() {
   const fmt = (n) =>
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
-  // ✅ Verifica si "Vinos" está seleccionado
   const mostrarSubcategorias = categoria === "Vinos";
 
   return (
@@ -166,7 +160,7 @@ export default function MenuBebidas() {
             </div>
           </div>
 
-          {/* ✅ SUBCATEGORÍAS DE VINOS */}
+          {/* SUBCATEGORÍAS DE VINOS */}
           {mostrarSubcategorias && (
             <div>
               <label className="text-sm text-[#736D66] block mb-2">
@@ -197,7 +191,7 @@ export default function MenuBebidas() {
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 md:p-10">
-        {/* ✅ SECCIÓN PRODUCTOS ESTRELLA */}
+        {/* SECCIÓN PRODUCTOS ESTRELLA */}
         {productosEstrella.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-center gap-3 mb-8">
@@ -214,7 +208,6 @@ export default function MenuBebidas() {
                   key={b._id}
                   className="bg-gradient-to-br from-[#FFF9E6] to-white rounded-2xl border-2 border-[#FFD700] p-5 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 flex flex-col justify-between relative"
                 >
-                  {/* Badge Estrella */}
                   <div className="absolute top-2 right-2 bg-[#FFD700] text-[#590707] px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                     <Star size={12} fill="#590707" />
                     Destacado
@@ -258,7 +251,7 @@ export default function MenuBebidas() {
           </section>
         )}
 
-        {/* ✅ CATÁLOGO NORMAL */}
+        {/* CATÁLOGO NORMAL */}
         <h1 className="text-5xl font-bold text-center text-[#590707] mb-8">
           Catálogo de Bebidas
         </h1>
@@ -269,64 +262,74 @@ export default function MenuBebidas() {
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            {bebidasFiltradas.map((b) => (
-              <div
-                key={b._id}
-                className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
-              >
-                <div>
-                  <img
-                    src={b.imagen}
-                    alt={b.nombre || "Imagen de bebida"}
-                    className="w-full h-48 object-cover rounded-xl mb-4"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
-                    }}
-                  />
+            {bebidasFiltradas.map((b) => {
+              // ✅ COMPATIBLE CON AMBOS FORMATOS
+              const cats =
+                Array.isArray(b.categorias) && b.categorias.length > 0
+                  ? b.categorias
+                  : b.categoria
+                  ? [b.categoria]
+                  : [];
 
-                  <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
-                    {b.nombre}
-                  </h3>
-
-                  {/* Mostrar categorías */}
-                  {b.categorias && b.categorias.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {b.categorias.map((cat) => (
-                        <span
-                          key={cat}
-                          className="text-xs bg-[#CDC7BD] text-[#04090C] px-2 py-1 rounded-full"
-                        >
-                          {cat}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Mostrar subcategoría si es vino */}
-                  {b.subcategoria && (
-                    <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
-                      {b.subcategoria}
-                    </span>
-                  )}
-
-                  <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
-                    {b.descripcion}
-                  </p>
-
-                  <p className="text-[#590707] font-bold text-3xl mb-4">
-                    ${fmt(b.precio)}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleAgregar(b)}
-                  className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+              return (
+                <div
+                  key={b._id}
+                  className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
                 >
-                  Agregar al carrito 🛒
-                </button>
-              </div>
-            ))}
+                  <div>
+                    <img
+                      src={b.imagen}
+                      alt={b.nombre || "Imagen de bebida"}
+                      className="w-full h-48 object-cover rounded-xl mb-4"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
+                      }}
+                    />
+
+                    <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                      {b.nombre}
+                    </h3>
+
+                    {/* Mostrar categorías (compatible con ambos formatos) */}
+                    {cats.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {cats.map((cat, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs bg-[#CDC7BD] text-[#04090C] px-2 py-1 rounded-full"
+                          >
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Mostrar subcategoría si es vino */}
+                    {b.subcategoria && (
+                      <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
+                        {b.subcategoria}
+                      </span>
+                    )}
+
+                    <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                      {b.descripcion}
+                    </p>
+
+                    <p className="text-[#590707] font-bold text-3xl mb-4">
+                      ${fmt(b.precio)}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleAgregar(b)}
+                    className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                  >
+                    Agregar al carrito 🛒
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
       </main>
