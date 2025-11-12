@@ -1,5 +1,5 @@
 import express from "express";
-import Bebida from "../models/bebidaModel.js";
+import bebida from "../models/bebidaModel.js";
 
 const router = express.Router();
 
