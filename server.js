@@ -8,6 +8,7 @@ import usuariosRoutes from "./backend/routes/usuariosRoutes.js";
 import pedidosRoutes from "./backend/routes/pedidosRoutes.js";
 import horariosRoutes from "./backend/routes/horariosRoutes.js";
 import geoRouter from "./backend/routes/geo.js";
+import migracionRoutes from "./backend/routes/migrar.js";
 
 dotenv.config();
 conectarDB();
@@ -40,6 +41,7 @@ app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/horarios", horariosRoutes);
 app.use("/api/geo", geoRouter);
+app.use("/api/migracion", migracionRoutes);
 
 app.get("/", (req, res) => {
   res.json({ mensaje: "API funcionando 🚀" });
