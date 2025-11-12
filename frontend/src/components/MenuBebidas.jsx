@@ -209,7 +209,8 @@ export default function MenuBebidas() {
               DESTACADOS DE EL DANÉS
             </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+            {/* GRID RESPONSIVE - Igual que el catálogo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
               {productosEstrella.map((b) => {
                 const cats =
                   Array.isArray(b.categorias) && b.categorias.length > 0
@@ -221,20 +222,20 @@ export default function MenuBebidas() {
                 return (
                   <div
                     key={b._id}
-                    className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
+                    className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
                   >
                     <div>
                       <img
                         src={b.imagen}
                         alt={b.nombre || "Imagen de bebida"}
-                        className="w-full h-48 object-cover rounded-xl mb-4"
+                        className="w-full h-40 md:h-48 object-cover rounded-xl mb-3 md:mb-4"
                         onError={(e) => {
                           e.currentTarget.src =
                             "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
                         }}
                       />
 
-                      <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                      <h3 className="text-lg md:text-xl font-semibold text-[#04090C] mb-1 line-clamp-2">
                         {b.nombre}
                       </h3>
 
@@ -259,18 +260,18 @@ export default function MenuBebidas() {
                         </span>
                       )}
 
-                      <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                      <p className="text-[#736D66] text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
                         {b.descripcion}
                       </p>
 
-                      <p className="text-[#590707] font-bold text-3xl mb-4">
+                      <p className="text-[#590707] font-bold text-xl md:text-2xl mb-3 md:mb-4">
                         ${fmt(b.precio)}
                       </p>
                     </div>
 
                     <button
                       onClick={() => handleAgregar(b)}
-                      className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                      className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto text-sm md:text-base"
                     >
                       Agregar al carrito 🛒
                     </button>
@@ -279,24 +280,24 @@ export default function MenuBebidas() {
               })}
             </div>
 
-            {/* CAROUSEL DE PRODUCTOS ESTRELLA */}
+            {/* CAROUSEL RESPONSIVE */}
             <div className="relative mt-12">
-              <h3 className="text-3xl font-bold text-center text-[#590707] mb-6">
+              <h3 className="text-2xl md:text-3xl font-bold text-center text-[#590707] mb-6">
                 Más Destacados
               </h3>
 
               <div className="relative">
+                {/* Botones solo en desktop */}
                 <button
                   onClick={() => scrollCarousel("left")}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-3 rounded-full shadow-lg transition"
+                  className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 md:p-3 rounded-full shadow-lg transition"
                 >
-                  <ChevronLeft size={24} />
+                  <ChevronLeft size={20} className="md:w-6 md:h-6" />
                 </button>
 
                 <div
                   ref={carouselRef}
-                  className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-12"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth px-2 md:px-12 snap-x snap-mandatory scrollbar-hide"
                 >
                   {productosEstrella.map((b) => {
                     const cats =
@@ -309,20 +310,20 @@ export default function MenuBebidas() {
                     return (
                       <div
                         key={`carousel-${b._id}`}
-                        className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between min-w-[280px]"
+                        className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between min-w-[260px] md:min-w-[280px] snap-start flex-shrink-0"
                       >
                         <div>
                           <img
                             src={b.imagen}
                             alt={b.nombre || "Imagen de bebida"}
-                            className="w-full h-48 object-cover rounded-xl mb-4"
+                            className="w-full h-40 md:h-48 object-cover rounded-xl mb-3 md:mb-4"
                             onError={(e) => {
                               e.currentTarget.src =
                                 "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
                             }}
                           />
 
-                          <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                          <h3 className="text-lg md:text-xl font-semibold text-[#04090C] mb-1 line-clamp-2">
                             {b.nombre}
                           </h3>
 
@@ -345,18 +346,18 @@ export default function MenuBebidas() {
                             </span>
                           )}
 
-                          <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                          <p className="text-[#736D66] text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
                             {b.descripcion}
                           </p>
 
-                          <p className="text-[#590707] font-bold text-3xl mb-4">
+                          <p className="text-[#590707] font-bold text-xl md:text-2xl mb-3 md:mb-4">
                             ${fmt(b.precio)}
                           </p>
                         </div>
 
                         <button
                           onClick={() => handleAgregar(b)}
-                          className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                          className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto text-sm md:text-base"
                         >
                           Agregar al carrito 🛒
                         </button>
@@ -367,9 +368,9 @@ export default function MenuBebidas() {
 
                 <button
                   onClick={() => scrollCarousel("right")}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-3 rounded-full shadow-lg transition"
+                  className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 md:p-3 rounded-full shadow-lg transition"
                 >
-                  <ChevronRight size={24} />
+                  <ChevronRight size={20} className="md:w-6 md:h-6" />
                 </button>
               </div>
             </div>
@@ -388,7 +389,7 @@ export default function MenuBebidas() {
             No se encontraron bebidas con esos filtros.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {bebidasFiltradas.map((b) => {
               // ✅ COMPATIBLE CON AMBOS FORMATOS
               const cats =
@@ -401,20 +402,20 @@ export default function MenuBebidas() {
               return (
                 <div
                   key={b._id}
-                  className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
+                  className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
                 >
                   <div>
                     <img
                       src={b.imagen}
                       alt={b.nombre || "Imagen de bebida"}
-                      className="w-full h-48 object-cover rounded-xl mb-4"
+                      className="w-full h-40 md:h-48 object-cover rounded-xl mb-3 md:mb-4"
                       onError={(e) => {
                         e.currentTarget.src =
                           "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
                       }}
                     />
 
-                    <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                    <h3 className="text-lg md:text-xl font-semibold text-[#04090C] mb-1 line-clamp-2">
                       {b.nombre}
                     </h3>
 
@@ -439,18 +440,18 @@ export default function MenuBebidas() {
                       </span>
                     )}
 
-                    <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                    <p className="text-[#736D66] text-xs md:text-sm mb-2 md:mb-3 line-clamp-2">
                       {b.descripcion}
                     </p>
 
-                    <p className="text-[#590707] font-bold text-3xl mb-4">
+                    <p className="text-[#590707] font-bold text-xl md:text-2xl mb-3 md:mb-4">
                       ${fmt(b.precio)}
                     </p>
                   </div>
 
                   <button
                     onClick={() => handleAgregar(b)}
-                    className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                    className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto text-sm md:text-base"
                   >
                     Agregar al carrito 🛒
                   </button>
