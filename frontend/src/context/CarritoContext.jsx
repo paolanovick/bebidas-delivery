@@ -4,38 +4,46 @@ const CarritoContext = createContext();
 
 export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState(
-    JSON.parse(localStorage.getItem("carrito")) || []
+   JSON.parse(sessionStorage.getItem("carrito")) || []
   );
 
   const guardarCarrito = (nuevoCarrito) => {
     setCarrito(nuevoCarrito);
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-    window.dispatchEvent(new CustomEvent("carrito:updated"));
+   sessionStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
+window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 
   const agregar = (bebida) => {
-    if (bebida.stock <= 0) {
-      alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
+  if (bebida.stock <= 0) {
+    alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
+    return;
+  }
+
+  const existe = carrito.find((i) => i._id === bebida._id);
+  let nuevo;
+
+  if (existe) {
+    if (existe.cantidad + 1 > bebida.stock) {
+      alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
       return;
     }
+    nuevo = carrito.map((i) =>
+      i._id === bebida._id ? { ...i, cantidad: i.cantidad + 1 } : i
+    );
+  } else {
+    nuevo = [...carrito, { ...bebida, cantidad: 1 }];
+  }
 
-    const existe = carrito.find((i) => i._id === bebida._id);
-    let nuevo;
+  guardarCarrito(nuevo);
 
-    if (existe) {
-      if (existe.cantidad + 1 > bebida.stock) {
-        alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
-        return;
-      }
-      nuevo = carrito.map((i) =>
-        i._id === bebida._id ? { ...i, cantidad: i.cantidad + 1 } : i
-      );
-    } else {
-      nuevo = [...carrito, { ...bebida, cantidad: 1 }];
-    }
+  // 🔔 Animación del icono del carrito (rebote al agregar)
+  const icono = document.getElementById("icono-carrito");
+  if (icono) {
+    icono.classList.add("animate-bounce");
+    setTimeout(() => icono.classList.remove("animate-bounce"), 800);
+  }
+};
 
-    guardarCarrito(nuevo);
-  };
 
   const modificarCantidad = (id, cantidad) => {
     const nuevo = carrito.map((item) =>
@@ -52,7 +60,7 @@ export function CarritoProvider({ children }) {
   // ✅ NUEVO: Vaciar el carrito
   const vaciarCarrito = () => {
     setCarrito([]); // limpia UI
-    localStorage.removeItem("carrito"); // limpia storage
+   sessionStorage.removeItem("carrito");
     window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 

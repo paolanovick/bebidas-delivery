@@ -14,20 +14,14 @@ conectarDB();
 
 const app = express();
 
-// ✅ CORS CORRECTO (solo este!)
+// ✅ CORS CORRECTO (solo este
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permitir peticiones sin origen (ej: Postman, mobile)
-      if (!origin) return callback(null, true);
-
-      // Permitir cualquier dominio de Vercel
-      if (origin.endsWith(".vercel.app")) return callback(null, true);
-
-      // Permitir localhost para desarrollo
-      if (origin.includes("localhost")) return callback(null, true);
-
-      // Si no coincide → bloquear
+      if (!origin) return callback(null, true);                 // Postman/mobile
+      if (origin.includes("eldanes.online")) return callback(null, true);  // ✅ tu dominio
+      if (origin.includes("localhost")) return callback(null, true);       // dev
+      if (origin.endsWith(".vercel.app")) return callback(null, true);     // vercel (si aplica)
       return callback(new Error("No permitido por CORS"));
     },
     credentials: true,

@@ -4,15 +4,18 @@ import { ShoppingCart } from "lucide-react";
 
 export default function UsuarioBebidas({ bebidas }) {
   const { agregar } = useCarrito();
+  const [mensaje, setMensaje] = React.useState("");
 
   const agregarAlCarrito = (bebida) => {
     if (bebida.stock <= 0) {
-      alert(`❗ "${bebida.nombre}" está sin stock`);
+      setMensaje(`❗ "${bebida.nombre}" está sin stock`);
+      setTimeout(() => setMensaje(""), 2000);
       return;
     }
 
     agregar(bebida);
-    alert(`✅ ${bebida.nombre} agregado al carrito`);
+    setMensaje(`✅ "${bebida.nombre}" agregada al carrito 🛒`);
+    setTimeout(() => setMensaje(""), 2000);
   };
 
   return (
@@ -54,17 +57,30 @@ export default function UsuarioBebidas({ bebidas }) {
               {b.stock > 0 ? `Stock: ${b.stock}` : "Sin stock"}
             </p>
 
-            <button
-              onClick={() => agregarAlCarrito(b)}
-              className="bg-[#590707] hover:bg-[#A30404] text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl w-full justify-center"
-              disabled={b.stock < 1}
-            >
-              <ShoppingCart size={18} />
-              Agregar al Carrito
-            </button>
+          <button
+  onClick={() => agregarAlCarrito(b)}
+  disabled={b.stock < 1}
+  className="bg-[#590707] hover:bg-[#A30404] text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <ShoppingCart size={18} />
+  Agregar al Carrito
+</button>
+
+
           </div>
         ))}
       </div>
+
+    {mensaje && (
+  <div
+    className={`fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg text-white font-semibold text-center shadow-lg z-50 transition-opacity duration-500 ${
+      mensaje.includes("❗") ? "bg-red-600" : "bg-green-600"
+    }`}
+  >
+    {mensaje}
+  </div>
+)}
+
     </div>
   );
 }

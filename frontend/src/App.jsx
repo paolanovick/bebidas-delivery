@@ -165,8 +165,7 @@ function AppContent() {
           />
 
           <Route
-            path="/pedido"
-            element={usuario ? <Pedido /> : <Navigate to="/login" />}
+           path="/pedido" element={<Pedido />}
           />
         </Routes>
       </div>

@@ -71,18 +71,19 @@ const Navbar = () => {
             </>
           )}
 
-          {/* 🛒 Carrito SIEMPRE visible */}
-          <Link to="/pedido" className="relative">
-            <ShoppingCart
-              size={28}
-              className="text-[#CDC7BD] hover:text-white transition"
-            />
-            {total > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {total}
-              </span>
-            )}
-          </Link>
+         {/* 🛒 Carrito SIEMPRE visible */}
+<Link to="/pedido" id="icono-carrito" className="relative">
+  <ShoppingCart
+    size={28}
+    className="text-[#CDC7BD] hover:text-white transition"
+  />
+  {total > 0 && (
+    <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+      {total}
+    </span>
+  )}
+</Link>
+
 
           {/* Si NO hay usuario → solo Admin Login */}
           {!usuario && (

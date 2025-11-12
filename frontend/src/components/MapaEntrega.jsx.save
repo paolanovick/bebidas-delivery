@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 const marcadorIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
@@ -22,20 +23,13 @@ export default function MapaEntrega({ direccion, onLocationSelect }) {
     lng: -59.13317,
   });
 
-  // ✅ Detecta la URL del backend automáticamente
-  const API_URL = process.env.REACT_APP_API_URL || "https://eldanes.online/api";
+  // ✅ AHORA TOMA LA URL SEGÚN EL ENTORNO (LOCAL / VERCEL)
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const buscarDireccion = useCallback(async () => {
     if (!direccion || direccion.length < 3) return;
 
-    try {
-      const url = `${API_URL}/geo/buscar?q=${encodeURIComponent(direccion)}`;
-      console.log("🔍 Buscando en:", url);
-
-      const res = await fetch(url);
-      if (!res.ok) return;
-
-      const text = await res.text();
+ const text = await res.text();
 
       let data;
       try {
@@ -52,6 +46,14 @@ export default function MapaEntrega({ direccion, onLocationSelect }) {
         onLocationSelect(nueva);
       } else {
         console.error("❌ Datos inválidos:", data);
+      }
+      const data = await res.json();
+
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        const nueva = { lat: parseFloat(lat), lng: parseFloat(lon) };
+        setCoord(nueva);
+        onLocationSelect(nueva);
       }
     } catch (err) {
       console.error("❌ Error al buscar dirección:", err);
@@ -81,4 +83,3 @@ export default function MapaEntrega({ direccion, onLocationSelect }) {
     </div>
   );
 }
-
