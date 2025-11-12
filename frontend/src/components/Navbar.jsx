@@ -71,19 +71,18 @@ const Navbar = () => {
             </>
           )}
 
-         {/* 🛒 Carrito SIEMPRE visible */}
-<Link to="/pedido" id="icono-carrito" className="relative">
-  <ShoppingCart
-    size={28}
-    className="text-[#CDC7BD] hover:text-white transition"
-  />
-  {total > 0 && (
-    <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-      {total}
-    </span>
-  )}
-</Link>
-
+          {/* 🛒 Carrito SIEMPRE visible */}
+          <Link to="/pedido" id="icono-carrito" className="relative">
+            <ShoppingCart
+              size={28}
+              className="text-[#CDC7BD] hover:text-white transition"
+            />
+            {total > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {total}
+              </span>
+            )}
+          </Link>
 
           {/* Si NO hay usuario → solo Admin Login */}
           {!usuario && (
@@ -110,7 +109,21 @@ const Navbar = () => {
         </div>
 
         {/* MENU MOBILE */}
-        <div className="md:hidden relative">
+        <div className="md:hidden flex items-center gap-4 relative">
+          {/* 🛒 Carrito visible SIEMPRE en móvil */}
+          <Link to="/pedido" id="icono-carrito" className="relative">
+            <ShoppingCart
+              size={26}
+              className="text-[#CDC7BD] hover:text-white transition"
+            />
+            {total > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {total}
+              </span>
+            )}
+          </Link>
+
+          {/* Botón hamburguesa */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="focus:outline-none text-[#CDC7BD]"
@@ -140,6 +153,7 @@ const Navbar = () => {
             </svg>
           </button>
 
+          {/* Menú desplegable */}
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-52 bg-[#04090C] shadow-lg rounded-md flex flex-col gap-2 p-4 z-50">
               <Link
@@ -179,19 +193,6 @@ const Navbar = () => {
                 </>
               )}
 
-              <Link
-                to="/pedido"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold"
-              >
-                Carrito
-                {total > 0 && (
-                  <span className="ml-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {total}
-                  </span>
-                )}
-              </Link>
-
               {!usuario && (
                 <Link
                   to="/login-admin"
@@ -202,12 +203,11 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {/* ✅ Cerrar sesión (MOBILE) — SOLO CAMBIO ESTO */}
               {usuario && (
                 <button
                   onClick={() => {
-                    vaciarCarrito(); // ✅ Vacía el carrito
-                    logout(); // ✅ Cierra sesión
+                    vaciarCarrito();
+                    logout();
                   }}
                   className="px-4 py-2 rounded-md bg-[#590707] text-white font-semibold shadow-md hover:bg-[#A30404] transition duration-300"
                 >
