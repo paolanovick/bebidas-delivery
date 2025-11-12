@@ -191,13 +191,13 @@ export default function MenuBebidas() {
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 md:p-10">
-        {/* SECCIÓN PRODUCTOS ESTRELLA */}
+        {/* SECCIÓN DESTACADOS */}
         {productosEstrella.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-center gap-3 mb-8">
               <Star className="text-[#FFD700]" size={32} fill="#FFD700" />
               <h2 className="text-4xl font-bold text-[#590707]">
-                Productos Estrella
+                DESTACADOS DE EL DANÉS
               </h2>
               <Star className="text-[#FFD700]" size={32} fill="#FFD700" />
             </div>
