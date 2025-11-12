@@ -1,5 +1,5 @@
 import express from "express";
-import bebida from "../models/bebidaModel.js";
+import Bebida from "../models/Bebida.js";
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get("/migrar-categorias", async (req, res) => {
         (!bebida.categorias || bebida.categorias.length === 0)
       ) {
         bebida.categorias = [bebida.categoria];
-        bebida.categoria = undefined; // Eliminar el campo viejo
+        bebida.categoria = undefined;
         await bebida.save();
         migradas++;
       }
