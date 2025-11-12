@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
-import { Star } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
@@ -11,6 +11,7 @@ export default function MenuBebidas() {
   const [subcategoria, setSubcategoria] = useState("Todas");
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const carouselRef = useRef(null);
 
   const categorias = [
     "Todas",
@@ -80,6 +81,16 @@ export default function MenuBebidas() {
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
   const mostrarSubcategorias = categoria === "Vinos";
+
+  const scrollCarousel = (direction) => {
+    if (carouselRef.current) {
+      const scrollAmount = 300;
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F7F5F2]">
@@ -194,57 +205,173 @@ export default function MenuBebidas() {
         {/* SECCIÓN DESTACADOS */}
         {productosEstrella.length > 0 && (
           <section className="mb-12">
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <Star className="text-[#FFD700]" size={32} fill="#FFD700" />
-              <h2 className="text-4xl font-bold text-[#590707]">
-                DESTACADOS DE EL DANÉS
-              </h2>
-              <Star className="text-[#FFD700]" size={32} fill="#FFD700" />
-            </div>
+            <h2 className="text-4xl font-bold text-center text-[#590707] mb-8">
+              DESTACADOS DE EL DANÉS
+            </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-              {productosEstrella.map((b) => (
-                <div
-                  key={b._id}
-                  className="bg-gradient-to-br from-[#FFF9E6] to-white rounded-2xl border-2 border-[#FFD700] p-5 shadow-lg hover:shadow-2xl transition hover:-translate-y-2 flex flex-col justify-between relative"
-                >
-                  <div className="absolute top-2 right-2 bg-[#FFD700] text-[#590707] px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                    <Star size={12} fill="#590707" />
-                    Destacado
-                  </div>
+              {productosEstrella.map((b) => {
+                const cats =
+                  Array.isArray(b.categorias) && b.categorias.length > 0
+                    ? b.categorias
+                    : b.categoria
+                    ? [b.categoria]
+                    : [];
 
-                  <div>
-                    <img
-                      src={b.imagen}
-                      alt={b.nombre || "Imagen de bebida"}
-                      className="w-full h-48 object-cover rounded-xl mb-4"
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
-                      }}
-                    />
-
-                    <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
-                      {b.nombre}
-                    </h3>
-
-                    <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
-                      {b.descripcion}
-                    </p>
-
-                    <p className="text-[#590707] font-bold text-3xl mb-4">
-                      ${fmt(b.precio)}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => handleAgregar(b)}
-                    className="bg-gradient-to-r from-[#590707] to-[#A30404] hover:from-[#A30404] hover:to-[#590707] text-white w-full py-2 rounded-xl font-semibold transition mt-auto shadow-md"
+                return (
+                  <div
+                    key={b._id}
+                    className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
                   >
-                    Agregar al carrito 🛒
-                  </button>
+                    <div>
+                      <img
+                        src={b.imagen}
+                        alt={b.nombre || "Imagen de bebida"}
+                        className="w-full h-48 object-cover rounded-xl mb-4"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
+                        }}
+                      />
+
+                      <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                        {b.nombre}
+                      </h3>
+
+                      {/* Mostrar categorías */}
+                      {cats.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {cats.map((cat, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs bg-[#CDC7BD] text-[#04090C] px-2 py-1 rounded-full"
+                            >
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Mostrar subcategoría si es vino */}
+                      {b.subcategoria && (
+                        <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
+                          {b.subcategoria}
+                        </span>
+                      )}
+
+                      <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                        {b.descripcion}
+                      </p>
+
+                      <p className="text-[#590707] font-bold text-3xl mb-4">
+                        ${fmt(b.precio)}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleAgregar(b)}
+                      className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                    >
+                      Agregar al carrito 🛒
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* CAROUSEL DE PRODUCTOS ESTRELLA */}
+            <div className="relative mt-12">
+              <h3 className="text-3xl font-bold text-center text-[#590707] mb-6">
+                Más Destacados
+              </h3>
+
+              <div className="relative">
+                <button
+                  onClick={() => scrollCarousel("left")}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-3 rounded-full shadow-lg transition"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+
+                <div
+                  ref={carouselRef}
+                  className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-12"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  {productosEstrella.map((b) => {
+                    const cats =
+                      Array.isArray(b.categorias) && b.categorias.length > 0
+                        ? b.categorias
+                        : b.categoria
+                        ? [b.categoria]
+                        : [];
+
+                    return (
+                      <div
+                        key={`carousel-${b._id}`}
+                        className="bg-white rounded-2xl border border-[#CDC7BD] p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between min-w-[280px]"
+                      >
+                        <div>
+                          <img
+                            src={b.imagen}
+                            alt={b.nombre || "Imagen de bebida"}
+                            className="w-full h-48 object-cover rounded-xl mb-4"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen";
+                            }}
+                          />
+
+                          <h3 className="text-2xl font-semibold text-[#04090C] mb-1">
+                            {b.nombre}
+                          </h3>
+
+                          {cats.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {cats.map((cat, idx) => (
+                                <span
+                                  key={idx}
+                                  className="text-xs bg-[#CDC7BD] text-[#04090C] px-2 py-1 rounded-full"
+                                >
+                                  {cat}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {b.subcategoria && (
+                            <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
+                              {b.subcategoria}
+                            </span>
+                          )}
+
+                          <p className="text-[#736D66] text-sm mb-3 line-clamp-2">
+                            {b.descripcion}
+                          </p>
+
+                          <p className="text-[#590707] font-bold text-3xl mb-4">
+                            ${fmt(b.precio)}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => handleAgregar(b)}
+                          className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-2 rounded-xl font-semibold transition mt-auto"
+                        >
+                          Agregar al carrito 🛒
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+
+                <button
+                  onClick={() => scrollCarousel("right")}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-3 rounded-full shadow-lg transition"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
             </div>
 
             <div className="border-t-2 border-[#CDC7BD] mt-8"></div>
