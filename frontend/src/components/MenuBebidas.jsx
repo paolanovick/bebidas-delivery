@@ -37,33 +37,41 @@ export default function MenuBebidas() {
   const subcategoriasVinos = ["Todas", "Tinto", "Blanco", "Rosé"];
 
   // ✅ FILTRO CON CATEGORÍAS MÚLTIPLES Y SUBCATEGORÍAS
-  const bebidasFiltradas = bebidas.filter((b) => {
-    // ✅ Normaliza los filtros de vino
-    let categoriaNormalizada = categoria;
-    if (
-      categoria === "Vinos Tintos" ||
-      categoria === "Vinos Blancos" ||
-      categoria === "Vinos Rosé"
-    ) {
-      categoriaNormalizada = "Vinos";
-    }
+ const bebidasFiltradas = bebidas.filter((b) => {
+   // ✅ Asegura compatibilidad entre campo singular y plural
+   const categoriasProducto = Array.isArray(b.categorias)
+     ? b.categorias
+     : b.categoria
+     ? [b.categoria]
+     : [];
 
-    const matchCat =
-      categoriaNormalizada === "Todas" ||
-      (b.categorias && b.categorias.includes(categoriaNormalizada));
+   // ✅ Normaliza las categorías de vinos
+   let categoriaNormalizada = categoria;
+   if (
+     categoria === "Vinos Tintos" ||
+     categoria === "Vinos Blancos" ||
+     categoria === "Vinos Rosé"
+   ) {
+     categoriaNormalizada = "Vinos";
+   }
 
-    const matchSubcat =
-      subcategoria === "Todas" ||
-      !b.subcategoria ||
-      b.subcategoria === subcategoria;
+   const matchCat =
+     categoriaNormalizada === "Todas" ||
+     categoriasProducto.includes(categoriaNormalizada);
 
-    const q = busqueda.toLowerCase();
-    const matchTxt =
-      (b.nombre || "").toLowerCase().includes(q) ||
-      (b.descripcion || "").toLowerCase().includes(q);
+   const matchSubcat =
+     subcategoria === "Todas" ||
+     !b.subcategoria ||
+     b.subcategoria === subcategoria;
 
-    return matchCat && matchSubcat && matchTxt;
-  });
+   const q = busqueda.toLowerCase();
+   const matchTxt =
+     (b.nombre || "").toLowerCase().includes(q) ||
+     (b.descripcion || "").toLowerCase().includes(q);
+
+   return matchCat && matchSubcat && matchTxt;
+ });
+
 
 
   // ✅ PRODUCTOS ESTRELLA (no están en el filtro normal)
