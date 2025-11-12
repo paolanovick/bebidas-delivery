@@ -30,100 +30,72 @@ const Login = () => {
     }
   };
 
-return (
-  <div className="max-w-md mx-auto mt-10">
-    <form
-      onSubmit={handleSubmit}
-      className="bg-[#FFFFFF] shadow-md rounded-lg p-8"
-    >
-      <h2
-        className="text-3xl font-bold text-center mb-6"
-        style={{ color: "#590707" }}
+  return (
+    <div className="max-w-md mx-auto mt-10 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-8"
       >
-        Iniciar Sesión
-      </h2>
+        <h2 className="text-3xl font-bold text-center mb-6 text-[#590707]">
+          Iniciar Sesión
+        </h2>
 
-      {error && (
-        <div
-          className="px-4 py-3 rounded mb-4"
-          style={{ backgroundColor: "#A30404", color: "#FFFFFF" }}
-        >
-          {error}
+        {error && (
+          <div className="px-4 py-3 rounded mb-4 bg-[#A30404] text-white">
+            {error}
+          </div>
+        )}
+
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-2 text-[#736D66]">
+            Email
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="tu@email.com"
+            autoComplete="email"
+            className="w-full px-3 py-2 rounded focus:outline-none border border-[#CDC7BD] text-[#04090C] focus:border-[#590707] focus:ring-1 focus:ring-[#590707]"
+          />
         </div>
-      )}
 
-      <div className="mb-4">
-        <label
-          className="block text-sm font-bold mb-2"
-          style={{ color: "#736D66" }}
+        <div className="mb-6">
+          <label className="block text-sm font-bold mb-2 text-[#736D66]">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
+            autoComplete="current-password"
+            required
+            placeholder="••••••••"
+            className="w-full px-3 py-2 rounded focus:outline-none border border-[#CDC7BD] text-[#04090C] focus:border-[#590707] focus:ring-1 focus:ring-[#590707]"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full font-bold py-3 rounded bg-[#590707] text-white hover:bg-[#A30404] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
-          Email
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="tu@email.com"
-          autoComplete="email"
-          className="w-full px-3 py-2 rounded focus:outline-none"
-          style={{
-            border: "1px solid #CDC7BD",
-            color: "#04090C",
-          }}
-        />
-      </div>
+          {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+        </button>
 
-      <div className="mb-6">
-        <label
-          className="block text-sm font-bold mb-2"
-          style={{ color: "#736D66" }}
-        >
-          Contraseña
-        </label>
-        <input
-          type="password"
-          value={contrasena}
-          onChange={(e) => setContrasena(e.target.value)}
-          autoComplete="current-password"
-          required
-          placeholder="••••••••"
-          className="w-full px-3 py-2 rounded focus:outline-none"
-          style={{
-            border: "1px solid #CDC7BD",
-            color: "#04090C",
-          }}
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full font-bold py-3 rounded disabled:bg-gray-400"
-        style={{
-          backgroundColor: "#590707",
-          color: "#FFFFFF",
-        }}
-        onMouseEnter={(e) => (e.target.style.backgroundColor = "#A30404")}
-        onMouseLeave={(e) => (e.target.style.backgroundColor = "#590707")}
-      >
-        {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
-      </button>
-
-      <p className="text-center mt-4" style={{ color: "#736D66" }}>
-        ¿No tienes cuenta?{" "}
-        <Link
-          to="/registro"
-          className="hover:underline"
-          style={{ color: "#590707" }}
-        >
-          Regístrate aquí
-        </Link>
-      </p>
-    </form>
-  </div>
-);
-
+        <p className="text-center mt-4 text-[#736D66]">
+          ¿No tienes cuenta?{" "}
+          <Link
+            to="/registro"
+            className="text-[#590707] hover:underline font-semibold"
+          >
+            Regístrate aquí
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
 };
 
 export default Login;
