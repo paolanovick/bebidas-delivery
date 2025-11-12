@@ -110,10 +110,10 @@ const Navbar = () => {
 
         {/* MENU MOBILE */}
         <div className="md:hidden flex items-center gap-4 relative">
-          {/* 🛒 Carrito visible SIEMPRE en móvil */}
+          {/* 🛒 CARRITO (visible siempre en móvil) */}
           <Link to="/pedido" id="icono-carrito" className="relative">
             <ShoppingCart
-              size={26}
+              size={28}
               className="text-[#CDC7BD] hover:text-white transition"
             />
             {total > 0 && (
@@ -123,7 +123,7 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* Botón hamburguesa */}
+          {/* BOTÓN HAMBURGUESA */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="focus:outline-none text-[#CDC7BD]"
@@ -153,9 +153,9 @@ const Navbar = () => {
             </svg>
           </button>
 
-          {/* Menú desplegable */}
+          {/* MENÚ DESPLEGABLE */}
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-52 bg-[#04090C] shadow-lg rounded-md flex flex-col gap-2 p-4 z-50">
+            <div className="absolute right-0 top-12 w-52 bg-[#04090C] shadow-lg rounded-md flex flex-col gap-2 p-4 z-50">
               <Link
                 to="/tienda"
                 onClick={() => setMenuOpen(false)}
