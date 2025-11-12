@@ -38,9 +38,19 @@ export default function MenuBebidas() {
 
   // ✅ FILTRO CON CATEGORÍAS MÚLTIPLES Y SUBCATEGORÍAS
   const bebidasFiltradas = bebidas.filter((b) => {
+    // ✅ Normaliza los filtros de vino
+    let categoriaNormalizada = categoria;
+    if (
+      categoria === "Vinos Tintos" ||
+      categoria === "Vinos Blancos" ||
+      categoria === "Vinos Rosé"
+    ) {
+      categoriaNormalizada = "Vinos";
+    }
+
     const matchCat =
-      categoria === "Todas" ||
-      (b.categorias && b.categorias.includes(categoria));
+      categoriaNormalizada === "Todas" ||
+      (b.categorias && b.categorias.includes(categoriaNormalizada));
 
     const matchSubcat =
       subcategoria === "Todas" ||
@@ -54,6 +64,7 @@ export default function MenuBebidas() {
 
     return matchCat && matchSubcat && matchTxt;
   });
+
 
   // ✅ PRODUCTOS ESTRELLA (no están en el filtro normal)
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
