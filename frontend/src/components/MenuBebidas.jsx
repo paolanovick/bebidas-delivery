@@ -37,9 +37,7 @@ export default function MenuBebidas() {
 
   const subcategoriasVinos = ["Todas", "Tinto", "Blanco", "Rosé"];
 
-  // ✅ FILTRO COMPATIBLE CON AMBOS FORMATOS
   const bebidasFiltradas = bebidas.filter((b) => {
-    // Compatibilidad: convierte 'categoria' (string) en 'categorias' (array)
     let categoriasProducto = [];
 
     if (Array.isArray(b.categorias) && b.categorias.length > 0) {
@@ -48,20 +46,17 @@ export default function MenuBebidas() {
       categoriasProducto = [b.categoria];
     }
 
-    // Filtro de categoría (case-insensitive)
     const matchCat =
       categoria === "Todas" ||
       categoriasProducto.some(
         (cat) => cat.toLowerCase() === categoria.toLowerCase()
       );
 
-    // Filtro de subcategoría
     const matchSubcat =
       subcategoria === "Todas" ||
       !b.subcategoria ||
       b.subcategoria === subcategoria;
 
-    // Búsqueda por texto
     const q = busqueda.toLowerCase();
     const matchTxt =
       !q ||
@@ -201,16 +196,16 @@ export default function MenuBebidas() {
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 p-6 md:p-10">
+      <main className="flex-1 p-4 md:p-6 lg:p-10 overflow-x-hidden">
         {/* SECCIÓN DESTACADOS */}
         {productosEstrella.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-4xl font-bold text-center text-[#590707] mb-8">
+          <section className="mb-8 md:mb-12 w-full">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#590707] mb-6 md:mb-8">
               DESTACADOS DE EL DANÉS
             </h2>
 
-            {/* GRID RESPONSIVE - Igual que el catálogo */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
+            {/* GRID RESPONSIVE */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-8 md:mb-12 w-full max-w-full">
               {productosEstrella.map((b) => {
                 const cats =
                   Array.isArray(b.categorias) && b.categorias.length > 0
@@ -222,7 +217,7 @@ export default function MenuBebidas() {
                 return (
                   <div
                     key={b._id}
-                    className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
+                    className="bg-white rounded-xl md:rounded-2xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-full"
                   >
                     <div>
                       <img
@@ -239,7 +234,6 @@ export default function MenuBebidas() {
                         {b.nombre}
                       </h3>
 
-                      {/* Mostrar categorías */}
                       {cats.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
                           {cats.map((cat, idx) => (
@@ -253,7 +247,6 @@ export default function MenuBebidas() {
                         </div>
                       )}
 
-                      {/* Mostrar subcategoría si es vino */}
                       {b.subcategoria && (
                         <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
                           {b.subcategoria}
@@ -281,23 +274,22 @@ export default function MenuBebidas() {
             </div>
 
             {/* CAROUSEL RESPONSIVE */}
-            <div className="relative mt-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-center text-[#590707] mb-6">
+            <div className="relative mt-8 md:mt-12 w-full max-w-full overflow-hidden">
+              <h3 className="text-2xl md:text-3xl font-bold text-center text-[#590707] mb-4 md:mb-6">
                 Más Destacados
               </h3>
 
-              <div className="relative">
-                {/* Botones solo en desktop */}
+              <div className="relative w-full">
                 <button
                   onClick={() => scrollCarousel("left")}
-                  className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 md:p-3 rounded-full shadow-lg transition"
+                  className="hidden lg:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
                 >
-                  <ChevronLeft size={20} className="md:w-6 md:h-6" />
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
 
                 <div
                   ref={carouselRef}
-                  className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth px-2 md:px-12 snap-x snap-mandatory scrollbar-hide"
+                  className="flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto scroll-smooth px-1 md:px-4 lg:px-12 snap-x snap-mandatory scrollbar-hide w-full"
                 >
                   {productosEstrella.map((b) => {
                     const cats =
@@ -310,7 +302,7 @@ export default function MenuBebidas() {
                     return (
                       <div
                         key={`carousel-${b._id}`}
-                        className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between min-w-[260px] md:min-w-[280px] snap-start flex-shrink-0"
+                        className="bg-white rounded-xl md:rounded-2xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-64 md:w-72 flex-shrink-0 snap-start"
                       >
                         <div>
                           <img
@@ -368,30 +360,29 @@ export default function MenuBebidas() {
 
                 <button
                   onClick={() => scrollCarousel("right")}
-                  className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 md:p-3 rounded-full shadow-lg transition"
+                  className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
                 >
-                  <ChevronRight size={20} className="md:w-6 md:h-6" />
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <div className="border-t-2 border-[#CDC7BD] mt-8"></div>
+            <div className="border-t-2 border-[#CDC7BD] mt-6 md:mt-8"></div>
           </section>
         )}
 
         {/* CATÁLOGO NORMAL */}
-        <h1 className="text-5xl font-bold text-center text-[#590707] mb-8">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#590707] mb-6 md:mb-8">
           Catálogo de Bebidas
         </h1>
 
         {bebidasFiltradas.length === 0 ? (
-          <p className="text-center text-[#736D66] text-xl mt-10">
+          <p className="text-center text-[#736D66] text-lg md:text-xl mt-10">
             No se encontraron bebidas con esos filtros.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-6 w-full max-w-full">
             {bebidasFiltradas.map((b) => {
-              // ✅ COMPATIBLE CON AMBOS FORMATOS
               const cats =
                 Array.isArray(b.categorias) && b.categorias.length > 0
                   ? b.categorias
@@ -402,7 +393,7 @@ export default function MenuBebidas() {
               return (
                 <div
                   key={b._id}
-                  className="bg-white rounded-2xl border border-[#CDC7BD] p-4 md:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between"
+                  className="bg-white rounded-xl md:rounded-2xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-full"
                 >
                   <div>
                     <img
@@ -419,7 +410,6 @@ export default function MenuBebidas() {
                       {b.nombre}
                     </h3>
 
-                    {/* Mostrar categorías (compatible con ambos formatos) */}
                     {cats.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-2">
                         {cats.map((cat, idx) => (
@@ -433,7 +423,6 @@ export default function MenuBebidas() {
                       </div>
                     )}
 
-                    {/* Mostrar subcategoría si es vino */}
                     {b.subcategoria && (
                       <span className="text-xs bg-[#A30404] text-white px-2 py-1 rounded-full inline-block mb-2">
                         {b.subcategoria}
