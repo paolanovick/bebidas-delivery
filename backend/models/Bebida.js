@@ -6,31 +6,25 @@ const bebidaSchema = new mongoose.Schema({
   precio: { type: Number, required: true },
   stock: { type: Number, default: 0 },
   imagen: { type: String },
-  categoria: {
+
+  // ✅ AHORA ES UN ARRAY para selección múltiple
+  categorias: {
+    type: [String],
+    default: [],
+  },
+
+  // ✅ SUBCATEGORÍA para vinos (Blanco, Rosé, Tinto)
+  subcategoria: {
     type: String,
-    // Si querés, podés limitar a estas (opcional)
-    enum: [
-      "Vinos",
-      "Cervezas",
-      "Gaseosas",
-      "Jugos",
-      "Espumantes",
-      "Whisky",
-      "Blancas",
-      "Licores",
-      "Aperitivos",
-      "Espirituosas",
-      "Mayoristas",
-      "Ofertas",
-      "Regalos",
-      "Gift Cards",
-      "Wine Club",
-      "Experiencias",
-      "", // permite "Sin categoría"
-      undefined, // por si hay viejas
-    ],
     default: "",
   },
+
+  // ✅ PRODUCTO ESTRELLA
+  esEstrella: {
+    type: Boolean,
+    default: false,
+  },
+
   creadoEn: { type: Date, default: Date.now },
 });
 
