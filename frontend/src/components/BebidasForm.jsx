@@ -23,7 +23,8 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
     "Blancas",
     "Licores",
     "Aperitivos",
-    "Espirituosas",
+    "Energéticas",
+    "Aguas",
     "Combos", // ✅ NUEVA
     "Mayoristas",
     "Ofertas",

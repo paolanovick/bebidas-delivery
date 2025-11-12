@@ -23,7 +23,8 @@ export default function MenuBebidas() {
     "Blancas",
     "Licores",
     "Aperitivos",
-    "Espirituosas",
+    "Energéticas",
+    "Aguas",
     "Combos", // ✅ NUEVA
     "Mayoristas",
     "Ofertas",
