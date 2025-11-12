@@ -1,49 +1,54 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const CarritoContext = createContext();
 
 export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState(
-   JSON.parse(sessionStorage.getItem("carrito")) || []
+    JSON.parse(sessionStorage.getItem("carrito")) || []
   );
+
+  // ✅ Vaciar carrito automáticamente al recargar la página
+  useEffect(() => {
+    sessionStorage.removeItem("carrito");
+    setCarrito([]);
+  }, []);
 
   const guardarCarrito = (nuevoCarrito) => {
     setCarrito(nuevoCarrito);
-   sessionStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-window.dispatchEvent(new CustomEvent("carrito:updated"));
+    sessionStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
+    window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 
   const agregar = (bebida) => {
-  if (bebida.stock <= 0) {
-    alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
-    return;
-  }
-
-  const existe = carrito.find((i) => i._id === bebida._id);
-  let nuevo;
-
-  if (existe) {
-    if (existe.cantidad + 1 > bebida.stock) {
-      alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
+    if (bebida.stock <= 0) {
+      alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
       return;
     }
-    nuevo = carrito.map((i) =>
-      i._id === bebida._id ? { ...i, cantidad: i.cantidad + 1 } : i
-    );
-  } else {
-    nuevo = [...carrito, { ...bebida, cantidad: 1 }];
-  }
 
-  guardarCarrito(nuevo);
+    const existe = carrito.find((i) => i._id === bebida._id);
+    let nuevo;
 
-  // 🔔 Animación del icono del carrito (rebote al agregar)
-  const icono = document.getElementById("icono-carrito");
-  if (icono) {
-    icono.classList.add("animate-bounce");
-    setTimeout(() => icono.classList.remove("animate-bounce"), 800);
-  }
-};
+    if (existe) {
+      if (existe.cantidad + 1 > bebida.stock) {
+        alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
+        return;
+      }
+      nuevo = carrito.map((i) =>
+        i._id === bebida._id ? { ...i, cantidad: i.cantidad + 1 } : i
+      );
+    } else {
+      nuevo = [...carrito, { ...bebida, cantidad: 1 }];
+    }
 
+    guardarCarrito(nuevo);
+
+    // 🔔 Animación del icono del carrito (rebote al agregar)
+    const icono = document.getElementById("icono-carrito");
+    if (icono) {
+      icono.classList.add("animate-bounce");
+      setTimeout(() => icono.classList.remove("animate-bounce"), 800);
+    }
+  };
 
   const modificarCantidad = (id, cantidad) => {
     const nuevo = carrito.map((item) =>
@@ -55,12 +60,11 @@ window.dispatchEvent(new CustomEvent("carrito:updated"));
   const eliminar = (id) => {
     guardarCarrito(carrito.filter((item) => (item._id || item.id) !== id));
   };
-  
 
-  // ✅ NUEVO: Vaciar el carrito
+  // ✅ Vaciar completamente el carrito (para logout, etc.)
   const vaciarCarrito = () => {
-    setCarrito([]); // limpia UI
-   sessionStorage.removeItem("carrito");
+    setCarrito([]);
+    sessionStorage.removeItem("carrito");
     window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 
@@ -72,7 +76,7 @@ window.dispatchEvent(new CustomEvent("carrito:updated"));
         modificarCantidad,
         eliminar,
         guardarCarrito,
-        vaciarCarrito, // 👈 AGREGADO
+        vaciarCarrito,
       }}
     >
       {children}
