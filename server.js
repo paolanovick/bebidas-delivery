@@ -44,6 +44,18 @@ app.use("/api/geo", geoRouter);
 app.get("/", (req, res) => {
   res.json({ mensaje: "API funcionando 🚀" });
 });
+// ✅ Servir el frontend compilado (React)
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "frontend/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {
