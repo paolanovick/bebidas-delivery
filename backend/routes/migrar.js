@@ -6,28 +6,27 @@ const router = express.Router();
 // ✅ Endpoint para migrar datos una sola vez
 router.get("/migrar-categorias", async (req, res) => {
   try {
-    const bebidas = await Bebida.find({ categoria: { $exists: true } });
-
-    let migradas = 0;
-    for (const bebida of bebidas) {
-      if (
-        bebida.categoria &&
-        (!bebida.categorias || bebida.categorias.length === 0)
-      ) {
-        bebida.categorias = [bebida.categoria];
-        bebida.categoria = undefined;
-        await bebida.save();
-        migradas++;
-      }
-    }
+    const result = await Bebida.updateMany(
+      { categoria: { $exists: true, $ne: null } },
+      [
+        {
+          $set: {
+            categorias: ["$categoria"],
+          },
+        },
+        {
+          $unset: "categoria",
+        },
+      ]
+    );
 
     res.json({
-      mensaje: `✅ Migración completada. ${migradas} bebidas actualizadas.`,
-      migradas,
+      mensaje: `✅ Migración completada`,
+      modificados: result.modifiedCount,
+      mensaje2: "Recarga la página para ver los cambios",
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 export default router;
