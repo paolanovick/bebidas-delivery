@@ -7,8 +7,34 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
     precio: "",
     stock: "",
     imagen: "",
-    categoria: "",
+    categorias: [], // ✅ Array para múltiples categorías
+    subcategoria: "", // ✅ Para vinos: Blanco, Rosé, Tinto
+    esEstrella: false, // ✅ Producto destacado
   });
+
+  // ✅ CATEGORÍAS DISPONIBLES
+  const categoriasDisponibles = [
+    "Vinos",
+    "Cervezas",
+    "Gaseosas",
+    "Jugos",
+    "Espumantes",
+    "Whisky",
+    "Blancas",
+    "Licores",
+    "Aperitivos",
+    "Espirituosas",
+    "Combos", // ✅ NUEVA
+    "Mayoristas",
+    "Ofertas",
+    "Regalos",
+    "Gift Cards",
+    "Wine Club",
+    "Experiencias",
+  ];
+
+  // ✅ SUBCATEGORÍAS DE VINOS
+  const subcategoriasVinos = ["Tinto", "Blanco", "Rosé"];
 
   useEffect(() => {
     if (bebidaEditar) {
@@ -18,15 +44,29 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         precio: bebidaEditar.precio || "",
         stock: bebidaEditar.stock || "",
         imagen: bebidaEditar.imagen || "",
-        categoria: bebidaEditar.categoria || "",
+        categorias: bebidaEditar.categorias || [],
+        subcategoria: bebidaEditar.subcategoria || "",
+        esEstrella: bebidaEditar.esEstrella || false,
       });
     }
   }, [bebidaEditar]);
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  // ✅ MANEJO DE CATEGORÍAS MÚLTIPLES
+  const handleCategoriaToggle = (categoria) => {
+    setFormData((prev) => {
+      const nuevasCategorias = prev.categorias.includes(categoria)
+        ? prev.categorias.filter((c) => c !== categoria)
+        : [...prev.categorias, categoria];
+
+      return { ...prev, categorias: nuevasCategorias };
     });
   };
 
@@ -40,9 +80,14 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
       precio: "",
       stock: "",
       imagen: "",
-      categoria: "",
+      categorias: [],
+      subcategoria: "",
+      esEstrella: false,
     });
   };
+
+  // ✅ Verifica si "Vinos" está seleccionado
+  const esVinoSeleccionado = formData.categorias.includes("Vinos");
 
   return (
     <form
@@ -80,34 +125,74 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         />
       </div>
 
-      {/* Categoría */}
+      {/* ✅ CATEGORÍAS MÚLTIPLES */}
       <div className="mb-5">
-        <label className="block text-sm font-semibold mb-2">Categoría *</label>
-        <select
-          name="categoria"
-          value={formData.categoria}
-          onChange={handleChange}
-          required
-          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
-        >
-          <option value="">Seleccionar categoría</option>
-          <option value="Vinos">Vinos</option>
-          <option value="Cervezas">Cervezas</option>
-          <option value="Gaseosas">Gaseosas</option>
-          <option value="Jugos">Jugos</option>
-          <option value="Espumantes">Espumantes</option>
-          <option value="Whisky">Whisky</option>
-          <option value="Blancas">Blancas</option>
-          <option value="Licores">Licores</option>
-          <option value="Aperitivos">Aperitivos</option>
-          <option value="Espirituosas">Espirituosas</option>
-          <option value="Mayoristas">Mayoristas</option>
-          <option value="Ofertas">Ofertas</option>
-          <option value="Regalos">Regalos</option>
-          <option value="Gift Cards">Gift Cards</option>
-          <option value="Wine Club">Wine Club</option>
-          <option value="Experiencias">Experiencias</option>
-        </select>
+        <label className="block text-sm font-semibold mb-3">
+          Categorías * (Selección múltiple)
+        </label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 border border-[#CDC7BD] rounded-lg p-4 bg-[#F7F5F2]">
+          {categoriasDisponibles.map((cat) => (
+            <label
+              key={cat}
+              className="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition"
+            >
+              <input
+                type="checkbox"
+                checked={formData.categorias.includes(cat)}
+                onChange={() => handleCategoriaToggle(cat)}
+                className="w-4 h-4 accent-[#590707]"
+              />
+              <span className="text-sm">{cat}</span>
+            </label>
+          ))}
+        </div>
+        {formData.categorias.length > 0 && (
+          <p className="text-xs text-[#736D66] mt-2">
+            Seleccionadas: {formData.categorias.join(", ")}
+          </p>
+        )}
+      </div>
+
+      {/* ✅ SUBCATEGORÍA DE VINOS (solo si "Vinos" está seleccionado) */}
+      {esVinoSeleccionado && (
+        <div className="mb-5">
+          <label className="block text-sm font-semibold mb-2">
+            Tipo de Vino
+          </label>
+          <select
+            name="subcategoria"
+            value={formData.subcategoria}
+            onChange={handleChange}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
+          >
+            <option value="">Seleccionar tipo</option>
+            {subcategoriasVinos.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* ✅ PRODUCTO ESTRELLA */}
+      <div className="mb-5 bg-[#FFF9E6] border-2 border-[#FFD700] rounded-lg p-4">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            name="esEstrella"
+            checked={formData.esEstrella}
+            onChange={handleChange}
+            className="w-5 h-5 accent-[#FFD700]"
+          />
+          <span className="text-sm font-semibold text-[#04090C]">
+            ⭐ Destacar como Producto Estrella
+          </span>
+        </label>
+        <p className="text-xs text-[#736D66] mt-2">
+          Los productos destacados aparecen en la sección principal antes del
+          catálogo
+        </p>
       </div>
 
       {/* Precio & Stock */}
