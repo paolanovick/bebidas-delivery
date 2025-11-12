@@ -57,30 +57,35 @@ export default function UsuarioBebidas({ bebidas }) {
               {b.stock > 0 ? `Stock: ${b.stock}` : "Sin stock"}
             </p>
 
-          <button
-  onClick={() => agregarAlCarrito(b)}
-  disabled={b.stock < 1}
-  className="bg-[#590707] hover:bg-[#A30404] text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
->
-  <ShoppingCart size={18} />
-  Agregar al Carrito
-</button>
-
-
+            <button
+              onClick={() => agregarAlCarrito(b)}
+              disabled={b.stock < 1}
+              className="bg-[#590707] hover:bg-[#A30404] text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ShoppingCart size={18} />
+              Agregar al Carrito
+            </button>
           </div>
         ))}
       </div>
 
-    {mensaje && (
-  <div
-    className={`fixed bottom-5 left-1/2 -translate-x-1/2 px-5 py-3 rounded-lg text-white font-semibold text-center shadow-lg z-50 transition-opacity duration-500 ${
-      mensaje.includes("❗") ? "bg-red-600" : "bg-green-600"
-    }`}
-  >
-    {mensaje}
-  </div>
-)}
-
+      {mensaje && (
+        <div
+          className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white font-semibold text-center shadow-2xl z-[9999] transition-all duration-500 ${
+            mensaje.includes("❗")
+              ? "bg-red-600 animate-bounce"
+              : "bg-green-600 animate-bounce"
+          }`}
+          style={{
+            fontSize: "1.1rem",
+            minWidth: "250px",
+            maxWidth: "80%",
+            opacity: 0.95,
+          }}
+        >
+          {mensaje}
+        </div>
+      )}
     </div>
   );
 }
