@@ -242,7 +242,7 @@ export default function MenuBebidas() {
   overflow-x-auto 
   whitespace-nowrap 
   px-1 md:px-4 lg:px-12
-  snap-x snap-start
+  snap-x snap-mandatory
   scrollbar-hide 
   w-full 
   scroll-smooth 
