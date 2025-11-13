@@ -6,7 +6,7 @@ import { crearPedido, obtenerSlotsDisponibles } from "../services/api";
 import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
 
-const ADMIN_WHATSAPP = "5492494538707";
+const ADMIN_WHATSAPP = "5492494252530";
 
 export default function Pedido() {
   const navigate = useNavigate();
