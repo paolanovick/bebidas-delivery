@@ -214,16 +214,17 @@ export default function MenuBebidas() {
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-visible">
+      <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden">
         {productosEstrella.length > 0 && (
           <section className="mb-8 md:mb-12 w-full">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
-              Destacados EL DANÉS
+              Destacados El Danés
             </h2>
 
             {/* CARRUSEL INFINITO */}
             <div className="relative mt-8 md:mt-12 w-full max-w-full">
               <div className="relative w-full">
+                {/* BOTÓN IZQUIERDO */}
                 <button
                   onClick={() => scrollCarousel("left")}
                   className="hidden lg:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
@@ -237,20 +238,19 @@ export default function MenuBebidas() {
                   onMouseEnter={() => setPaused(true)}
                   onMouseLeave={() => setPaused(false)}
                   className="
-    flex
-    gap-3 md:gap-4 lg:gap-6
-    overflow-x-auto
-    whitespace-nowrap
-    px-1 md:px-4 lg:px-12
-    snap-x snap-proximity
-    scrollbar-hide
-    w-full
-    scroll-smooth
-    [scrollbar-width:none]
-    [-webkit-overflow-scrolling:touch]
-  "
-                
-                  >
+            flex
+            gap-3 md:gap-4 lg:gap-6
+            overflow-x-auto
+            whitespace-nowrap
+            px-1 md:px-4 lg:px-12
+            snap-x snap-proximity
+            scrollbar-hide
+            w-full
+            scroll-smooth
+            [scrollbar-width:none]
+            [-webkit-overflow-scrolling:touch]
+          "
+                >
                   {[...productosEstrella, ...productosEstrella].map((b, i) => {
                     const cats = Array.isArray(b.categorias)
                       ? b.categorias
@@ -317,6 +317,7 @@ export default function MenuBebidas() {
                   })}
                 </div>
 
+                {/* BOTÓN DERECHO */}
                 <button
                   onClick={() => scrollCarousel("right")}
                   className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
@@ -326,6 +327,7 @@ export default function MenuBebidas() {
               </div>
             </div>
 
+            {/* LÍNEA DIVISORIA */}
             <div className="border-t-2 border-[#CDC7BD] mt-6 md:mt-8"></div>
           </section>
         )}
