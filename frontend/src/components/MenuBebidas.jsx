@@ -222,7 +222,7 @@ export default function MenuBebidas() {
             </h2>
 
             {/* CARRUSEL INFINITO */}
-            <div className="relative mt-8 md:mt-12 w-full max-w-full overflow-hidden">
+            <div className="relative mt-8 md:mt-12 w-full max-w-full">
               <div className="relative w-full">
                 <button
                   onClick={() => scrollCarousel("left")}
@@ -236,7 +236,19 @@ export default function MenuBebidas() {
                   ref={carouselRef}
                   onMouseEnter={() => setPaused(true)}
                   onMouseLeave={() => setPaused(false)}
-                  className="flex gap-3 md:gap-4 lg:gap-6 overflow-x-scroll px-1 md:px-4 lg:px-12 snap-x snap-mandatory scrollbar-hide w-full scroll-smooth [scrollbar-width:none] [-webkit-overflow-scrolling:touch]"
+                  className="
+  flex 
+  gap-3 md:gap-4 lg:gap-6
+  overflow-x-auto 
+  whitespace-nowrap 
+  px-1 md:px-4 lg:px-12
+  snap-x snap-mandatory
+  scrollbar-hide 
+  w-full 
+  scroll-smooth 
+  [scrollbar-width:none] 
+  [-webkit-overflow-scrolling:touch]
+"
                 >
                   {[...productosEstrella, ...productosEstrella].map((b, i) => {
                     const cats = Array.isArray(b.categorias)
