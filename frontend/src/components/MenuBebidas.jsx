@@ -237,19 +237,20 @@ export default function MenuBebidas() {
                   onMouseEnter={() => setPaused(true)}
                   onMouseLeave={() => setPaused(false)}
                   className="
-  flex 
-  gap-3 md:gap-4 lg:gap-6
-  overflow-x-auto 
-  whitespace-nowrap 
-  px-1 md:px-4 lg:px-12
-  snap-x snap-mandatory
-  scrollbar-hide 
-  w-full 
-  scroll-smooth 
-  [scrollbar-width:none] 
-  [-webkit-overflow-scrolling:touch]
-"
+    flex
+    gap-3 md:gap-4 lg:gap-6
+    overflow-x-auto
+    whitespace-nowrap
+    px-1 md:px-4 lg:px-12
+    snap-x snap-proximity
+    scrollbar-hide
+    w-full
+    scroll-smooth
+    [scrollbar-width:none]
+    [-webkit-overflow-scrolling:touch]
+  "
                 >
+                  >
                   {[...productosEstrella, ...productosEstrella].map((b, i) => {
                     const cats = Array.isArray(b.categorias)
                       ? b.categorias
