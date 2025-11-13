@@ -227,6 +227,8 @@ export default function MenuBebidas() {
                 {/* BOTÓN IZQUIERDO */}
                 <button
                   onClick={() => scrollCarousel("left")}
+                  onMouseEnter={() => setPaused(true)}
+                  onMouseLeave={() => setPaused(false)}
                   className="hidden lg:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -237,21 +239,15 @@ export default function MenuBebidas() {
                   ref={carouselRef}
                   onMouseEnter={() => setPaused(true)}
                   onMouseLeave={() => setPaused(false)}
-                  className="
-            flex
-            gap-3 md:gap-4 lg:gap-6
-            overflow-x-auto
-            whitespace-nowrap
-            px-1 md:px-4 lg:px-12
-            snap-x snap-proximity
-            scrollbar-hide
-            w-full
-            scroll-smooth
-            [scrollbar-width:none]
-            [-webkit-overflow-scrolling:touch]
-          "
+                  onTouchStart={() => setPaused(true)}
+                  onTouchEnd={() => setPaused(false)}
+                  className="flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto px-1 md:px-4 lg:px-12 w-full scrollbar-hide"
                 >
-                  {[...productosEstrella, ...productosEstrella].map((b, i) => {
+                  {[
+                    ...productosEstrella,
+                    ...productosEstrella,
+                    ...productosEstrella,
+                  ].map((b, i) => {
                     const cats = Array.isArray(b.categorias)
                       ? b.categorias
                       : b.categoria
@@ -261,7 +257,7 @@ export default function MenuBebidas() {
                     return (
                       <div
                         key={`carousel-${b._id}-${i}`}
-                        className="bg-white rounded-lg md:rounded-xl border border-[#CDC7BD] p-2 md:p-3 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-56 sm:w-64 md:w-72 flex-shrink-0 snap-start"
+                        className="bg-white rounded-lg md:rounded-xl border border-[#CDC7BD] p-2 md:p-3 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-56 sm:w-64 md:w-72 flex-shrink-0"
                       >
                         <div>
                           <img
@@ -320,6 +316,8 @@ export default function MenuBebidas() {
                 {/* BOTÓN DERECHO */}
                 <button
                   onClick={() => scrollCarousel("right")}
+                  onMouseEnter={() => setPaused(true)}
+                  onMouseLeave={() => setPaused(false)}
                   className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
                 >
                   <ChevronRight className="w-5 h-5" />
