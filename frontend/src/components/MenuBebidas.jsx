@@ -249,7 +249,7 @@ export default function MenuBebidas() {
     [scrollbar-width:none]
     [-webkit-overflow-scrolling:touch]
   "
-                >
+                
                   >
                   {[...productosEstrella, ...productosEstrella].map((b, i) => {
                     const cats = Array.isArray(b.categorias)
