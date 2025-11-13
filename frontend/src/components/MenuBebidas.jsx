@@ -214,11 +214,11 @@ export default function MenuBebidas() {
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden">
+      <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-visible">
         {productosEstrella.length > 0 && (
           <section className="mb-8 md:mb-12 w-full">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
-              DESTACADOS DE EL DANÉS
+              Destacados EL DANÉS
             </h2>
 
             {/* CARRUSEL INFINITO */}
@@ -242,7 +242,7 @@ export default function MenuBebidas() {
   overflow-x-auto 
   whitespace-nowrap 
   px-1 md:px-4 lg:px-12
-  snap-x snap-mandatory
+  snap-x snap-start
   scrollbar-hide 
   w-full 
   scroll-smooth 
