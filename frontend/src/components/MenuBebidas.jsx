@@ -263,7 +263,7 @@ export default function MenuBebidas() {
                           <img
                             src={b.imagen}
                             alt={b.nombre}
-                            className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg mb-2 md:mb-3"
+                            className="w-full h-24 sm:h-32 md:h-40 object-cover rounded-lg mb-2 md:mb-3"
                             onError={(e) =>
                               (e.currentTarget.src =
                                 "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
