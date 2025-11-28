@@ -93,7 +93,7 @@ function AppContent() {
     <div className="min-h-screen bg-[#04090C] text-white">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 pt-36 md:pt-6">
         <Routes>
           <Route path="/" element={<Inicio />} />
           <Route path="/inicio" element={<Inicio />} />
@@ -164,16 +164,12 @@ function AppContent() {
             }
           />
 
-          <Route
-           path="/pedido" element={<Pedido />}
-          />
+          <Route path="/pedido" element={<Pedido />} />
         </Routes>
       </div>
 
       {/* ✅ Footer solo si NO estamos en admin */}
       {!ocultarFooter && <Footer />}
-
-     
     </div>
   );
 }
