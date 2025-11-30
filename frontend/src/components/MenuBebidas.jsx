@@ -251,13 +251,13 @@ export default function MenuBebidas() {
            onClick={() => setMenuAbierto(true)}
            className="md:hidden bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg text-xs sm:text-sm font-semibold whitespace-nowrap"
          >
-           Filtros ☰
+           Categorías ☰
          </button>
        </div>
 
        {bebidasFiltradas.length === 0 ? (
          <p className="text-center text-[#736D66] text-lg md:text-xl mt-10">
-           No se encontraron bebidas con esos filtros.
+           No se encontró esa categoría de bebidas.
          </p>
        ) : (
          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 w-full max-w-full">
