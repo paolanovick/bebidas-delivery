@@ -135,13 +135,13 @@ export default function MenuBebidas() {
          {mensajeAgregado}
        </div>
      )}
-     {/* botón hamburguesa */}
+     {/* botón hamburguesa 
      <button
        onClick={() => setMenuAbierto(true)}
        className="md:hidden absolute top-2 left-2 z-40 bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg"
      >
        ☰
-     </button>
+     </button>*/}
 
      {/* overlay móviles */}
      {menuAbierto && (
@@ -349,10 +349,25 @@ export default function MenuBebidas() {
          </section>
        )}
 
-       {/* CATÁLOGO */}
+       {/* CATÁLOGO 
        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
          Catálogo de Bebidas
-       </h1>
+       </h1>*/}
+
+       {/* CABECERA CATÁLOGO + BOTÓN FILTROS (MOBILE) */}
+       <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 md:mb-8">
+         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#590707] flex-1 text-left md:text-center">
+           Catálogo de Bebidas
+         </h1>
+
+         {/* Botón filtros solo en mobile */}
+         <button
+           onClick={() => setMenuAbierto(true)}
+           className="md:hidden bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg text-xs sm:text-sm font-semibold whitespace-nowrap"
+         >
+           Filtros ☰
+         </button>
+       </div>
 
        {bebidasFiltradas.length === 0 ? (
          <p className="text-center text-[#736D66] text-lg md:text-xl mt-10">
