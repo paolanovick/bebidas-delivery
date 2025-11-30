@@ -152,9 +152,11 @@ export default function MenuBebidas() {
       {/* Fondo diagonal con logo */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div
-          className="absolute inset-[-25%] bg-repeat opacity-10 rotate-12"
+          className="absolute inset-[-20%] -rotate-12 opacity-20"
           style={{
             backgroundImage: `url(${process.env.PUBLIC_URL + "/logoNsf.png"})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "220px 220px",
           }}
         />
       </div>
