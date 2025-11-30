@@ -138,7 +138,7 @@ export default function MenuBebidas() {
      {/* botón hamburguesa */}
      <button
        onClick={() => setMenuAbierto(true)}
-       className="md:hidden fixed top-4 left-4 z-40 bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg"
+       className="md:hidden fixed top-20 left-4 z-40 bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg"
      >
        ☰
      </button>
@@ -153,11 +153,11 @@ export default function MenuBebidas() {
 
      {/* SIDEBAR */}
      <aside
-       className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] p-6 z-40 shadow-[0_8px_24px_rgba(0,0,0,0.08)] transform transition-transform duration-300
-          ${
-            menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          }
-          overflow-y-auto max-h-screen`}
+       className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] 
+    p-6 z-40 shadow-[0_8px_24px_rgba(0,0,0,0.08)] transform transition-transform duration-300
+    pt-16 md:pt-6
+    ${menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+    overflow-y-auto max-h-screen`}
      >
        <div className="absolute top-0 left-0 h-1 w-full bg-[#CDC7BD]" />
 
@@ -233,7 +233,7 @@ export default function MenuBebidas() {
      </aside>
 
      {/* CONTENIDO PRINCIPAL */}
-     <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden">
+     <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-28 md:pt-10">
        {productosEstrella.length > 0 && (
          <section className="mt-6 mb-8 md:mb-12 w-full">
            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
