@@ -136,7 +136,7 @@ export default function MenuBebidas() {
          {mensajeAgregado}
        </div>
      )}
-   
+
      {/* overlay móviles */}
      {menuAbierto && (
        <div
@@ -213,7 +213,7 @@ export default function MenuBebidas() {
                    onClick={() => setSubcategoria(sub)}
                    className={`w-full text-left px-4 py-2 rounded-lg border transition text-sm ${
                      subcategoria === sub
-                       ? "border-[#A30404] bg-[#A30404] text-white shadow"
+                       ? "border-[#590707] bg-[#590707] text-white shadow"
                        : "border-transparent hover:bg-[#CDC7BD]/40 text-[#04090C]"
                    }`}
                  >
