@@ -155,7 +155,7 @@ export default function MenuBebidas() {
         backgroundSize: "200px 200px",
         backgroundRepeat: "repeat",
         backgroundAttachment: "fixed",
-        opacity: 0.7,
+        
       }}
     >
       {/* MENSAJE PRODUCTO AGREGADO */}
