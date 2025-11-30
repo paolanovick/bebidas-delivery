@@ -292,8 +292,47 @@ export default function MenuBebidas() {
           <div className="space-y-10">
             {ordenCategoriasCatalogo.map((cat) => (
               <section key={cat} className="w-full">
-                <h2 className="text-xl md:text-2xl font-bold mb-3 text-[#590707]">
-                  {cat}
+                <h2
+                  onClick={() => {
+                    setCategoria(cat);
+                    setSubcategoria("Todas");
+                    setBusqueda("");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="
+    text-xl md:text-2xl font-bold mb-3 text-[#590707] 
+    cursor-pointer 
+    relative inline-block
+    transition-all
+    group
+  "
+                >
+                  <span className="group-hover:text-[#A30404] transition-colors">
+                    {cat}
+                  </span>
+
+                  {/* Línea sutil animada */}
+                  <span
+                    className="
+      absolute left-0 -bottom-1 h-[2px] w-0 
+      bg-gradient-to-r from-[#590707] via-[#A30404] to-[#CDC7BD]
+      rounded-full
+      transition-all duration-300 
+      group-hover:w-full
+    "
+                  />
+
+                  {/* Flecha minimalista */}
+                  <span
+                    className="
+      opacity-0 group-hover:opacity-100 
+      text-[#A30404] 
+      ml-2 
+      transition-opacity duration-300
+    "
+                  >
+                    →
+                  </span>
                 </h2>
 
                 <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide">
