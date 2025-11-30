@@ -152,7 +152,7 @@ export default function MenuBebidas() {
       className="flex min-h-screen relative"
       style={{
         backgroundImage: "url('/fondo.png')",
-        backgroundSize: "cover",
+        backgroundSize: "200px 200px",
         backgroundRepeat: "repeat",
         backgroundAttachment: "fixed",
       }}
