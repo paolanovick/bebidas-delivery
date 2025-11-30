@@ -151,7 +151,7 @@ export default function MenuBebidas() {
     <div className="flex min-h-screen relative bg-[#F7F5F2] overflow-hidden">
       {/* 🎨 TEXTURA DE FONDO - LOGO INVERTIDO SUAVE */}
       <div
-        className="pointer-events-none fixed inset-0 -z-10 opacity-8"
+        className="pointer-events-none fixed inset-0 -z-10 opacity-20"
         style={{
            backgroundImage: "url('/logoInvertido.png')",
           backgroundSize: "200px 200px",
