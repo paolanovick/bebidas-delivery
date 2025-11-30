@@ -106,7 +106,7 @@ export default function CarruselDestacados({
                       ))}
 
                       {b.subcategoria && (
-                        <span className="text-[10px] md:text-xs bg-[#A30404] text-white px-1.5 py-0.5 rounded-full">
+                        <span className="text-[10px] md:text-xs bg-[#590707] text-white px-1.5 py-0.5 rounded-full">
                           {b.subcategoria}
                         </span>
                       )}

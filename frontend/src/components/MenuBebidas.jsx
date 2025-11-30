@@ -3,7 +3,6 @@ import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import CarruselDestacados from "../components/CarruselDestacados";
 
-
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar } = useCarrito();
@@ -13,35 +12,29 @@ export default function MenuBebidas() {
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  // PAUSA DEL SCROLL
-  const [paused, setPaused] = useState(false);
-   const [mensajeAgregado, setMensajeAgregado] = useState("");
+  // ------------------------------------
+  // FLAGS PARA VISTA NETFLIX / FILTRADA
+  // ------------------------------------
+  const sinFiltros =
+    categoria === "Todas" && subcategoria === "Todas" && busqueda.trim() === "";
 
-  // REFERENCIA DEL CARRUSEL
-  const carouselRef = useRef(null);
+  // Agrupar bebidas por categoría
+  const bebidasPorCategoria = bebidas.reduce((acc, b) => {
+    let cat = "Sin categoría";
 
-  // AUTO-SCROLL + LOOP INFINITO
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
+    if (Array.isArray(b.categorias) && b.categorias.length > 0) {
+      cat = b.categorias[0];
+    } else if (b.categoria) {
+      cat = b.categoria;
+    }
 
-    const interval = setInterval(() => {
-      if (!paused) {
-        carousel.scrollLeft += 1;
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(b);
 
-        // loop infinito real
-        if (
-          carousel.scrollLeft >=
-          carousel.scrollWidth - carousel.clientWidth
-        ) {
-          carousel.scrollLeft = 0;
-        }
-      }
-    }, 15);
+    return acc;
+  }, {});
 
-    return () => clearInterval(interval);
-  }, [paused]);
-
+  // Ordenar categorías según el menú lateral
   const categorias = [
     "Todas",
     "Vinos",
@@ -64,8 +57,15 @@ export default function MenuBebidas() {
     "Experiencias",
   ];
 
+  const ordenCategoriasCatalogo = categorias.filter(
+    (c) => c !== "Todas" && bebidasPorCategoria[c]
+  );
+
   const subcategoriasVinos = ["Todas", "Tinto", "Blanco", "Rosé"];
 
+  // ---------------------------
+  // FILTROS
+  // ---------------------------
   const bebidasFiltradas = bebidas.filter((b) => {
     let categoriasProducto = [];
 
@@ -95,239 +95,282 @@ export default function MenuBebidas() {
     return matchCat && matchSubcat && matchTxt;
   });
 
- const productosEstrella = bebidas.filter((b) => b.esEstrella);
+  const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
- const handleAgregar = (b) => {
-   agregar(b);
+  const handleAgregar = (b) => {
+    agregar(b);
+    setMensajeAgregado(`${b.nombre} agregado al carrito 🛒`);
+    setTimeout(() => setMensajeAgregado(""), 3000);
+  };
 
-   setMensajeAgregado(`${b.nombre} agregado al carrito 🛒`);
+  const fmt = (n) =>
+    new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
-   setTimeout(() => {
-     setMensajeAgregado("");
-   }, 3000);
- };
+  const mostrarSubcategorias = categoria === "Vinos";
 
- const fmt = (n) =>
-   new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
+  // -------------------------------------
+  // ESTADOS DEL CARRUSEL DESTACADOS
+  // -------------------------------------
+  const [mensajeAgregado, setMensajeAgregado] = useState("");
+  const [paused, setPaused] = useState(false);
+  const carouselRef = useRef(null);
 
- const mostrarSubcategorias = categoria === "Vinos";
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
 
- const scrollCarousel = (direction) => {
-   if (carouselRef.current) {
-     const scrollAmount = 300;
-     carouselRef.current.scrollBy({
-       left: direction === "left" ? -scrollAmount : scrollAmount,
-       behavior: "smooth",
-     });
-   }
- };
+    const interval = setInterval(() => {
+      if (!paused) {
+        carousel.scrollLeft += 1;
+        if (
+          carousel.scrollLeft >=
+          carousel.scrollWidth - carousel.clientWidth
+        ) {
+          carousel.scrollLeft = 0;
+        }
+      }
+    }, 15);
 
- return (
-   <div className="flex min-h-screen bg-[#F7F5F2] relative">
-     {/* ✅ TOAST: mensaje producto agregado */}
-     {mensajeAgregado && (
-       <div
-         className="
-            fixed bottom-6 left-1/2 -translate-x-1/2 z-50
-            bg-green-600 text-white px-4 py-2 rounded-full shadow-lg
-            text-sm sm:text-base
-          "
-       >
-         {mensajeAgregado}
-       </div>
-     )}
+    return () => clearInterval(interval);
+  }, [paused]);
 
-     {/* overlay móviles */}
-     {menuAbierto && (
-       <div
-         className="fixed inset-0 bg-black/40 z-30 md:hidden"
-         onClick={() => setMenuAbierto(false)}
-       />
-     )}
+  const scrollCarousel = (direction) => {
+    if (carouselRef.current) {
+      const scrollAmount = 300;
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
-     {/* SIDEBAR */}
-     <aside
-       className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] 
-    p-6 z-40 shadow-[0_8px_24px_rgba(0,0,0,0.08)] transform transition-transform duration-300
-    pt-16 md:pt-6
-    ${menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-    overflow-y-auto max-h-screen`}
-     >
-       <div className="absolute top-0 left-0 h-1 w-full bg-[#CDC7BD]" />
+  // -------------------------------------
+  // RENDER
+  // -------------------------------------
+  return (
+    <div className="flex min-h-screen bg-[#F7F5F2] relative">
+      {/* MENSAJE PRODUCTO AGREGADO */}
+      {mensajeAgregado && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded-full shadow-lg text-sm sm:text-base">
+          {mensajeAgregado}
+        </div>
+      )}
 
-       <button
-         onClick={() => setMenuAbierto(false)}
-         className="md:hidden ml-auto mb-4 text-[#590707] font-bold"
-       >
-         ✖
-       </button>
+      {/* OVERLAY MOBILE */}
+      {menuAbierto && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={() => setMenuAbierto(false)}
+        />
+      )}
 
-       <div className="space-y-6">
-         {/* buscador */}
-         <div>
-           <label className="text-sm text-[#736D66] block mb-2">Buscar</label>
-           <input
-             value={busqueda}
-             onChange={(e) => setBusqueda(e.target.value)}
-             className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] bg-white text-[#04090C] placeholder-[#736D66]/80"
-             placeholder="Ej: Malbec, Whisky..."
-           />
-         </div>
+      {/* ------------------------------- */}
+      {/* SIDEBAR */}
+      {/* ------------------------------- */}
+      <aside
+        className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] 
+        p-6 z-40 shadow-[0_8px_24px_rgba(0,0,0,0.08)] transform transition-transform duration-300
+        pt-16 md:pt-6
+        ${menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        overflow-y-auto max-h-screen`}
+      >
+        <div className="absolute top-0 left-0 h-1 w-full bg-[#CDC7BD]" />
 
-         {/* categorías */}
-         <div>
-           <label className="text-sm text-[#736D66] block mb-2">
-             Categorías
-           </label>
-           <div className="space-y-2">
-             {categorias.map((cat) => (
-               <button
-                 key={cat}
-                 onClick={() => {
-                   setCategoria(cat);
-                   setSubcategoria("Todas");
-                   setMenuAbierto(false);
-                 }}
-                 className={`w-full text-left px-4 py-2 rounded-lg border transition ${
-                   categoria === cat
-                     ? "border-[#590707] bg-[#590707] text-white shadow"
-                     : "border-transparent hover:bg-[#CDC7BD]/40 text-[#04090C]"
-                 }`}
-               >
-                 {cat}
-               </button>
-             ))}
-           </div>
-         </div>
+        <button
+          onClick={() => setMenuAbierto(false)}
+          className="md:hidden ml-auto mb-4 text-[#590707] font-bold"
+        >
+          ✖
+        </button>
 
-         {/* subcategorías vinos */}
-         {mostrarSubcategorias && (
-           <div>
-             <label className="text-sm text-[#736D66] block mb-2">
-               Tipo de Vino
-             </label>
-             <div className="space-y-2">
-               {subcategoriasVinos.map((sub) => (
-                 <button
-                   key={sub}
-                   onClick={() => setSubcategoria(sub)}
-                   className={`w-full text-left px-4 py-2 rounded-lg border transition text-sm ${
-                     subcategoria === sub
-                       ? "border-[#590707] bg-[#590707] text-white shadow"
-                       : "border-transparent hover:bg-[#CDC7BD]/40 text-[#04090C]"
-                   }`}
-                 >
-                   {sub}
-                 </button>
-               ))}
-             </div>
-           </div>
-         )}
-       </div>
-     </aside>
+        <div className="space-y-6">
+          {/* BUSCADOR */}
+          <div>
+            <label className="text-sm text-[#736D66] block mb-2">Buscar</label>
+            <input
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] bg-white text-[#04090C] placeholder-[#736D66]/80"
+              placeholder="Ej: Malbec, Whisky..."
+            />
+          </div>
 
-     {/* CONTENIDO PRINCIPAL */}
-     <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
-       {productosEstrella.length > 0 && (
-         <CarruselDestacados
-           productos={productosEstrella}
-           handleAgregar={handleAgregar}
-           scrollCarousel={scrollCarousel}
-           carouselRef={carouselRef}
-           paused={paused}
-           setPaused={setPaused}
-           fmt={fmt}
-         />
-       )}
+          {/* CATEGORÍAS */}
+          <div>
+            <label className="text-sm text-[#736D66] block mb-2">
+              Categorías
+            </label>
 
-       {/* CABECERA CATÁLOGO + BOTÓN FILTROS (MOBILE) */}
-       <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 md:mb-8">
-         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#590707] flex-1 text-left md:text-center">
-           Catálogo de Bebidas
-         </h1>
+            <div className="space-y-2">
+              {categorias.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setCategoria(cat);
+                    setSubcategoria("Todas");
+                    setMenuAbierto(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 rounded-lg border transition ${
+                    categoria === cat
+                      ? "border-[#590707] bg-[#590707] text-white shadow"
+                      : "border-transparent hover:bg-[#CDC7BD]/40 text-[#04090C]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
 
-         {/* Botón filtros solo en mobile */}
-         <button
-           onClick={() => setMenuAbierto(true)}
-           className="md:hidden bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg text-xs sm:text-sm font-semibold whitespace-nowrap"
-         >
-           Categorías ☰
-         </button>
-       </div>
+          {/* SUBCATEGORÍAS VINOS */}
+          {mostrarSubcategorias && (
+            <div>
+              <label className="text-sm text-[#736D66] block mb-2">
+                Tipo de Vino
+              </label>
 
-       {bebidasFiltradas.length === 0 ? (
-         <p className="text-center text-[#736D66] text-lg md:text-xl mt-10">
-           No se encontró esa categoría de bebidas.
-         </p>
-       ) : (
-         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 w-full max-w-full">
-           {bebidasFiltradas.map((b) => {
-             const cats = Array.isArray(b.categorias)
-               ? b.categorias
-               : b.categoria
-               ? [b.categoria]
-               : [];
+              <div className="space-y-2">
+                {subcategoriasVinos.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => setSubcategoria(sub)}
+                    className={`w-full text-left px-4 py-2 rounded-lg border transition text-sm ${
+                      subcategoria === sub
+                        ? "border-[#590707] bg-[#590707] text-white shadow"
+                        : "border-transparent hover:bg-[#CDC7BD]/40 text-[#04090C]"
+                    }`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
 
-             return (
-               <div
-                 key={b._id}
-                 className="bg-white rounded-lg md:rounded-xl border border-[#CDC7BD] p-2 md:p-3 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-full"
-               >
-                 <div>
-                   <img
-                     src={b.imagen}
-                     alt={b.nombre}
-                     className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg mb-2 md:mb-3"
-                     onError={(e) =>
-                       (e.currentTarget.src =
-                         "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
-                     }
-                   />
+      {/* --------------------------------------- */}
+      {/* CONTENIDO PRINCIPAL */}
+      {/* --------------------------------------- */}
+      <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
+        {/* DESTACADOS */}
+        {productosEstrella.length > 0 && (
+          <CarruselDestacados
+            productos={productosEstrella}
+            handleAgregar={handleAgregar}
+            scrollCarousel={scrollCarousel}
+            carouselRef={carouselRef}
+            paused={paused}
+            setPaused={setPaused}
+            fmt={fmt}
+          />
+        )}
 
-                   <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-[#04090C] mb-1 line-clamp-2">
-                     {b.nombre}
-                   </h3>
+        {/* TÍTULO */}
+        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#590707] flex-1 text-left md:text-center">
+            Catálogo de Bebidas
+          </h1>
 
-                   {cats.length > 0 && (
-                     <div className="flex flex-wrap gap-1 mb-1 md:mb-2">
-                       {cats.map((cat, idx) => (
-                         <span
-                           key={idx}
-                           className="text-[10px] md:text-xs bg-[#CDC7BD] text-[#04090C] px-1.5 py-0.5 md:px-2 md:py-1 rounded-full"
-                         >
-                           {cat}
-                         </span>
-                       ))}
-                     </div>
-                   )}
+          <button
+            onClick={() => setMenuAbierto(true)}
+            className="md:hidden bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg text-xs sm:text-sm font-semibold whitespace-nowrap"
+          >
+            Categorías ☰
+          </button>
+        </div>
 
-                   {b.subcategoria && (
-                     <span className="text-[10px] md:text-xs bg-[#A30404] text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full inline-block mb-1 md:mb-2">
-                       {b.subcategoria}
-                     </span>
-                   )}
+        {/* SI NO HAY RESULTADOS */}
+        {bebidasFiltradas.length === 0 ? (
+          <p className="text-center text-[#736D66] text-lg md:text-xl mt-10">
+            No se encontró esa categoría de bebidas.
+          </p>
+        ) : sinFiltros ? (
+          /* -----------------------------------------
+             🚀 VISTA 1 – ESTILO NETFLIX POR CATEGORÍA
+             ----------------------------------------- */
+          <div className="space-y-10">
+            {ordenCategoriasCatalogo.map((cat) => (
+              <section key={cat} className="w-full">
+                <h2 className="text-xl md:text-2xl font-bold mb-3 text-[#590707]">
+                  {cat}
+                </h2>
 
-                   <p className="text-[#736D66] text-xs md:text-sm mb-1 md:mb-2 line-clamp-2">
-                     {b.descripcion}
-                   </p>
+                <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide">
+                  {bebidasPorCategoria[cat].map((b) => (
+                    <div
+                      key={b._id}
+                      className="bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 shadow-sm hover:shadow-xl transition hover:-translate-y-1 w-48 sm:w-56 md:w-64 flex-shrink-0 flex flex-col"
+                    >
+                      <img
+                        src={b.imagen}
+                        alt={b.nombre}
+                        className="w-full h-32 sm:h-40 md:h-44 object-cover rounded-lg mb-2"
+                        onError={(e) =>
+                          (e.currentTarget.src =
+                            "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
+                        }
+                      />
 
-                   <p className="text-[#590707] font-bold text-base sm:text-lg md:text-xl lg:text-2xl mb-2 md:mb-3">
-                     ${fmt(b.precio)}
-                   </p>
-                 </div>
+                      <h3 className="text-sm md:text-base font-semibold text-[#04090C] line-clamp-2 mb-1">
+                        {b.nombre}
+                      </h3>
 
-                 <button
-                   onClick={() => handleAgregar(b)}
-                   className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition mt-auto text-xs sm:text-sm md:text-base"
-                 >
-                   Agregar 🛒
-                 </button>
-               </div>
-             );
-           })}
-         </div>
-       )}
-     </main>
-   </div>
- );
+                      <p className="text-[#590707] font-bold text-lg mb-2">
+                        ${fmt(b.precio)}
+                      </p>
+
+                      <button
+                        onClick={() => handleAgregar(b)}
+                        className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-1.5 rounded-lg font-semibold transition"
+                      >
+                        Agregar 🛒
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          /* -----------------------------------------
+             🎯 VISTA 2 – CUANDO HAY FILTROS
+             ----------------------------------------- */
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {bebidasFiltradas.map((b) => (
+              <div
+                key={b._id}
+                className="bg-white rounded-xl border border-[#CDC7BD] p-3 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col"
+              >
+                <img
+                  src={b.imagen}
+                  alt={b.nombre}
+                  className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg mb-2"
+                  onError={(e) =>
+                    (e.currentTarget.src =
+                      "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
+                  }
+                />
+
+                <h3 className="text-sm md:text-lg font-semibold text-[#04090C] mb-1 line-clamp-2">
+                  {b.nombre}
+                </h3>
+
+                <p className="text-[#590707] font-bold text-xl mb-2">
+                  ${fmt(b.precio)}
+                </p>
+
+                <button
+                  onClick={() => handleAgregar(b)}
+                  className="bg-[#590707] hover:bg-[#A30404] text-white py-2 rounded-lg font-semibold transition"
+                >
+                  Agregar 🛒
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
