@@ -233,7 +233,7 @@ export default function MenuBebidas() {
      </aside>
 
      {/* CONTENIDO PRINCIPAL */}
-     <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-24 md:pt-10">
+     <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
        {productosEstrella.length > 0 && (
          <section className="mt-6 mb-8 md:mb-12 w-full">
            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
