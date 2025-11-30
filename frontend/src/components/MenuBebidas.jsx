@@ -154,7 +154,7 @@ export default function MenuBebidas() {
         <div
           className="absolute inset-[-20%] -rotate-12 opacity-20"
           style={{
-            backgroundImage: `url(${process.env.PUBLIC_URL + "/logoNsf.png"})`,
+            backgroundImage: `url(${process.env.PUBLIC_URL + "/logoInvertido.png"})`,
             backgroundRepeat: "repeat",
             backgroundSize: "220px 220px",
           }}
