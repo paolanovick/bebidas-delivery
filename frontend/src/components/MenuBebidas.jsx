@@ -150,13 +150,18 @@ export default function MenuBebidas() {
   return (
     <div className="flex min-h-screen relative bg-[#F7F5F2] overflow-hidden">
       {/* Fondo diagonal con logo */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute inset-[-20%] -rotate-12 opacity-20"
+          className="
+      absolute 
+      inset-[-20%] 
+      -rotate-12 
+      opacity-15 
+      bg-repeat 
+      bg-[length:220px_220px]
+    "
           style={{
-            backgroundImage: `url(${process.env.PUBLIC_URL + "/logoInvertido.png"})`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "220px 220px",
+            backgroundImage: "url('/logoInvertido.png')",
           }}
         />
       </div>
