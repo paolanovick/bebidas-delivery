@@ -46,71 +46,91 @@ export default function CarruselDestacados({
               return (
                 <div
                   key={`carousel-${b._id}-${i}`}
-                  className="relative w-56 sm:w-64 md:w-72 flex-shrink-0 overflow-visible"
+                  className="
+        relative
+        bg-white rounded-xl border border-[#CDC7BD]
+        p-3 md:p-4 lg:p-5
+        shadow-sm hover:shadow-xl
+        transition hover:-translate-y-1
+        flex flex-col justify-between
+        w-56 sm:w-64 md:w-72 flex-shrink-0
+      "
                 >
-                  {/* CINTA DESTACADO */}
-                  <div
-                    className="absolute top-2 -left-3 px-4 py-1 bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold uppercase shadow-lg -rotate-6  z-20 pointer-events-none" >
-                    <span className="bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold px-3 py-1 shadow-lg rounded-sm tracking-wide uppercase">
+                  {/* CONTENEDOR IMAGEN + CINTA */}
+                  <div className="relative mb-3 md:mb-4">
+                    {/* CINTA DESTACADO */}
+                    <div
+                      className="
+            absolute left-0 top-2
+            px-3 py-1
+            bg-gradient-to-r from-[#A30404] to-[#590707]
+            text-white text-[10px] md:text-xs font-bold
+            uppercase shadow-md
+            -rotate-6
+            origin-left
+            pointer-events-none
+          "
+                    >
                       Destacado
-                    </span>
+                    </div>
+
+                    <img
+                      src={b.imagen}
+                      alt={b.nombre}
+                      className="
+            w-full h-24 sm:h-32 md:h-40
+            object-cover rounded-lg mt-4
+          "
+                      onError={(e) =>
+                        (e.currentTarget.src =
+                          "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
+                      }
+                    />
                   </div>
 
-                  {/* TARJETA */}
-                  <div
-                    className="
-                      bg-white rounded-lg md:rounded-xl border border-[#CDC7BD]
-                      p-2 md:p-3 lg:p-5 shadow-sm hover:shadow-xl
-                      transition hover:-translate-y-1
-                      flex flex-col justify-between h-full
-                    "
-                  >
-                    <div>
-                      <img
-                        src={b.imagen}
-                        alt={b.nombre}
-                        className="w-full h-24 sm:h-32 md:h-40 object-cover rounded-lg mb-2 md:mb-3"
-                        onError={(e) =>
-                          (e.currentTarget.src =
-                            "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
-                        }
-                      />
+                  {/* TEXTO + BADGES */}
+                  <div className="flex flex-col gap-1 md:gap-1.5">
+                    <h3 className="text-sm sm:text-base md:text-lg font-semibold text-[#04090C] line-clamp-2">
+                      {b.nombre}
+                    </h3>
 
-                      <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-[#04090C] mb-1 line-clamp-2">
-                        {b.nombre}
-                      </h3>
-
-                      {cats.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-1 md:mb-2">
-                          {cats.map((cat, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[10px] md:text-xs bg-[#CDC7BD] text-[#04090C] px-1.5 py-0.5 md:px-2 md:py-1 rounded-full"
-                            >
-                              {cat}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                    {/* TODOS LOS BADGES EN UNA FRANJA */}
+                    <div className="flex flex-wrap items-center gap-1 mb-1">
+                      {cats.map((cat, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[10px] md:text-xs bg-[#CDC7BD] text-[#04090C] px-1.5 py-0.5 rounded-full"
+                        >
+                          {cat}
+                        </span>
+                      ))}
 
                       {b.subcategoria && (
-                        <span className="text-[10px] md:text-xs bg-[#A30404] text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full inline-block mb-1 md:mb-2">
+                        <span className="text-[10px] md:text-xs bg-[#A30404] text-white px-1.5 py-0.5 rounded-full">
                           {b.subcategoria}
                         </span>
                       )}
-
-                      <p className="text-[#736D66] text-xs md:text-sm mb-1 md:mb-2 line-clamp-2">
-                        {b.descripcion}
-                      </p>
-
-                      <p className="text-[#590707] font-bold text-base sm:text-lg md:text-xl lg:text-2xl mb-2 md:mb-3">
-                        ${fmt(b.precio)}
-                      </p>
                     </div>
+
+                    <p className="text-[#736D66] text-xs md:text-sm line-clamp-3">
+                      {b.descripcion}
+                    </p>
+                  </div>
+
+                  {/* PRECIO + BOTÓN */}
+                  <div className="mt-2 md:mt-3">
+                    <p className="text-[#590707] font-bold text-base sm:text-lg md:text-xl lg:text-2xl mb-2">
+                      ${fmt(b.precio)}
+                    </p>
 
                     <button
                       onClick={() => handleAgregar(b)}
-                      className="bg-[#590707] hover:bg-[#A30404] text-white w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition mt-auto text-xs sm:text-sm md:text-base"
+                      className="
+            bg-[#590707] hover:bg-[#A30404]
+            text-white w-full py-1.5 md:py-2
+            rounded-lg md:rounded-xl font-semibold
+            transition text-xs sm:text-sm md:text-base
+          "
                     >
                       Agregar 🛒
                     </button>
