@@ -136,14 +136,7 @@ export default function MenuBebidas() {
          {mensajeAgregado}
        </div>
      )}
-     {/* botón hamburguesa 
-     <button
-       onClick={() => setMenuAbierto(true)}
-       className="md:hidden absolute top-2 left-2 z-40 bg-[#590707] text-white px-3 py-2 rounded-lg shadow-lg"
-     >
-       ☰
-     </button>*/}
-
+   
      {/* overlay móviles */}
      {menuAbierto && (
        <div
