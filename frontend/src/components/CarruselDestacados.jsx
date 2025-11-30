@@ -49,7 +49,8 @@ export default function CarruselDestacados({
                   className="relative w-56 sm:w-64 md:w-72 flex-shrink-0 overflow-visible"
                 >
                   {/* CINTA DESTACADO */}
-                  <div className="absolute -top-3 -left-3 z-20 rotate-[-15deg]">
+                  <div
+                    className="absolute top-2 -left-3 px-4 py-1 bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold uppercase shadow-lg -rotate-6  z-20 pointer-events-none" >
                     <span className="bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold px-3 py-1 shadow-lg rounded-sm tracking-wide uppercase">
                       Destacado
                     </span>
