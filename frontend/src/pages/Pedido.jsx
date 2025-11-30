@@ -168,7 +168,7 @@ export default function Pedido() {
   };
 
   return (
-    <div className="min-h-screen bg-[#CDC7BD] py-10 px-6">
+    <div className="min-h-screen bg-[#CDC7BD] pt-24 md:pt-16 px-6 pb-10">
       <h1 className="text-3xl font-bold text-center text-[#590707] mb-8 flex gap-2 justify-center">
         <ShoppingCart /> Carrito de Compras
       </h1>
@@ -178,6 +178,7 @@ export default function Pedido() {
           <p className="text-[#04090C]">Tu carrito está vacío.</p>
         </div>
       )}
+      {/* LISTA DE PRODUCTOS */}
 
       {carrito.map((item) => {
         const id = item._id || item.id;

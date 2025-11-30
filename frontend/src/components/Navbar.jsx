@@ -17,14 +17,8 @@ const Navbar = () => {
   if (location.pathname === "/" || location.pathname === "/inicio") return null;
 
   return (
-    <nav
-      className="
-  bg-[#04090C] shadow-lg text-[#FFFFFF]
-  fixed top-0 left-0 right-0 z-50 
-  md:static
-"
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         {/* LOGO */}
         <div className="flex items-center gap-4">
           <Link to="/tienda">

@@ -67,18 +67,20 @@ export default function MapaEntrega({ direccion, onLocationSelect }) {
     onLocationSelect(pos);
   };
 
-  return (
-    <div className="w-full mt-2">
-      <MapContainer
-        center={[coord.lat, coord.lng]}
-        zoom={15}
-        className="w-full h-64 rounded-lg border border-[#d4cec6]"
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[coord.lat, coord.lng]} icon={marcadorIcon} />
-        <MapEvents onSelect={handleMapClick} />
-      </MapContainer>
-    </div>
-  );
+ return (
+   <div className="w-full mt-2 relative z-10">
+     <MapContainer
+       center={[coord.lat, coord.lng]}
+       zoom={15}
+       className="w-full h-64 rounded-lg border border-[#d4cec6] z-0"
+       style={{ zIndex: 0 }}
+     >
+       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+       <Marker position={[coord.lat, coord.lng]} icon={marcadorIcon} />
+       <MapEvents onSelect={handleMapClick} />
+     </MapContainer>
+   </div>
+ );
+
 }
 
