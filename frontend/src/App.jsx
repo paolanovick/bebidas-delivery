@@ -52,14 +52,16 @@ function AppContent() {
     cargarBebidas();
   }, []);
 
-  const handleAdd = async (bebida) => {
-    try {
-      const nueva = await agregarBebida(bebida);
-      setBebidas((prev) => [...prev, nueva]); // se ve al toque
-    } catch (error) {
-      console.error("Error al agregar bebida:", error);
-    }
-  };
+ const handleAdd = async (bebida) => {
+   try {
+     const nueva = await agregarBebida(bebida);
+     console.log("🔍 Bebida creada desde backend:", nueva);
+     setBebidas((prev) => [...prev, nueva]);
+   } catch (error) {
+     console.error("Error al agregar bebida:", error);
+   }
+ };
+
 
   const handleEdit = async (bebida) => {
     try {

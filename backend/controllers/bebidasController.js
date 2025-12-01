@@ -1,21 +1,43 @@
 // controllers/bebidasController.js
 import Bebida from "../models/Bebida.js";
 
-// Obtener todas las bebidas
+/* ============================
+   GET /api/bebidas
+============================ */
 export const getBebidas = async (req, res) => {
   try {
-    const bebidas = await Bebida.find();
+    const bebidas = await Bebida.find().sort({ creadoEn: -1 });
     res.json(bebidas);
   } catch (error) {
-    console.error(error);
+    console.error("Error al obtener bebidas:", error);
     res.status(500).json({ mensaje: "Error al obtener bebidas" });
   }
 };
 
-// Agregar una bebida
+/* ============================
+   POST /api/bebidas
+============================ */
 export const agregarBebida = async (req, res) => {
   try {
-    const { nombre, descripcion, precio, stock, imagen, categoria } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      stock,
+      imagen,
+      categorias,
+      categoria, // por si viene en singular
+      subcategoria,
+      esEstrella,
+    } = req.body;
+
+    // 👇 Normalizamos siempre a array
+    const categoriasNormalizadas =
+      Array.isArray(categorias) && categorias.length > 0
+        ? categorias
+        : categoria
+        ? [categoria]
+        : [];
 
     const nuevaBebida = new Bebida({
       nombre,
@@ -23,38 +45,74 @@ export const agregarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categoria, // ✅ Agregada aquí
+      categorias: categoriasNormalizadas,
+      subcategoria: subcategoria || "",
+      esEstrella: !!esEstrella,
     });
 
-    await nuevaBebida.save();
-    res.json(nuevaBebida);
+    const guardada = await nuevaBebida.save();
+    res.json(guardada);
   } catch (error) {
+    console.error("Error al agregar bebida:", error);
     res.status(500).json({ error: "Error al agregar bebida" });
   }
 };
 
-
-// Editar bebida
+/* ============================
+   PUT /api/bebidas/:id
+============================ */
 export const editarBebida = async (req, res) => {
   const { id } = req.params;
+
   try {
+    const {
+      nombre,
+      descripcion,
+      precio,
+      stock,
+      imagen,
+      categorias,
+      categoria,
+      subcategoria,
+      esEstrella,
+    } = req.body;
+
+    const categoriasNormalizadas =
+      Array.isArray(categorias) && categorias.length > 0
+        ? categorias
+        : categoria
+        ? [categoria]
+        : [];
+
     const bebidaActualizada = await Bebida.findByIdAndUpdate(
       id,
-      req.body,
-      { new: true, runValidators: true } // ✅ importante
+      {
+        nombre,
+        descripcion,
+        precio,
+        stock,
+        imagen,
+        categorias: categoriasNormalizadas,
+        subcategoria: subcategoria || "",
+        esEstrella: !!esEstrella,
+      },
+      { new: true, runValidators: true }
     );
+
     if (!bebidaActualizada) {
       return res.status(404).json({ mensaje: "Bebida no encontrada" });
     }
+
     res.json(bebidaActualizada);
   } catch (error) {
-    console.error(error);
+    console.error("Error al actualizar bebida:", error);
     res.status(400).json({ mensaje: "Error al actualizar bebida" });
   }
 };
 
-
-// Eliminar bebida
+/* ============================
+   DELETE /api/bebidas/:id
+============================ */
 export const eliminarBebida = async (req, res) => {
   const { id } = req.params;
   try {
@@ -64,7 +122,7 @@ export const eliminarBebida = async (req, res) => {
     }
     res.json({ mensaje: "Bebida eliminada" });
   } catch (error) {
-    console.error(error);
+    console.error("Error al eliminar bebida:", error);
     res.status(400).json({ mensaje: "Error al eliminar bebida" });
   }
 };

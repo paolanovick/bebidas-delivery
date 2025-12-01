@@ -16,15 +16,30 @@ const BebidasListCategorias = ({
   const hayBebidas = bebidas.length > 0;
   const navigate = useNavigate();
 
-  const obtenerCategoriasBebida = (b) => {
-    if (Array.isArray(b.categorias) && b.categorias.length > 0) {
-      return b.categorias;
-    }
-    if (b.categoria) {
-      return [b.categoria];
-    }
-    return ["Sin categoría"];
-  };
+ const obtenerCategoriasBebida = (b) => {
+   // 1) Si viene "categorias" como array, perfecto
+   if (Array.isArray(b.categorias) && b.categorias.length > 0) {
+     return b.categorias;
+   }
+
+   // 2) Si viene "categorias" como string (por ej. "Vinos")
+   if (typeof b.categorias === "string" && b.categorias.trim() !== "") {
+     return [b.categorias.trim()];
+   }
+
+   // 3) Si viene "categoria" como array (por las dudas)
+   if (Array.isArray(b.categoria) && b.categoria.length > 0) {
+     return b.categoria;
+   }
+
+   // 4) Si viene "categoria" como string
+   if (typeof b.categoria === "string" && b.categoria.trim() !== "") {
+     return [b.categoria.trim()];
+   }
+
+   // 5) Si nada de lo anterior, lo consideramos sin categoría
+   return ["Sin categoría"];
+ };
 
   const categorias = useMemo(() => {
     if (!hayBebidas) return [];
