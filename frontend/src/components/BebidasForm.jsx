@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const BebidasForm = ({ onSubmit, bebidaEditar }) => {
+const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -11,8 +11,6 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
     subcategoria: "", // Para vinos: Blanco, Rosé, Tinto
     esEstrella: false, // Producto destacado
   });
-
-  const [errores, setErrores] = useState({});
 
   // ✅ CATEGORÍAS DISPONIBLES
   const categoriasDisponibles = [
@@ -44,22 +42,15 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
       setFormData({
         nombre: bebidaEditar.nombre || "",
         descripcion: bebidaEditar.descripcion || "",
-        precio:
-          bebidaEditar.precio !== undefined && bebidaEditar.precio !== null
-            ? String(bebidaEditar.precio)
-            : "",
-        stock:
-          bebidaEditar.stock !== undefined && bebidaEditar.stock !== null
-            ? String(bebidaEditar.stock)
-            : "",
+        precio: bebidaEditar.precio || "",
+        stock: bebidaEditar.stock || "",
         imagen: bebidaEditar.imagen || "",
         categorias: bebidaEditar.categorias || [],
         subcategoria: bebidaEditar.subcategoria || "",
         esEstrella: bebidaEditar.esEstrella || false,
       });
-      setErrores({});
     } else {
-      // si salís del modo edición
+      // si salís de edición, limpio
       setFormData({
         nombre: "",
         descripcion: "",
@@ -70,16 +61,15 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         subcategoria: "",
         esEstrella: false,
       });
-      setErrores({});
     }
   }, [bebidaEditar]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData({
+      ...formData,
       [name]: type === "checkbox" ? checked : value,
-    }));
+    });
   };
 
   // ✅ MANEJO DE CATEGORÍAS MÚLTIPLES
@@ -93,61 +83,11 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
     });
   };
 
-  // ✅ Validaciones
-  const validar = () => {
-    const err = {};
-
-    if (!formData.nombre.trim()) {
-      err.nombre = "El nombre es obligatorio";
-    }
-
-    if (!formData.categorias || formData.categorias.length === 0) {
-      err.categorias = "Seleccioná al menos una categoría";
-    }
-
-    if (formData.precio === "") {
-      err.precio = "El precio es obligatorio";
-    } else if (isNaN(Number(formData.precio)) || Number(formData.precio) <= 0) {
-      err.precio = "Ingresá un precio válido mayor a 0";
-    }
-
-    if (
-      formData.stock !== "" &&
-      (isNaN(Number(formData.stock)) || Number(formData.stock) < 0)
-    ) {
-      err.stock = "El stock debe ser un número mayor o igual a 0";
-    }
-
-    // si es vino y seleccionó subcategoria vacía
-    if (formData.categorias.includes("Vinos") && !formData.subcategoria) {
-      err.subcategoria = "Seleccioná el tipo de vino";
-    }
-
-    return err;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const err = validar();
-    setErrores(err);
+    onSubmit(formData);
 
-    if (Object.keys(err).length > 0) return;
-
-    const payload = {
-      ...bebidaEditar, // por si desde el padre usan este objeto como base
-      nombre: formData.nombre.trim(),
-      descripcion: formData.descripcion.trim(),
-      precio: Number(formData.precio),
-      stock: formData.stock === "" ? 0 : Number(formData.stock),
-      imagen: formData.imagen.trim(),
-      categorias: formData.categorias,
-      subcategoria: formData.subcategoria,
-      esEstrella: formData.esEstrella,
-    };
-
-    onSubmit(payload);
-
-    // Si es alta nueva, limpio el formulario
+    // si es alta nueva, limpio
     if (!bebidaEditar) {
       setFormData({
         nombre: "",
@@ -159,11 +99,29 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         subcategoria: "",
         esEstrella: false,
       });
-      setErrores({});
     }
   };
 
-  // Verifica si "Vinos" está seleccionado
+  const handleCancel = () => {
+    // si estamos editando, avisamos al padre para salir del modo edición
+    if (bebidaEditar && onCancel) {
+      onCancel();
+    }
+
+    // limpiamos los campos
+    setFormData({
+      nombre: "",
+      descripcion: "",
+      precio: "",
+      stock: "",
+      imagen: "",
+      categorias: [],
+      subcategoria: "",
+      esEstrella: false,
+    });
+  };
+
+  // ✅ Verifica si "Vinos" está seleccionado
   const esVinoSeleccionado = formData.categorias.includes("Vinos");
 
   return (
@@ -183,16 +141,10 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
           name="nombre"
           value={formData.nombre}
           onChange={handleChange}
-          className={`bg-white border rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 outline-none ${
-            errores.nombre
-              ? "border-red-400 focus:ring-red-400"
-              : "border-[#CDC7BD] focus:ring-[#A30404]"
-          }`}
+          required
+          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
           placeholder="Malbec Reserva 2019"
         />
-        {errores.nombre && (
-          <p className="text-xs text-red-600 mt-1">{errores.nombre}</p>
-        )}
       </div>
 
       {/* Descripción */}
@@ -208,18 +160,12 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         />
       </div>
 
-      {/* CATEGORÍAS MÚLTIPLES */}
+      {/* ✅ CATEGORÍAS MÚLTIPLES */}
       <div className="mb-5">
         <label className="block text-sm font-semibold mb-3">
           Categorías * (Selección múltiple)
         </label>
-        <div
-          className={`grid grid-cols-2 md:grid-cols-3 gap-3 rounded-lg p-4 ${
-            errores.categorias
-              ? "border-2 border-red-400 bg-[#FFF5F5]"
-              : "border border-[#CDC7BD] bg-[#F7F5F2]"
-          }`}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 border border-[#CDC7BD] rounded-lg p-4 bg-[#F7F5F2]">
           {categoriasDisponibles.map((cat) => (
             <label
               key={cat}
@@ -235,17 +181,14 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
             </label>
           ))}
         </div>
-        {errores.categorias && (
-          <p className="text-xs text-red-600 mt-1">{errores.categorias}</p>
-        )}
-        {formData.categorias.length > 0 && !errores.categorias && (
+        {formData.categorias.length > 0 && (
           <p className="text-xs text-[#736D66] mt-2">
             Seleccionadas: {formData.categorias.join(", ")}
           </p>
         )}
       </div>
 
-      {/* SUBCATEGORÍA DE VINOS */}
+      {/* ✅ SUBCATEGORÍA DE VINOS (solo si "Vinos" está seleccionado) */}
       {esVinoSeleccionado && (
         <div className="mb-5">
           <label className="block text-sm font-semibold mb-2">
@@ -255,11 +198,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
             name="subcategoria"
             value={formData.subcategoria}
             onChange={handleChange}
-            className={`bg-white border rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 outline-none ${
-              errores.subcategoria
-                ? "border-red-400 focus:ring-red-400"
-                : "border-[#CDC7BD] focus:ring-[#A30404]"
-            }`}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
           >
             <option value="">Seleccionar tipo</option>
             {subcategoriasVinos.map((sub) => (
@@ -268,13 +207,10 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
               </option>
             ))}
           </select>
-          {errores.subcategoria && (
-            <p className="text-xs text-red-600 mt-1">{errores.subcategoria}</p>
-          )}
         </div>
       )}
 
-      {/* PRODUCTO ESTRELLA */}
+      {/* ✅ PRODUCTO ESTRELLA */}
       <div className="mb-5 bg-[#FFF9E6] border-2 border-[#FFD700] rounded-lg p-4">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
@@ -290,7 +226,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         </label>
         <p className="text-xs text-[#736D66] mt-2">
           Los productos destacados aparecen en la sección principal antes del
-          catálogo.
+          catálogo
         </p>
       </div>
 
@@ -303,17 +239,11 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
             name="precio"
             value={formData.precio}
             onChange={handleChange}
+            required
             step="0.01"
-            className={`bg-white border rounded-lg w-full py-3 px-4 text-[#04090C] ${
-              errores.precio
-                ? "border-red-400 focus:ring-2 focus:ring-red-400"
-                : "border-[#CDC7BD] focus:ring-2 focus:ring-[#A30404]"
-            }`}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C]"
             placeholder="0.00"
           />
-          {errores.precio && (
-            <p className="text-xs text-red-600 mt-1">{errores.precio}</p>
-          )}
         </div>
 
         <div>
@@ -323,16 +253,9 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
             name="stock"
             value={formData.stock}
             onChange={handleChange}
-            className={`bg-white border rounded-lg w-full py-3 px-4 text-[#04090C] ${
-              errores.stock
-                ? "border-red-400 focus:ring-2 focus:ring-red-400"
-                : "border-[#CDC7BD] focus:ring-2 focus:ring-[#A30404]"
-            }`}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C]"
             placeholder="0"
           />
-          {errores.stock && (
-            <p className="text-xs text-red-600 mt-1">{errores.stock}</p>
-          )}
         </div>
       </div>
 
@@ -362,12 +285,23 @@ const BebidasForm = ({ onSubmit, bebidaEditar }) => {
         )}
       </div>
 
-      <button
-        type="submit"
-        className="bg-[#590707] hover:bg-[#A30404] text-white font-bold py-3 px-6 rounded-lg w-full shadow-lg transition"
-      >
-        {bebidaEditar ? "✓ Actualizar Bebida" : "+ Agregar Bebida"}
-      </button>
+      {/* Botones */}
+      <div className="flex flex-col md:flex-row gap-3 justify-end mt-4">
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="border border-[#CDC7BD] text-[#04090C] font-semibold py-3 px-5 rounded-lg shadow-sm bg-white hover:bg-[#F2ECE4] transition md:w-auto w-full"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          className="bg-[#590707] hover:bg-[#A30404] text-white font-bold py-3 px-6 rounded-lg shadow-lg transition md:w-auto w-full"
+        >
+          {bebidaEditar ? "✓ Actualizar Bebida" : "+ Agregar Bebida"}
+        </button>
+      </div>
     </form>
   );
 };

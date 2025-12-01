@@ -11,7 +11,7 @@ import { useAuth } from "./context/AuthContext";
 
 import Navbar from "./components/Navbar";
 import BebidasForm from "./components/BebidasForm";
-import BebidasList from "./components/BebidasList";
+import BebidasListCategorias from "./components/BebidasListCategorias";
 import Login from "./components/Login";
 import Registro from "./components/Registro";
 import MisPedidos from "./components/MisPedidos";
@@ -30,12 +30,10 @@ import {
   editarBebida,
   eliminarBebida,
 } from "./services/api";
-import BebidasListCategorias from "./components/BebidasListCategorias";
-
 
 function AppContent() {
   const { usuario, loading } = useAuth();
-  const location = useLocation(); // ✅ ahora sí funciona
+  const location = useLocation();
   const ocultarFooter = location.pathname.startsWith("/admin");
 
   const [bebidas, setBebidas] = useState([]);
@@ -57,7 +55,7 @@ function AppContent() {
   const handleAdd = async (bebida) => {
     try {
       const nueva = await agregarBebida(bebida);
-      setBebidas([...bebidas, nueva]);
+      setBebidas((prev) => [...prev, nueva]); // se ve al toque
     } catch (error) {
       console.error("Error al agregar bebida:", error);
     }
@@ -66,7 +64,9 @@ function AppContent() {
   const handleEdit = async (bebida) => {
     try {
       const actualizada = await editarBebida(editing._id, bebida);
-      setBebidas(bebidas.map((b) => (b._id === editing._id ? actualizada : b)));
+      setBebidas((prev) =>
+        prev.map((b) => (b._id === editing._id ? actualizada : b))
+      );
       setEditing(null);
     } catch (error) {
       console.error("Error al editar bebida:", error);
@@ -76,7 +76,7 @@ function AppContent() {
   const handleDelete = async (id) => {
     try {
       await eliminarBebida(id);
-      setBebidas(bebidas.filter((b) => b._id !== id));
+      setBebidas((prev) => prev.filter((b) => b._id !== id));
     } catch (error) {
       console.error("Error al eliminar bebida:", error);
     }
@@ -100,6 +100,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Inicio />} />
           <Route path="/inicio" element={<Inicio />} />
+
           <Route
             path="/login"
             element={usuario ? <Navigate to="/tienda" /> : <Login />}
@@ -108,42 +109,14 @@ function AppContent() {
             path="/registro"
             element={usuario ? <Navigate to="/tienda" /> : <Registro />}
           />
+
           <Route
             path="/login-admin"
             element={
               usuario && usuario.rol === "admin" ? (
-                <Navigate to="/admin" />
+                <Navigate to="/admin/bebidas-categorias" />
               ) : (
                 <LoginAdmin />
-              )
-            }
-          />
-          <Route
-            path="/admin/bebidas-categorias"
-            element={
-              usuario && usuario.rol === "admin" ? (
-                <>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-3xl font-bold text-center text-[#CDC7BD]">
-                      Bebidas por categoría
-                    </h2>
-                    <Link
-                      to="/admin"
-                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
-                    >
-                      ← Volver a vista clásica
-                    </Link>
-                  </div>
-
-                  <BebidasListCategorias
-                    bebidas={bebidas}
-                    onEdit={setEditing}
-                    onDelete={handleDelete}
-                    showStock={true}
-                  />
-                </>
-              ) : (
-                <Navigate to="/login-admin" />
               )
             }
           />
@@ -161,28 +134,55 @@ function AppContent() {
 
           <Route path="/tienda" element={<MenuBebidas />} />
 
+          {/* /admin -> SOLO formulario */}
           <Route
             path="/admin"
             element={
               usuario && usuario.rol === "admin" ? (
                 <>
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-3xl font-bold text-center text-[#CDC7BD]">
-                      Panel de Administración
+                    <h2 className="text-3xl font-bold text-[#CDC7BD]">
+                      Formulario de Bebidas
                     </h2>
                     <Link
                       to="/admin/bebidas-categorias"
                       className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
                     >
-                      🌟 Ver por categoría
+                      Ver catálogo por categoría
                     </Link>
                   </div>
 
                   <BebidasForm
                     onSubmit={editing ? handleEdit : handleAdd}
                     bebidaEditar={editing}
+                    onCancel={() => setEditing(null)}
                   />
-                  <BebidasList
+                </>
+              ) : (
+                <Navigate to="/login-admin" />
+              )
+            }
+          />
+
+          {/* Lista moderna por categoría */}
+          <Route
+            path="/admin/bebidas-categorias"
+            element={
+              usuario && usuario.rol === "admin" ? (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-3xl font-bold text-[#CDC7BD]">
+                      Catálogo de Bebidas
+                    </h2>
+                    <Link
+                      to="/admin"
+                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                    >
+                      + Nueva / Editar bebida
+                    </Link>
+                  </div>
+
+                  <BebidasListCategorias
                     bebidas={bebidas}
                     onEdit={setEditing}
                     onDelete={handleDelete}
@@ -210,7 +210,6 @@ function AppContent() {
         </Routes>
       </div>
 
-      {/* ✅ Footer solo si NO estamos en admin */}
       {!ocultarFooter && <Footer />}
     </div>
   );
