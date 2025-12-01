@@ -69,7 +69,7 @@ const LoginAdmin = () => {
           type="submit"
           className="w-full font-bold py-3 rounded bg-[#590707] text-white hover:bg-[#A30404] transition-colors"
         >
-          Iniciar Sesión Admin
+          Admin
         </button>
       </form>
     </div>
