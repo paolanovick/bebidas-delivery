@@ -191,22 +191,62 @@ const handleAdd = async (bebida) => {
       <main className="flex-1 p-6 md:p-8 mt-16 md:mt-0">
         {seccion === "pedidos" && <AdminPedidos />}
         {seccion === "bebidas" && (
-          <div>
-            <h1 className="text-3xl font-bold mb-6 text-[#04090C]">
-              Gestión de Bebidas
-            </h1>
-            <BebidasForm
-              onSubmit={editing ? handleEdit : handleAdd}
-              bebidaEditar={editing}
-            />
-            <BebidasList
-              bebidas={bebidas}
-              onEdit={setEditing}
-              onDelete={handleDelete}
-              showStock={true}
-            />
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-[#04090C]">
+                  Gestión de Bebidas
+                </h1>
+                <p className="text-sm text-[#736D66]">
+                  Carga, edita y organiza tus productos de forma rápida.
+                </p>
+              </div>
+
+              {/* Pequeño resumen rápido */}
+              <div className="flex flex-wrap gap-3">
+                <div className="bg-white shadow-md rounded-lg px-4 py-2 text-sm">
+                  <span className="font-semibold text-[#04090C]">
+                    Total bebidas:
+                  </span>{" "}
+                  <span className="text-[#590707] font-bold">
+                    {bebidas.length}
+                  </span>
+                </div>
+                <div className="bg-white shadow-md rounded-lg px-4 py-2 text-sm">
+                  <span className="font-semibold text-[#04090C]">
+                    Sin stock:
+                  </span>{" "}
+                  <span className="text-[#A30404] font-bold">
+                    {bebidas.filter((b) => (b.stock ?? 0) <= 0).length}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Form + Lista en 2 columnas en escritorio */}
+            <div className="grid md:grid-cols-2 gap-6 items-start">
+              <div className="bg-white shadow-xl rounded-xl p-4">
+                <h2 className="text-xl font-semibold mb-3 text-[#04090C]">
+                  {editing ? "✏️ Editar bebida" : "🆕 Nueva bebida"}
+                </h2>
+                <BebidasForm
+                  onSubmit={editing ? handleEdit : handleAdd}
+                  bebidaEditar={editing}
+                />
+              </div>
+
+              <div>
+                <BebidasList
+                  bebidas={bebidas}
+                  onEdit={setEditing}
+                  onDelete={handleDelete}
+                  showStock={true}
+                />
+              </div>
+            </div>
           </div>
         )}
+
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
       </main>
