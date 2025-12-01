@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  Link,
 } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 
@@ -29,6 +30,8 @@ import {
   editarBebida,
   eliminarBebida,
 } from "./services/api";
+import BebidasListCategorias from "./components/BebidasListCategorias";
+
 
 function AppContent() {
   const { usuario, loading } = useAuth();
@@ -116,6 +119,36 @@ function AppContent() {
             }
           />
           <Route
+            path="/admin/bebidas-categorias"
+            element={
+              usuario && usuario.rol === "admin" ? (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-3xl font-bold text-center text-[#CDC7BD]">
+                      Bebidas por categoría
+                    </h2>
+                    <Link
+                      to="/admin"
+                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                    >
+                      ← Volver a vista clásica
+                    </Link>
+                  </div>
+
+                  <BebidasListCategorias
+                    bebidas={bebidas}
+                    onEdit={setEditing}
+                    onDelete={handleDelete}
+                    showStock={true}
+                  />
+                </>
+              ) : (
+                <Navigate to="/login-admin" />
+              )
+            }
+          />
+
+          <Route
             path="/mis-pedidos"
             element={
               usuario && usuario.rol !== "admin" ? (
@@ -133,9 +166,18 @@ function AppContent() {
             element={
               usuario && usuario.rol === "admin" ? (
                 <>
-                  <h2 className="text-3xl font-bold text-center mb-6 text-[#CDC7BD]">
-                    Panel de Administración
-                  </h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-3xl font-bold text-center text-[#CDC7BD]">
+                      Panel de Administración
+                    </h2>
+                    <Link
+                      to="/admin/bebidas-categorias"
+                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                    >
+                      🌟 Ver por categoría
+                    </Link>
+                  </div>
+
                   <BebidasForm
                     onSubmit={editing ? handleEdit : handleAdd}
                     bebidaEditar={editing}
