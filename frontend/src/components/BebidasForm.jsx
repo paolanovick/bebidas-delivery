@@ -45,12 +45,17 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
         precio: bebidaEditar.precio || "",
         stock: bebidaEditar.stock || "",
         imagen: bebidaEditar.imagen || "",
-        categorias: bebidaEditar.categorias || [],
+        // 👇 si no viene "categorias" pero sí "categoria", lo transformamos
+        categorias:
+          (Array.isArray(bebidaEditar.categorias) &&
+            bebidaEditar.categorias.length > 0 &&
+            bebidaEditar.categorias) ||
+          (bebidaEditar.categoria ? [bebidaEditar.categoria] : []),
         subcategoria: bebidaEditar.subcategoria || "",
         esEstrella: bebidaEditar.esEstrella || false,
       });
     } else {
-      // si salís de edición, limpio
+      // si no estoy editando, limpio
       setFormData({
         nombre: "",
         descripcion: "",
@@ -63,6 +68,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
       });
     }
   }, [bebidaEditar]);
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -83,24 +89,37 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
+ const handleSubmit = (e) => {
+   e.preventDefault();
 
-    // si es alta nueva, limpio
-    if (!bebidaEditar) {
-      setFormData({
-        nombre: "",
-        descripcion: "",
-        precio: "",
-        stock: "",
-        imagen: "",
-        categorias: [],
-        subcategoria: "",
-        esEstrella: false,
-      });
-    }
-  };
+   // 👇 tomamos la primera categoría elegida (si hay)
+   const categoriaPrincipal =
+     Array.isArray(formData.categorias) && formData.categorias.length > 0
+       ? formData.categorias[0]
+       : "";
+
+   const payload = {
+     ...formData,
+     categoria: categoriaPrincipal, // 👈 compatibilidad con datos que usan "categoria"
+   };
+
+   onSubmit(payload);
+
+   // si NO estoy editando (alta nueva), limpio el form
+   if (!bebidaEditar) {
+     setFormData({
+       nombre: "",
+       descripcion: "",
+       precio: "",
+       stock: "",
+       imagen: "",
+       categorias: [],
+       subcategoria: "",
+       esEstrella: false,
+     });
+   }
+ };
+
 
   const handleCancel = () => {
     // si estamos editando, avisamos al padre para salir del modo edición
