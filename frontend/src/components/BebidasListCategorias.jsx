@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // ← AGREGAR ESTA LÍNEA
 
 
 const ITEMS_PER_PAGE = 6;
