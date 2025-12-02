@@ -37,11 +37,9 @@ export default function Pedido() {
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
   const [coordenadas, setCoordenadas] = useState(null);
-  const [fecha, setFecha] = useState("");
-  const [hora, setHora] = useState("");
   const [comentarios, setComentarios] = useState("");
 
-  // 🔹 NUEVO: modo de entrega (envío / take away)
+  // 🔹 modo de entrega (envío / take away)
   const [modoEntrega, setModoEntrega] = useState("envio"); // "envio" | "takeaway"
 
   // obtener ubicación si es envío
@@ -72,8 +70,6 @@ export default function Pedido() {
     carrito.length > 0 &&
     validoTelefono &&
     validoEmail &&
-    Boolean(fecha) &&
-    Boolean(hora) &&
     (!requiereDireccion || validoDireccion);
 
   const confirmarYEnviar = async () => {
@@ -91,8 +87,6 @@ export default function Pedido() {
         modoEntrega === "envio" ? direccion : "Retira en el local (take away)",
       telefono,
       coordenadas: modoEntrega === "envio" ? coordenadas : null,
-      fechaEntrega: fecha,
-      horaEntrega: hora,
       notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
         comentarios || ""
       }`.trim(),
@@ -125,7 +119,7 @@ export default function Pedido() {
       modoEntrega === "envio"
         ? `Dirección: ${direccion}\nUbicación: ${ubicacion}\n`
         : ""
-    }Teléfono: ${telefono}\nEmail: ${email}\nFecha y Hora: ${fecha} ${hora}\n\nNotas\n${
+    }Teléfono: ${telefono}\nEmail: ${email}\n\nNotas\n${
       comentarios || "Sin notas"
     }`;
 
@@ -291,29 +285,6 @@ export default function Pedido() {
           className="p-2 border rounded w-full text-[#04090C] bg-white mb-4"
           placeholder="ej: cliente@gmail.com"
         />
-
-        {/* Fecha y hora manual (sin slots) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          <div>
-            <label className="font-semibold text-[#04090C]">Fecha *</label>
-            <input
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              className="p-2 border rounded w-full text-[#04090C] bg-white"
-            />
-          </div>
-
-          <div>
-            <label className="font-semibold text-[#04090C]">Hora *</label>
-            <input
-              type="time"
-              value={hora}
-              onChange={(e) => setHora(e.target.value)}
-              className="p-2 border rounded w-full text-[#04090C] bg-white"
-            />
-          </div>
-        </div>
 
         <label className="font-semibold text-[#04090C] block mt-4">Notas</label>
         <textarea
