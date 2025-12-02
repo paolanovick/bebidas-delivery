@@ -30,6 +30,7 @@ import {
   editarBebida,
   eliminarBebida,
 } from "./services/api";
+import AgeGateModal from "./components/AgeGateModal";
 
 function AppContent() {
   const { usuario, loading } = useAuth();
@@ -222,9 +223,12 @@ export default function App() {
     <Router>
       <BebidasProvider>
         <CarritoProvider>
+          {/* 🔹 El modal vive acá, por encima de todo lo demás */}
+          <AgeGateModal />
           <AppContent />
         </CarritoProvider>
       </BebidasProvider>
     </Router>
   );
 }
+
