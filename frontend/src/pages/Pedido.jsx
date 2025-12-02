@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarrito } from "../context/CarritoContext";
-import { crearPedido, obtenerSlotsDisponibles } from "../services/api";
+import { crearPedido } from "../services/api";
+
 import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
 
@@ -43,6 +44,7 @@ export default function Pedido() {
   // 🔹 NUEVO: modo de entrega (envío / take away)
   const [modoEntrega, setModoEntrega] = useState("envio"); // "envio" | "takeaway"
 
+  // obtener ubicación si es envío
   useEffect(() => {
     if (!coordenadas && "geolocation" in navigator && modoEntrega === "envio") {
       navigator.geolocation.getCurrentPosition(
@@ -58,44 +60,7 @@ export default function Pedido() {
     }
   }, [coordenadas, modoEntrega]);
 
-  const [slots, setSlots] = useState([]);
-  const [cargandoSlots, setCargandoSlots] = useState(false);
-
-  useEffect(() => {
-    let activo = true;
-
-    const cargarSlots = async () => {
-      if (!fecha) {
-        setSlots([]);
-        setHora("");
-        return;
-      }
-
-      setCargandoSlots(true);
-      try {
-        const res = await obtenerSlotsDisponibles(fecha);
-        const lista = res?.slots || [];
-
-        if (activo) {
-          setSlots(lista);
-          if (!lista.some((s) => s.hora === hora && s.disponible !== false)) {
-            setHora("");
-          }
-        }
-      } catch {
-        if (activo) {
-          setSlots([]);
-          setHora("");
-        }
-      } finally {
-        if (activo) setCargandoSlots(false);
-      }
-    };
-
-    cargarSlots();
-    return () => (activo = false);
-  }, [fecha, hora]);
-
+  // VALIDACIONES
   const telSoloDigitos = telefono.replace(/\D/g, "");
   const validoDireccion = direccion.trim().length >= 5;
   const validoTelefono = telSoloDigitos.length >= 10;
@@ -115,7 +80,6 @@ export default function Pedido() {
     if (!puedeConfirmar) return;
 
     const pedido = {
-      // usuario: null, // No requiere login
       emailCliente: email,
       items: carrito.map((i) => ({
         bebida: i._id || i.id,
@@ -129,7 +93,6 @@ export default function Pedido() {
       coordenadas: modoEntrega === "envio" ? coordenadas : null,
       fechaEntrega: fecha,
       horaEntrega: hora,
-      // guardamos el modo de entrega dentro de notas
       notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
         comentarios || ""
       }`.trim(),
@@ -188,12 +151,14 @@ export default function Pedido() {
         <ShoppingCart /> Carrito de Compras
       </h1>
 
+      {/* carrito vacío */}
       {carrito.length === 0 && (
         <div className="bg-white rounded-2xl shadow p-6 text-center border border-[#e6e2dc] max-w-2xl mx-auto">
           <p className="text-[#04090C]">Tu carrito está vacío.</p>
         </div>
       )}
 
+      {/* LISTA DE PRODUCTOS */}
       {carrito.map((item) => {
         const id = item._id || item.id;
         return (
@@ -262,8 +227,9 @@ export default function Pedido() {
         Total: ${total.toLocaleString("es-AR")}
       </div>
 
+      {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
-        {/* 🔹 Selector de modo de entrega */}
+        {/* MODO ENTREGA */}
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -291,7 +257,7 @@ export default function Pedido() {
           </label>
         </div>
 
-        {/* Dirección y mapa solo si es envío */}
+        {/* Dirección solo si es envío */}
         {modoEntrega === "envio" && (
           <>
             <label className="font-semibold text-[#04090C]">Dirección *</label>
@@ -326,6 +292,7 @@ export default function Pedido() {
           placeholder="ej: cliente@gmail.com"
         />
 
+        {/* Fecha y hora manual (sin slots) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
             <label className="font-semibold text-[#04090C]">Fecha *</label>
@@ -339,30 +306,12 @@ export default function Pedido() {
 
           <div>
             <label className="font-semibold text-[#04090C]">Hora *</label>
-            <select
+            <input
+              type="time"
               value={hora}
               onChange={(e) => setHora(e.target.value)}
               className="p-2 border rounded w-full text-[#04090C] bg-white"
-              disabled={cargandoSlots || slots.length === 0}
-            >
-              <option value="">
-                {cargandoSlots
-                  ? "Cargando horarios..."
-                  : slots.length
-                  ? "Seleccioná hora"
-                  : "No hay horarios"}
-              </option>
-
-              {slots.map((s, i) => (
-                <option
-                  key={i}
-                  value={s.hora}
-                  disabled={s.disponible === false}
-                >
-                  {s.hora} {s.disponible === false ? "(Ocupado)" : ""}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
