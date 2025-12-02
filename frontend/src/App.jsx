@@ -33,9 +33,6 @@ import {
 import AgeGateModal from "./components/AgeGateModal";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
-import { useNavigate } from "react-router-dom";
-
-
 
 function AppContent() {
   const { usuario, loading } = useAuth();
@@ -58,16 +55,15 @@ function AppContent() {
     cargarBebidas();
   }, []);
 
- const handleAdd = async (bebida) => {
-   try {
-     const nueva = await agregarBebida(bebida);
-     console.log("🔍 Bebida creada desde backend:", nueva);
-     setBebidas((prev) => [...prev, nueva]);
-   } catch (error) {
-     console.error("Error al agregar bebida:", error);
-   }
- };
-
+  const handleAdd = async (bebida) => {
+    try {
+      const nueva = await agregarBebida(bebida);
+      console.log("🔍 Bebida creada desde backend:", nueva);
+      setBebidas((prev) => [...prev, nueva]);
+    } catch (error) {
+      console.error("Error al agregar bebida:", error);
+    }
+  };
 
   const handleEdit = async (bebida) => {
     try {
@@ -79,35 +75,6 @@ function AppContent() {
     } catch (error) {
       console.error("Error al editar bebida:", error);
     }
-  };
-  const MenuBebidas = () => {
-    const navigate = useNavigate();
-
-    return (
-      <div className="botones-admin">
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/admin/bebidas/nueva")}
-        >
-          + Nueva / Editar bebida
-        </button>
-
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate("/admin/catalogo")}
-        >
-          Ver catálogo por categoría
-        </button>
-
-        {/* 👉 NUEVO BOTÓN */}
-        <button
-          className="btn btn-outline"
-          onClick={() => navigate("/configuracion-horarios")}
-        >
-          Horarios de entrega
-        </button>
-      </div>
-    );
   };
 
   const handleDelete = async (id) => {
@@ -128,7 +95,6 @@ function AppContent() {
       </div>
     );
   }
-  
 
   return (
     <div className="min-h-screen bg-[#04090C] text-white">
@@ -170,8 +136,20 @@ function AppContent() {
             }
           />
 
+          {/* TIENDA (front) */}
           <Route path="/tienda" element={<MenuBebidas />} />
-          <Route path="/admin/horarios" element={<ConfiguracionHorarios />} />
+
+          {/* CONFIG HORARIOS (admin) */}
+          <Route
+            path="/admin/horarios"
+            element={
+              usuario && usuario.rol === "admin" ? (
+                <ConfiguracionHorarios />
+              ) : (
+                <Navigate to="/login-admin" />
+              )
+            }
+          />
 
           {/* /admin -> SOLO formulario */}
           <Route
@@ -179,16 +157,26 @@ function AppContent() {
             element={
               usuario && usuario.rol === "admin" ? (
                 <>
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
                     <h2 className="text-3xl font-bold text-[#CDC7BD]">
                       Formulario de Bebidas
                     </h2>
-                    <Link
-                      to="/admin/bebidas-categorias"
-                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
-                    >
-                      Ver catálogo por categoría
-                    </Link>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to="/admin/bebidas-categorias"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                      >
+                        Ver catálogo por categoría
+                      </Link>
+
+                      <Link
+                        to="/admin/horarios"
+                        className="bg-[#CDC7BD] hover:bg-[#F0E7D9] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
+                      >
+                        ⏰ Horarios de entrega
+                      </Link>
+                    </div>
                   </div>
 
                   <BebidasForm
@@ -209,16 +197,26 @@ function AppContent() {
             element={
               usuario && usuario.rol === "admin" ? (
                 <>
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
                     <h2 className="text-3xl font-bold text-[#CDC7BD]">
                       Catálogo de Bebidas
                     </h2>
-                    <Link
-                      to="/admin"
-                      className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
-                    >
-                      + Nueva / Editar bebida
-                    </Link>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to="/admin"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                      >
+                        + Nueva / Editar bebida
+                      </Link>
+
+                      <Link
+                        to="/admin/horarios"
+                        className="bg-[#CDC7BD] hover:bg-[#F0E7D9] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
+                      >
+                        ⏰ Horarios de entrega
+                      </Link>
+                    </div>
                   </div>
 
                   <BebidasListCategorias
@@ -268,4 +266,3 @@ export default function App() {
     </Router>
   );
 }
-

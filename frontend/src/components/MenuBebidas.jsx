@@ -3,6 +3,9 @@ import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import CarruselDestacados from "../components/CarruselDestacados";
 
+import { obtenerConfiguracionHorarios } from "../services/api";
+import { getEstadoDelivery } from "../utils/horariosDelivery";
+
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar } = useCarrito();
@@ -11,6 +14,9 @@ export default function MenuBebidas() {
   const [subcategoria, setSubcategoria] = useState("Todas");
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
+
+  const [estadoDelivery, setEstadoDelivery] = useState(null);
+  const [cargandoHorarios, setCargandoHorarios] = useState(true);
 
   const sinFiltros =
     categoria === "Todas" && subcategoria === "Todas" && busqueda.trim() === "";
@@ -105,6 +111,28 @@ export default function MenuBebidas() {
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
   const mostrarSubcategorias = categoria === "Vinos";
+
+  // 🔹 CARGAR CONFIGURACIÓN DE HORARIOS DESDE EL BACKEND
+  useEffect(() => {
+    const cargarEstado = async () => {
+      try {
+        const config = await obtenerConfiguracionHorarios();
+        const estado = getEstadoDelivery(config);
+        setEstadoDelivery(estado);
+      } catch (err) {
+        console.error("Error al cargar configuración de horarios:", err);
+        setEstadoDelivery({
+          estado: "error",
+          mensaje:
+            "No pudimos cargar los horarios de entrega en este momento. Podés hacer tu pedido igual 😊",
+        });
+      } finally {
+        setCargandoHorarios(false);
+      }
+    };
+
+    cargarEstado();
+  }, []);
 
   // CARRUSEL DESTACADOS
   useEffect(() => {
@@ -246,13 +274,37 @@ export default function MenuBebidas() {
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
-        {/* 🔹 BANNER FIJO (sin horarios) */}
-        <div className="mb-4 px-4 py-3 rounded-2xl bg-[#590707] text-white flex items-center gap-3 shadow-md border border-[#CDC7BD]/40">
-          <span className="text-xl">🛵</span>
-          <p className="text-sm sm:text-base leading-snug">
-            Hoy realizamos entregas. ¡Hacé tu pedido cuando quieras! 🍻
-          </p>
-        </div>
+        {/* 🔹 BANNER DINÁMICO DE HORARIOS */}
+        {!cargandoHorarios && estadoDelivery && (
+          <div
+            className={`
+              mb-4 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-md border border-[#CDC7BD]/40
+              ${
+                estadoDelivery.estado === "durante"
+                  ? "bg-[#590707] text-white"
+                  : estadoDelivery.estado === "antes"
+                  ? "bg-amber-500 text-[#04090C]"
+                  : estadoDelivery.estado === "despues" ||
+                    estadoDelivery.estado === "no_hoy"
+                  ? "bg-[#736D66] text-white"
+                  : "bg-[#444] text-white"
+              }
+            `}
+          >
+            <span className="text-xl">
+              {estadoDelivery.estado === "durante"
+                ? "🛵"
+                : estadoDelivery.estado === "antes"
+                ? "⏰"
+                : estadoDelivery.estado === "no_hoy"
+                ? "📅"
+                : "ℹ️"}
+            </span>
+            <p className="text-sm sm:text-base leading-snug">
+              {estadoDelivery.mensaje}
+            </p>
+          </div>
+        )}
 
         {/* DESTACADOS */}
         {productosEstrella.length > 0 && (

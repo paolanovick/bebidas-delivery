@@ -3,7 +3,7 @@ import AdminPedidos from "../admin/AdminPedidos";
 import AdminUsuarios from "../admin/AdminUsuarios";
 import BebidasForm from "../components/BebidasForm";
 import BebidasList from "../components/BebidasList";
-import ConfiguracionHorarios from "../admin/ConfiguracionHorarios";
+import ConfiguracionHorarios from "./ConfiguracionHorarios";
 import { Menu, X } from "lucide-react";
 import {
   getBebidas,
@@ -11,8 +11,6 @@ import {
   editarBebida,
   eliminarBebida,
 } from "../services/api";
-
-
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
@@ -33,46 +31,40 @@ const Admin = () => {
     cargarBebidas();
   }, []);
 
-const handleAdd = async (bebida) => {
-  try {
-    await agregarBebida(bebida);
-    await cargarBebidas();
-    // ✅ refresca sin recargar la página
-  } catch (error) {
-    console.error("Error al agregar bebida:", error);
-  }
-};
-
+  const handleAdd = async (bebida) => {
+    try {
+      await agregarBebida(bebida);
+      await cargarBebidas();
+      // ✅ refresca sin recargar la página
+    } catch (error) {
+      console.error("Error al agregar bebida:", error);
+    }
+  };
 
   const handleEdit = async (bebida) => {
     try {
       await editarBebida(editing._id, bebida);
       await cargarBebidas(); // ✅ trae todo actualizado desde el servidor
       setEditing(null);
-       
     } catch (error) {
       console.error("Error al editar bebida:", error);
     }
   };
 
-
   const handleDelete = async (id) => {
     try {
       await eliminarBebida(id);
       setBebidas(bebidas.filter((b) => b._id !== id));
-   
     } catch (error) {
       console.error("Error al eliminar bebida:", error);
     }
   };
-  
 
   const cambiarSeccion = (nuevaSeccion) => {
     setSeccion(nuevaSeccion);
     setMenuAbierto(false);
   };
-  
- 
+
   return (
     <div className="flex min-h-screen bg-[#CDC7BD]">
       {/* Sidebar escritorio */}
