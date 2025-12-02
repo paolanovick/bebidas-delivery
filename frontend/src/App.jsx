@@ -32,6 +32,9 @@ import {
 } from "./services/api";
 import AgeGateModal from "./components/AgeGateModal";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
+import { useNavigate } from "react-router-dom";
+
 
 
 function AppContent() {
@@ -77,6 +80,35 @@ function AppContent() {
       console.error("Error al editar bebida:", error);
     }
   };
+  const MenuBebidas = () => {
+    const navigate = useNavigate();
+
+    return (
+      <div className="botones-admin">
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/admin/bebidas/nueva")}
+        >
+          + Nueva / Editar bebida
+        </button>
+
+        <button
+          className="btn btn-secondary"
+          onClick={() => navigate("/admin/catalogo")}
+        >
+          Ver catálogo por categoría
+        </button>
+
+        {/* 👉 NUEVO BOTÓN */}
+        <button
+          className="btn btn-outline"
+          onClick={() => navigate("/configuracion-horarios")}
+        >
+          Horarios de entrega
+        </button>
+      </div>
+    );
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -96,6 +128,7 @@ function AppContent() {
       </div>
     );
   }
+  
 
   return (
     <div className="min-h-screen bg-[#04090C] text-white">
@@ -138,6 +171,7 @@ function AppContent() {
           />
 
           <Route path="/tienda" element={<MenuBebidas />} />
+          <Route path="/admin/horarios" element={<ConfiguracionHorarios />} />
 
           {/* /admin -> SOLO formulario */}
           <Route

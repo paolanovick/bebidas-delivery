@@ -3,10 +3,6 @@ import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import CarruselDestacados from "../components/CarruselDestacados";
 
-// 🔹 NUEVO: importamos la API de horarios y el helper
-import { obtenerConfiguracionHorarios } from "../services/api";
-import { getEstadoDelivery } from "../utils/horariosDelivery";
-
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar } = useCarrito();
@@ -16,13 +12,6 @@ export default function MenuBebidas() {
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  // 🔹 NUEVO: estado para horarios
-  const [configHorarios, setConfigHorarios] = useState(null);
-  const [estadoDelivery, setEstadoDelivery] = useState(null);
-
-  // ------------------------------------
-  // FLAGS PARA VISTA NETFLIX / FILTRADA
-  // ------------------------------------
   const sinFiltros =
     categoria === "Todas" && subcategoria === "Todas" && busqueda.trim() === "";
 
@@ -42,7 +31,6 @@ export default function MenuBebidas() {
     return acc;
   }, {});
 
-  // Ordenar categorías según el menú lateral
   const categorias = [
     "Todas",
     "Vinos",
@@ -71,9 +59,7 @@ export default function MenuBebidas() {
 
   const subcategoriasVinos = ["Todas", "Tinto", "Blanco", "Rosé"];
 
-  // ---------------------------
   // FILTROS
-  // ---------------------------
   const bebidasFiltradas = bebidas.filter((b) => {
     let categoriasProducto = [];
 
@@ -120,9 +106,7 @@ export default function MenuBebidas() {
 
   const mostrarSubcategorias = categoria === "Vinos";
 
-  // -------------------------------------
-  // CARRUSEL DESTACADOS (YA LO TENÍAS)
-  // -------------------------------------
+  // CARRUSEL DESTACADOS
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
@@ -152,27 +136,6 @@ export default function MenuBebidas() {
     }
   };
 
-  // -------------------------------------
-  // 🔹 NUEVO: cargar configuración de horarios
-  // -------------------------------------
-  useEffect(() => {
-    const cargarHorarios = async () => {
-      try {
-        const data = await obtenerConfiguracionHorarios();
-        setConfigHorarios(data);
-        const estado = getEstadoDelivery(data);
-        setEstadoDelivery(estado);
-      } catch (err) {
-        console.error("Error al cargar configuración de horarios:", err);
-      }
-    };
-
-    cargarHorarios();
-  }, []);
-
-  // -------------------------------------
-  // RENDER
-  // -------------------------------------
   return (
     <div
       className="flex min-h-screen relative"
@@ -283,12 +246,13 @@ export default function MenuBebidas() {
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
-        {/* 🔹 NUEVO: BANNER DE HORARIOS DE ENTREGA */}
-        {estadoDelivery && estadoDelivery.mensaje && (
-          <div className="mb-4 p-3 rounded-lg bg-[#FFF4D6] border border-[#E6B800] text-sm text-[#5A4500]">
-            {estadoDelivery.mensaje}
-          </div>
-        )}
+        {/* 🔹 BANNER FIJO (sin horarios) */}
+        <div className="mb-4 px-4 py-3 rounded-2xl bg-[#590707] text-white flex items-center gap-3 shadow-md border border-[#CDC7BD]/40">
+          <span className="text-xl">🛵</span>
+          <p className="text-sm sm:text-base leading-snug">
+            Hoy realizamos entregas. ¡Hacé tu pedido cuando quieras! 🍻
+          </p>
+        </div>
 
         {/* DESTACADOS */}
         {productosEstrella.length > 0 && (
@@ -323,7 +287,7 @@ export default function MenuBebidas() {
             No se encontró esa categoría de bebidas.
           </p>
         ) : sinFiltros ? (
-          /* VISTA 1 – ESTILO NETFLIX POR CATEGORÍA */
+          /* VISTA 1 – ESTILO NETFLIX */
           <div className="space-y-10">
             {ordenCategoriasCatalogo.map((cat) => (
               <section key={cat} className="w-full">
@@ -332,7 +296,6 @@ export default function MenuBebidas() {
                     setCategoria(cat);
                     setSubcategoria("Todas");
                     setBusqueda("");
-                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="
                     text-xl md:text-2xl font-bold mb-3 text-[#590707] 
@@ -405,7 +368,7 @@ export default function MenuBebidas() {
             ))}
           </div>
         ) : (
-          /* VISTA 2 – CUANDO HAY FILTROS */
+          /* VISTA 2 – FILTRADA */
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {bebidasFiltradas.map((b) => (
               <div

@@ -10,7 +10,7 @@ const WhatsAppButton = () => {
 
   if (ocultarEn.includes(location.pathname) || estaEnAdmin) return null;
 
-  const numero = "549XXXXXXXXXX"; // ← CAMBIAR POR EL NÚMERO REAL
+  const numero = "5492494252530"; 
   const mensaje = encodeURIComponent(
     "Hola! Estoy viendo el menú y tengo una consulta 😊🍾"
   );

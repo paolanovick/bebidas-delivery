@@ -1,62 +1,68 @@
 // src/utils/horariosDelivery.js
 
-export function getEstadoDelivery(config) {
-  if (!config) return null;
-
-  const { activo, diasDisponibles = [], horaInicio, horaFin } = config;
-
-  const ahora = new Date();
-  const horaActual = ahora.toTimeString().slice(0, 5);
-
-  const diaSemana = ahora
-    .toLocaleDateString("es-ES", { weekday: "long" })
+const normalize = (str = "") =>
+  str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-  const diasNormalizados = diasDisponibles.map((d) =>
-    d
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
+export function getEstadoDelivery(config) {
+  if (!config || config.activo === false) {
+    return {
+      estado: "inactivo",
+      mensaje: "Hoy no estamos realizando entregas.",
+    };
+  }
+
+  const ahora = new Date();
+
+  const hoyNombreNormalizado = normalize(
+    ahora.toLocaleDateString("es-AR", { weekday: "long" })
   );
 
-  // 🟥 Si el sistema está apagado
-  if (!activo) {
+  const diasConfig = (config.diasDisponibles || []).map(normalize);
+
+  const horaInicio = config.horaInicio || "00:00";
+  const horaFin = config.horaFin || "23:59";
+
+  const [hiH, hiM] = horaInicio.split(":").map(Number);
+  const [hfH, hfM] = horaFin.split(":").map(Number);
+
+  const hoyHabilitado = diasConfig.includes(hoyNombreNormalizado);
+
+  if (!hoyHabilitado) {
+    const diasTexto = (config.diasDisponibles || [])
+      .map((d) => d.charAt(0).toUpperCase() + d.slice(1))
+      .join(", ");
+
     return {
-      abierto: false,
-      mensaje: "🚫 Hoy no se realizan entregas.",
+      estado: "no_hoy",
+      mensaje: `Hoy no realizamos entregas. Días de entrega: ${diasTexto}.`,
     };
   }
 
-  // 🟥 Si hoy NO es un día habilitado
-  if (!diasNormalizados.includes(diaSemana)) {
+  const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes();
+  const inicioMin = hiH * 60 + hiM;
+  const finMin = hfH * 60 + hfM;
+
+  const mensajeBase = `Hoy realizamos entregas desde las ${horaInicio} hasta las ${horaFin}.`;
+
+  if (ahoraMin < inicioMin) {
     return {
-      abierto: false,
-      mensaje: `🚫 Hoy no se realizan entregas. Días de entrega: ${diasDisponibles.join(
-        ", "
-      )}.`,
+      estado: "antes",
+      mensaje: `${mensajeBase} Comenzamos a entregar a partir de las ${horaInicio}.`,
     };
   }
 
-  // 🕒 Evaluar hora actual vs horario configurado
-  if (horaActual < horaInicio) {
+  if (ahoraMin >= inicioMin && ahoraMin <= finMin) {
     return {
-      abierto: false,
-      mensaje: `🕒 Hoy entregamos a partir de las ${horaInicio}.`,
+      estado: "durante",
+      mensaje: `${mensajeBase} ¡Hacé tu pedido cuando quieras!`,
     };
   }
 
-  if (horaActual > horaFin) {
-    return {
-      abierto: false,
-      mensaje: `⚠️ Ya cerramos las entregas por hoy. Nuestro horario de hoy fue de ${horaInicio} a ${horaFin}.`,
-    };
-  }
-
-  // 🟢 Dentro del horario
   return {
-    abierto: true,
-    mensaje: `🟢 Entregando ahora — horario de hoy: ${horaInicio} a ${horaFin}.`,
+    estado: "despues",
+    mensaje: `${mensajeBase} Ya finalizamos las entregas por hoy.`,
   };
 }
