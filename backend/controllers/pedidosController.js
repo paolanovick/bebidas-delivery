@@ -47,20 +47,29 @@ export const crearPedido = async (req, res) => {
       });
     }
 
-    const nuevoPedido = new Pedido({
-      usuario: usuarioId,
-      emailCliente,
-      items: itemsValidados,
-      total,
-      direccionEntrega,
-      telefono,
-      notas,
-      fechaEntrega: new Date(fechaEntrega),
-      horaEntrega,
-    });
+   const pedidoData = {
+     usuario: usuarioId,
+     emailCliente,
+     items: itemsValidados,
+     total,
+     direccionEntrega,
+     telefono,
+     notas,
+   };
 
-    await nuevoPedido.save();
-    await nuevoPedido.populate("items.bebida", "nombre imagen");
+   // Solo seteo estos campos si vienen desde el front (en el futuro, si volvés a usarlos)
+   if (fechaEntrega) {
+     pedidoData.fechaEntrega = new Date(fechaEntrega);
+   }
+   if (horaEntrega) {
+     pedidoData.horaEntrega = horaEntrega;
+   }
+
+   const nuevoPedido = new Pedido(pedidoData);
+
+   await nuevoPedido.save();
+   await nuevoPedido.populate("items.bebida", "nombre imagen");
+
 
     res.status(201).json({ mensaje: "Pedido creado exitosamente", pedido: nuevoPedido });
   } catch (error) {

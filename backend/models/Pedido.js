@@ -36,8 +36,18 @@ const PedidoSchema = new mongoose.Schema({
   notas: String,
   fecha: { type: Date, default: Date.now },
 
-  fechaEntrega: { type: Date, required: true },
-  horaEntrega: { type: String, required: true },
+  // Ahora opcionales: el usuario no elige horario
+  fechaEntrega: {
+    type: Date,
+    required: false,
+    default: Date.now, // la fecha del pedido / entrega estimada
+  },
+  horaEntrega: {
+    type: String,
+    required: false, // puede quedar vacío
+    default: "", // o null si preferís
+  },
 });
+
 
 export default mongoose.model("Pedido", PedidoSchema, "pedidos");
