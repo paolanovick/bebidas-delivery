@@ -1,6 +1,9 @@
+// controllers/horariosController.js
 import ConfiguracionHorarios from "../models/ConfiguracionHorarios.js";
-import Pedido from "../models/Pedido.js";
+// import Pedido from "../models/Pedido.js";  // ❌ Ya no lo usamos por ahora
 
+// ❌ Ya no usamos normalize ni slots, los dejamos comentados por si en el futuro volvemos a turnos
+/*
 // Normaliza strings (quita tildes)
 function normalize(str) {
   return str
@@ -8,6 +11,7 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 }
+*/
 
 // GET /api/horarios/configuracion
 export const obtenerConfiguracion = async (req, res) => {
@@ -16,6 +20,7 @@ export const obtenerConfiguracion = async (req, res) => {
     if (!config) return res.json({});
     res.json(config);
   } catch (error) {
+    console.error("Error al obtener configuración de horarios:", error);
     res.status(500).json({ mensaje: "Error al obtener configuración" });
   }
 };
@@ -29,11 +34,15 @@ export const actualizarConfiguracion = async (req, res) => {
     });
     res.json({ mensaje: "Configuración actualizada", config });
   } catch (error) {
+    console.error("Error al actualizar configuración de horarios:", error);
     res.status(500).json({ mensaje: "Error al actualizar configuración" });
   }
 };
 
-// GET /api/horarios/slots-disponibles?fecha=YYYY-MM-DD
+/* 
+// ❌ YA NO SE USA: GET /api/horarios/slots-disponibles?fecha=YYYY-MM-DD
+// La dejamos comentada por si en el futuro el cliente quiere volver a elegir turnos/hora exacta.
+
 export const obtenerSlotsDisponibles = async (req, res) => {
   try {
     const { fecha } = req.query;
@@ -47,12 +56,10 @@ export const obtenerSlotsDisponibles = async (req, res) => {
       fechaObj.toLocaleDateString("es-ES", { weekday: "long" })
     );
 
-    // ✅ Coincide con tu BD ("sabado" sin tilde)
     if (!config.diasDisponibles.map(normalize).includes(diaSemana)) {
       return res.json({ slots: [] });
     }
 
-    // Generar slots por hora
     const slots = [];
     let [hInicio, mInicio] = config.horaInicio.split(":").map(Number);
     let [hFin, mFin] = config.horaFin.split(":").map(Number);
@@ -73,10 +80,8 @@ export const obtenerSlotsDisponibles = async (req, res) => {
       current.setMinutes(current.getMinutes() + config.duracionSlot);
     }
 
-    // Consultar pedidos existentes en ese día
     const pedidos = await Pedido.find({ fechaEntrega: fecha });
 
-    // Restar disponibilidad
     pedidos.forEach((p) => {
       const slot = slots.find((s) => s.hora === p.horaEntrega);
       if (slot) slot.disponible = false;
@@ -84,6 +89,8 @@ export const obtenerSlotsDisponibles = async (req, res) => {
 
     res.json({ slots });
   } catch (error) {
+    console.error("Error al calcular horarios:", error);
     res.status(500).json({ mensaje: "Error al calcular horarios" });
   }
 };
+*/

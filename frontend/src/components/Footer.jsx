@@ -1,7 +1,30 @@
+// src/components/Footer.jsx
 import React from "react";
-import { Mail, Facebook, Instagram, Twitter } from "lucide-react";
+import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleShare = () => {
+    const url = window.location.origin;
+    const title = "EL DANES Bebidas & Delivery";
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title,
+          text: "Te comparto la web de EL DANES Bebidas & Delivery 🍷",
+          url,
+        })
+        .catch(() => {});
+    } else {
+      // fallback simple: copia link
+      navigator.clipboard.writeText(url).catch(() => {});
+      alert("Enlace copiado al portapapeles ✅");
+    }
+  };
+
   return (
     <footer className="bg-[#CDC7BD] text-[#04090C] border-t border-[#590707] mt-10">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
@@ -13,19 +36,39 @@ const Footer = () => {
             className="w-32 h-auto object-contain drop-shadow-md"
           />
           <p className="text-sm leading-relaxed">
-            Bebidas seleccionadas con calidad.
+            EL DANES Bebidas & Delivery · Tandil, Buenos Aires, Argentina.
           </p>
 
           {/* Redes Sociales */}
           <div className="flex gap-4 mt-2">
-            <button className="hover:text-[#590707] transition">
+            {/* Facebook */}
+            <a
+              href="https://www.facebook.com/ivanito10?locale=es_LA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#590707] transition"
+            >
               <Facebook size={22} />
-            </button>
-            <button className="hover:text-[#590707] transition">
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://www.instagram.com/bebidaseldanes/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#590707] transition"
+            >
               <Instagram size={22} />
-            </button>
-            <button className="hover:text-[#590707] transition">
-              <Twitter size={22} />
+            </a>
+
+            {/* Compartir */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className="hover:text-[#590707] transition"
+              title="Compartir sitio"
+            >
+              <Share2 size={22} />
             </button>
           </div>
         </div>
@@ -36,17 +79,37 @@ const Footer = () => {
             Secciones
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Inicio
+            <li>
+              <Link
+                to="/"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Inicio
+              </Link>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Catálogo
+            <li>
+              <Link
+                to="/tienda"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Catálogo
+              </Link>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Ofertas
+            <li>
+              <Link
+                to="/tienda"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Ofertas
+              </Link>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Contacto
+            <li>
+              <a
+                href="mailto:eldanes.tandil@gmail.com"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Contacto
+              </a>
             </li>
           </ul>
         </div>
@@ -57,17 +120,45 @@ const Footer = () => {
             Políticas
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Términos y Condiciones
+            <li>
+              <a
+                href="/docs/terminos-condiciones.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Términos y Condiciones
+              </a>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Política de Privacidad
+            <li>
+              <a
+                href="/docs/politica-privacidad.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Política de Privacidad
+              </a>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Envíos y Devoluciones
+            <li>
+              <a
+                href="/docs/envios-devoluciones.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Envíos y Devoluciones
+              </a>
             </li>
-            <li className="hover:text-[#590707] cursor-pointer transition">
-              Preguntas Frecuentes
+            <li>
+              <a
+                href="/docs/preguntas-frecuentes.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#590707] cursor-pointer transition"
+              >
+                Preguntas Frecuentes
+              </a>
             </li>
           </ul>
         </div>
@@ -87,7 +178,14 @@ const Footer = () => {
               placeholder="Tu email..."
               className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404]"
             />
-            <button className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md">
+            <button
+              className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md"
+              type="button"
+              // 👉 Más adelante acá llamamos a tu webhook de n8n
+              onClick={() =>
+                alert("Pronto conectamos esto con tu newsletter en n8n 💌")
+              }
+            >
               <Mail size={18} />
             </button>
           </div>

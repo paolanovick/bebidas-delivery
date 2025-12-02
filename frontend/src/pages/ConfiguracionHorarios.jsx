@@ -1,3 +1,4 @@
+// src/pages/ConfiguracionHorarios.jsx
 import React, { useState, useEffect } from "react";
 import {
   obtenerConfiguracionHorarios,
@@ -9,9 +10,9 @@ const ConfiguracionHorarios = () => {
     diasDisponibles: [],
     horaInicio: "09:00",
     horaFin: "20:00",
-    duracionSlot: 60,
-    diasAnticipacion: 0,
-    pedidosSimultaneosPorSlot: 5,
+    duracionSlot: 60, // 👈 sigue existiendo pero no lo mostramos
+    diasAnticipacion: 0, // idem
+    pedidosSimultaneosPorSlot: 5, // idem
     activo: true,
   });
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,16 @@ const ConfiguracionHorarios = () => {
   const cargarConfiguracion = async () => {
     try {
       const data = await obtenerConfiguracionHorarios();
-      setConfig(data);
+
+      // 🔹 Mezclamos lo que viene de la API con los defaults,
+      // por si la primera vez viene {} desde el backend
+      setConfig((prev) => ({
+        ...prev,
+        ...data,
+        diasDisponibles: Array.isArray(data?.diasDisponibles)
+          ? data.diasDisponibles
+          : prev.diasDisponibles,
+      }));
     } catch (error) {
       console.error("Error al cargar configuración:", error);
     }
@@ -85,7 +95,7 @@ const ConfiguracionHorarios = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Estado activo/inactivo */}
+        {/* Activo / inactivo */}
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
@@ -102,7 +112,7 @@ const ConfiguracionHorarios = () => {
         {/* Días disponibles */}
         <div>
           <label className="block text-[#04090C] font-semibold mb-3">
-            Días disponibles para entrega:
+            Días con entregas:
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {diasSemana.map((dia) => (
@@ -122,11 +132,11 @@ const ConfiguracionHorarios = () => {
           </div>
         </div>
 
-        {/* Horarios */}
+        {/* Rango de horario (solo info) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-[#04090C] font-semibold mb-2">
-              Hora de inicio:
+              Hora de inicio de entregas:
             </label>
             <input
               type="time"
@@ -141,7 +151,7 @@ const ConfiguracionHorarios = () => {
 
           <div>
             <label className="block text-[#04090C] font-semibold mb-2">
-              Hora de fin:
+              Hora de fin de entregas:
             </label>
             <input
               type="time"
@@ -155,67 +165,6 @@ const ConfiguracionHorarios = () => {
           </div>
         </div>
 
-        {/* Duración del slot */}
-        <div>
-          <label className="block text-[#04090C] font-semibold mb-2">
-            Duración de cada slot (minutos):
-          </label>
-          <select
-            value={config.duracionSlot}
-            onChange={(e) =>
-              setConfig({ ...config, duracionSlot: Number(e.target.value) })
-            }
-            className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none"
-          >
-            <option value={30}>30 minutos</option>
-            <option value={60}>60 minutos</option>
-            <option value={90}>90 minutos</option>
-            <option value={120}>2 horas</option>
-          </select>
-        </div>
-
-        {/* Días de anticipación */}
-        <div>
-          <label className="block text-[#04090C] font-semibold mb-2">
-            Días de anticipación mínima:
-          </label>
-          <input
-            type="number"
-            min="0"
-            value={config.diasAnticipacion}
-            onChange={(e) =>
-              setConfig({ ...config, diasAnticipacion: Number(e.target.value) })
-            }
-            className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none"
-          />
-          <p className="text-sm text-[#736D66] mt-1">
-            0 = mismo día, 1 = mínimo para el día siguiente, etc.
-          </p>
-        </div>
-
-        {/* Pedidos simultáneos */}
-        <div>
-          <label className="block text-[#04090C] font-semibold mb-2">
-            Pedidos simultáneos por slot:
-          </label>
-          <input
-            type="number"
-            min="1"
-            value={config.pedidosSimultaneosPorSlot}
-            onChange={(e) =>
-              setConfig({
-                ...config,
-                pedidosSimultaneosPorSlot: Number(e.target.value),
-              })
-            }
-            className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none"
-          />
-          <p className="text-sm text-[#736D66] mt-1">
-            Cantidad máxima de pedidos que se pueden entregar en el mismo
-            horario
-          </p>
-        </div>
-
         {/* Botón guardar */}
         <button
           type="submit"
@@ -226,22 +175,26 @@ const ConfiguracionHorarios = () => {
         </button>
       </form>
 
-      {/* Vista previa */}
+      {/* Vista previa simple */}
       <div className="mt-6 p-4 bg-[#CDC7BD] rounded-lg">
         <h3 className="font-semibold text-[#04090C] mb-2">📋 Vista previa:</h3>
         <ul className="text-sm text-[#04090C] space-y-1">
           <li>
-            • Entregas de {config.horaInicio} a {config.horaFin}
+            • Horario de hoy (si es día habilitado):{" "}
+            <strong>
+              {config.horaInicio} a {config.horaFin}
+            </strong>
           </li>
-          <li>• Slots de {config.duracionSlot} minutos</li>
           <li>
-            • Días disponibles:{" "}
+            • Días con entregas:{" "}
             {config.diasDisponibles.length > 0
               ? config.diasDisponibles.join(", ")
               : "Ninguno"}
           </li>
-          <li>
-            • {config.pedidosSimultaneosPorSlot} pedidos máximos por horario
+          <li className="text-xs text-[#736D66] mt-2">
+            Esta configuración se usa solo para mostrar mensajes informativos en
+            el menú (ej: “Hoy entregamos a partir de las 20:00 hs”). <br />
+            La compra sigue habilitada siempre.
           </li>
         </ul>
       </div>

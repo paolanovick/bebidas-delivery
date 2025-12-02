@@ -176,7 +176,9 @@ export const actualizarConfiguracionHorarios = async (config) => {
   return res.json();
 };
 
+/*
 export async function obtenerSlotsDisponibles(fecha) {
   const res = await fetch(`${API_URL_HORARIOS}/slots-disponibles?fecha=${fecha}`);
   return res.json();
 }
+*/

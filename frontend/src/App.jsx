@@ -31,6 +31,8 @@ import {
   eliminarBebida,
 } from "./services/api";
 import AgeGateModal from "./components/AgeGateModal";
+import WhatsAppButton from "./components/WhatsAppButton";
+
 
 function AppContent() {
   const { usuario, loading } = useAuth();
@@ -214,6 +216,7 @@ function AppContent() {
       </div>
 
       {!ocultarFooter && <Footer />}
+      <WhatsAppButton />
     </div>
   );
 }

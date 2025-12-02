@@ -3,6 +3,10 @@ import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import CarruselDestacados from "../components/CarruselDestacados";
 
+// 🔹 NUEVO: importamos la API de horarios y el helper
+import { obtenerConfiguracionHorarios } from "../services/api";
+import { getEstadoDelivery } from "../utils/horariosDelivery";
+
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar } = useCarrito();
@@ -11,6 +15,10 @@ export default function MenuBebidas() {
   const [subcategoria, setSubcategoria] = useState("Todas");
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
+
+  // 🔹 NUEVO: estado para horarios
+  const [configHorarios, setConfigHorarios] = useState(null);
+  const [estadoDelivery, setEstadoDelivery] = useState(null);
 
   // ------------------------------------
   // FLAGS PARA VISTA NETFLIX / FILTRADA
@@ -97,6 +105,10 @@ export default function MenuBebidas() {
 
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
+  const [mensajeAgregado, setMensajeAgregado] = useState("");
+  const [paused, setPaused] = useState(false);
+  const carouselRef = useRef(null);
+
   const handleAgregar = (b) => {
     agregar(b);
     setMensajeAgregado(`${b.nombre} agregado al carrito 🛒`);
@@ -109,12 +121,8 @@ export default function MenuBebidas() {
   const mostrarSubcategorias = categoria === "Vinos";
 
   // -------------------------------------
-  // ESTADOS DEL CARRUSEL DESTACADOS
+  // CARRUSEL DESTACADOS (YA LO TENÍAS)
   // -------------------------------------
-  const [mensajeAgregado, setMensajeAgregado] = useState("");
-  const [paused, setPaused] = useState(false);
-  const carouselRef = useRef(null);
-
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
@@ -145,6 +153,24 @@ export default function MenuBebidas() {
   };
 
   // -------------------------------------
+  // 🔹 NUEVO: cargar configuración de horarios
+  // -------------------------------------
+  useEffect(() => {
+    const cargarHorarios = async () => {
+      try {
+        const data = await obtenerConfiguracionHorarios();
+        setConfigHorarios(data);
+        const estado = getEstadoDelivery(data);
+        setEstadoDelivery(estado);
+      } catch (err) {
+        console.error("Error al cargar configuración de horarios:", err);
+      }
+    };
+
+    cargarHorarios();
+  }, []);
+
+  // -------------------------------------
   // RENDER
   // -------------------------------------
   return (
@@ -155,7 +181,6 @@ export default function MenuBebidas() {
         backgroundSize: "200px 200px",
         backgroundRepeat: "repeat",
         backgroundAttachment: "fixed",
-        
       }}
     >
       {/* MENSAJE PRODUCTO AGREGADO */}
@@ -173,9 +198,7 @@ export default function MenuBebidas() {
         />
       )}
 
-      {/* ------------------------------- */}
       {/* SIDEBAR */}
-      {/* ------------------------------- */}
       <aside
         className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] 
         p-6 z-40 shadow-[0_8px_24px_rgba(0,0,0,0.08)] transform transition-transform duration-300
@@ -258,10 +281,15 @@ export default function MenuBebidas() {
         </div>
       </aside>
 
-      {/* --------------------------------------- */}
       {/* CONTENIDO PRINCIPAL */}
-      {/* --------------------------------------- */}
       <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
+        {/* 🔹 NUEVO: BANNER DE HORARIOS DE ENTREGA */}
+        {estadoDelivery && estadoDelivery.mensaje && (
+          <div className="mb-4 p-3 rounded-lg bg-[#FFF4D6] border border-[#E6B800] text-sm text-[#5A4500]">
+            {estadoDelivery.mensaje}
+          </div>
+        )}
+
         {/* DESTACADOS */}
         {productosEstrella.length > 0 && (
           <CarruselDestacados
@@ -295,9 +323,7 @@ export default function MenuBebidas() {
             No se encontró esa categoría de bebidas.
           </p>
         ) : sinFiltros ? (
-          /* -----------------------------------------
-             🚀 VISTA 1 – ESTILO NETFLIX POR CATEGORÍA
-             ----------------------------------------- */
+          /* VISTA 1 – ESTILO NETFLIX POR CATEGORÍA */
           <div className="space-y-10">
             {ordenCategoriasCatalogo.map((cat) => (
               <section key={cat} className="w-full">
@@ -309,36 +335,34 @@ export default function MenuBebidas() {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="
-    text-xl md:text-2xl font-bold mb-3 text-[#590707] 
-    cursor-pointer 
-    relative inline-block
-    transition-all
-    group
-  "
+                    text-xl md:text-2xl font-bold mb-3 text-[#590707] 
+                    cursor-pointer 
+                    relative inline-block
+                    transition-all
+                    group
+                  "
                 >
                   <span className="group-hover:text-[#A30404] transition-colors">
                     {cat}
                   </span>
 
-                  {/* Línea sutil animada */}
                   <span
                     className="
-      absolute left-0 -bottom-1 h-[2px] w-0 
-      bg-gradient-to-r from-[#590707] via-[#A30404] to-[#CDC7BD]
-      rounded-full
-      transition-all duration-300 
-      group-hover:w-full
-    "
+                      absolute left-0 -bottom-1 h-[2px] w-0 
+                      bg-gradient-to-r from-[#590707] via-[#A30404] to-[#CDC7BD]
+                      rounded-full
+                      transition-all duration-300 
+                      group-hover:w-full
+                    "
                   />
 
-                  {/* Flecha minimalista */}
                   <span
                     className="
-      opacity-0 group-hover:opacity-100 
-      text-[#A30404] 
-      ml-2 
-      transition-opacity duration-300
-    "
+                      opacity-0 group-hover:opacity-100 
+                      text-[#A30404] 
+                      ml-2 
+                      transition-opacity duration-300
+                    "
                   >
                     →
                   </span>
@@ -381,9 +405,7 @@ export default function MenuBebidas() {
             ))}
           </div>
         ) : (
-          /* -----------------------------------------
-             🎯 VISTA 2 – CUANDO HAY FILTROS
-             ----------------------------------------- */
+          /* VISTA 2 – CUANDO HAY FILTROS */
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {bebidasFiltradas.map((b) => (
               <div
