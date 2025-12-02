@@ -11,8 +11,7 @@ const ADMIN_WHATSAPP = "5492494252530";
 export default function Pedido() {
   const navigate = useNavigate();
 
-
-  // ✅ ACÁ IMPORTAMOS VACIAREl CARRITO
+  // carrito
   const { carrito, guardarCarrito, vaciarCarrito } = useCarrito();
 
   const cambiarCantidad = (id, nuevaCantidad) => {
@@ -41,8 +40,11 @@ export default function Pedido() {
   const [hora, setHora] = useState("");
   const [comentarios, setComentarios] = useState("");
 
+  // 🔹 NUEVO: modo de entrega (envío / take away)
+  const [modoEntrega, setModoEntrega] = useState("envio"); // "envio" | "takeaway"
+
   useEffect(() => {
-    if (!coordenadas && "geolocation" in navigator) {
+    if (!coordenadas && "geolocation" in navigator && modoEntrega === "envio") {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setCoordenadas({
@@ -54,7 +56,7 @@ export default function Pedido() {
         { enableHighAccuracy: true, timeout: 8000 }
       );
     }
-  }, [coordenadas]);
+  }, [coordenadas, modoEntrega]);
 
   const [slots, setSlots] = useState([]);
   const [cargandoSlots, setCargandoSlots] = useState(false);
@@ -99,40 +101,45 @@ export default function Pedido() {
   const validoTelefono = telSoloDigitos.length >= 10;
   const validoEmail = email.includes("@");
 
+  const requiereDireccion = modoEntrega === "envio";
+
   const puedeConfirmar =
     carrito.length > 0 &&
-    validoDireccion &&
     validoTelefono &&
     validoEmail &&
     Boolean(fecha) &&
-    Boolean(hora);
+    Boolean(hora) &&
+    (!requiereDireccion || validoDireccion);
 
   const confirmarYEnviar = async () => {
-
     if (!puedeConfirmar) return;
 
-   const pedido = {
-     // usuario: null, // No requiere login
-     emailCliente: email,
-     items: carrito.map((i) => ({
-       bebida: i._id || i.id,
-       nombre: i.nombre || i.titulo,
-       precio: Number(i.precio) || 0,
-       cantidad: Number(i.cantidad) || 0,
-     })),
-     direccionEntrega: direccion,
-     telefono,
-     coordenadas,
-     fechaEntrega: fecha,
-     horaEntrega: hora,
-     notas: comentarios,
-     total,
-   };
+    const pedido = {
+      // usuario: null, // No requiere login
+      emailCliente: email,
+      items: carrito.map((i) => ({
+        bebida: i._id || i.id,
+        nombre: i.nombre || i.titulo,
+        precio: Number(i.precio) || 0,
+        cantidad: Number(i.cantidad) || 0,
+      })),
+      direccionEntrega:
+        modoEntrega === "envio" ? direccion : "Retira en el local (take away)",
+      telefono,
+      coordenadas: modoEntrega === "envio" ? coordenadas : null,
+      fechaEntrega: fecha,
+      horaEntrega: hora,
+      // guardamos el modo de entrega dentro de notas
+      notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
+        comentarios || ""
+      }`.trim(),
+      total,
+    };
 
-
-    const ubicacion = coordenadas
-      ? `https://www.google.com/maps?q=${coordenadas.lat},${coordenadas.lng}`
-      : "Sin ubicación";
+    const ubicacion =
+      modoEntrega === "envio" && coordenadas
+        ? `https://www.google.com/maps?q=${coordenadas.lat},${coordenadas.lng}`
+        : "Sin ubicación";
 
     const textoProductos = carrito
       .map(
@@ -143,9 +150,19 @@ export default function Pedido() {
       )
       .join("\n");
 
-    const mensaje = `Nuevo Pedido 🛵\n\n${textoProductos}\n\nTotal: $${total.toLocaleString(
+    const mensaje = `Nuevo Pedido ${
+      modoEntrega === "envio" ? "🛵 Envío a domicilio" : "🛍️ Take Away"
+    }\n\n${textoProductos}\n\nTotal: $${total.toLocaleString(
       "es-AR"
-    )}\n\nDirección: ${direccion}\nTeléfono: ${telefono}\nEmail: ${email}\nFecha y Hora: ${fecha} ${hora}\n\nUbicación\n${ubicacion}\n\nNotas\n${
+    )}\n\nModo de entrega: ${
+      modoEntrega === "envio"
+        ? "Envío a domicilio"
+        : "Retira en el local (take away)"
+    }\n${
+      modoEntrega === "envio"
+        ? `Dirección: ${direccion}\nUbicación: ${ubicacion}\n`
+        : ""
+    }Teléfono: ${telefono}\nEmail: ${email}\nFecha y Hora: ${fecha} ${hora}\n\nNotas\n${
       comentarios || "Sin notas"
     }`;
 
@@ -157,9 +174,7 @@ export default function Pedido() {
         "_blank"
       );
 
-      // ✅ AQUÍ EL CAMBIO CORRECTO
       vaciarCarrito();
-
       navigate("/mis-pedidos");
     } catch (err) {
       alert("Error al confirmar el pedido");
@@ -178,7 +193,6 @@ export default function Pedido() {
           <p className="text-[#04090C]">Tu carrito está vacío.</p>
         </div>
       )}
-      {/* LISTA DE PRODUCTOS */}
 
       {carrito.map((item) => {
         const id = item._id || item.id;
@@ -249,13 +263,51 @@ export default function Pedido() {
       </div>
 
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
-        <label className="font-semibold text-[#04090C]">Dirección *</label>
-        <input
-          value={direccion}
-          onChange={(e) => setDireccion(e.target.value)}
-          className="w-full p-2 border rounded mb-4 text-[#04090C] bg-white"
-          placeholder="Ej.: Pasaje Vázquez 123, Tandil"
-        />
+        {/* 🔹 Selector de modo de entrega */}
+        <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="modoEntrega"
+              value="envio"
+              checked={modoEntrega === "envio"}
+              onChange={() => setModoEntrega("envio")}
+            />
+            <span className="text-[#04090C]">Envío a domicilio</span>
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="modoEntrega"
+              value="takeaway"
+              checked={modoEntrega === "takeaway"}
+              onChange={() => setModoEntrega("takeaway")}
+            />
+            <span className="text-[#04090C]">
+              Take Away (retira en el local)
+            </span>
+          </label>
+        </div>
+
+        {/* Dirección y mapa solo si es envío */}
+        {modoEntrega === "envio" && (
+          <>
+            <label className="font-semibold text-[#04090C]">Dirección *</label>
+            <input
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+              className="w-full p-2 border rounded mb-4 text-[#04090C] bg-white"
+              placeholder="Ej.: Pasaje Vázquez 123, Tandil"
+            />
+
+            <MapaEntrega
+              onLocationSelect={setCoordenadas}
+              direccion={direccion}
+            />
+          </>
+        )}
 
         <label className="font-semibold text-[#04090C]">Teléfono *</label>
         <input
@@ -273,8 +325,6 @@ export default function Pedido() {
           className="p-2 border rounded w-full text-[#04090C] bg-white mb-4"
           placeholder="ej: cliente@gmail.com"
         />
-
-        <MapaEntrega onLocationSelect={setCoordenadas} direccion={direccion} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
