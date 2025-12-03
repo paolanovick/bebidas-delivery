@@ -4,9 +4,13 @@ import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  const [emailNL, setEmailNL] = useState("");
-  const [loadingNL, setLoadingNL] = useState(false);
-  const [mensajeNL, setMensajeNL] = useState("");
+  // 🔹 Estado para el newsletter
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterEstado, setNewsletterEstado] = useState({
+    tipo: null, // "ok" | "error"
+    mensaje: "",
+  });
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -26,20 +30,19 @@ const Footer = () => {
     }
   };
 
-  const validarEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const handleNewsletter = async () => {
-    setMensajeNL("");
-
-    if (!emailNL || !validarEmail(emailNL)) {
-      setMensajeNL("Ingresá un email válido 📧");
+  const handleNewsletterSubmit = async () => {
+    // 🔹 Validación simple de email
+    if (!newsletterEmail || !newsletterEmail.includes("@")) {
+      setNewsletterEstado({
+        tipo: "error",
+        mensaje: "Ingresá un email válido 😊",
+      });
       return;
     }
 
     try {
-      setLoadingNL(true);
+      setNewsletterLoading(true);
+      setNewsletterEstado({ tipo: null, mensaje: "" });
 
       const res = await fetch(
         "https://n8n.triptest.com.ar/webhook/suscripcionNL",
@@ -49,24 +52,30 @@ const Footer = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: emailNL,
-            // Si más adelante agregamos nombre, se lo mandamos también
-            // nombre: nombreNL,
+            email: newsletterEmail,
+            // si después sumás nombre en el form, podés enviar: nombre: ...
           }),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Error en la suscripción");
+        throw new Error("Error al llamar al webhook");
       }
 
-      setMensajeNL("¡Gracias por suscribirte! Revisá tu mail 💌");
-      setEmailNL("");
+      setNewsletterEstado({
+        tipo: "ok",
+        mensaje: "¡Listo! Te suscribimos al newsletter 🍷",
+      });
+      setNewsletterEmail("");
     } catch (error) {
-      console.error("Error al suscribir al newsletter:", error);
-      setMensajeNL("Hubo un error al suscribirte, probá de nuevo más tarde.");
+      console.error("Error al suscribir newsletter:", error);
+      setNewsletterEstado({
+        tipo: "error",
+        mensaje:
+          "Hubo un problema al suscribirte. Probá de nuevo en unos minutos 🙏",
+      });
     } finally {
-      setLoadingNL(false);
+      setNewsletterLoading(false);
     }
   };
 
@@ -86,6 +95,7 @@ const Footer = () => {
 
           {/* Redes Sociales */}
           <div className="flex gap-4 mt-2">
+            {/* Facebook */}
             <a
               href="https://www.facebook.com/ivanito10?locale=es_LA"
               target="_blank"
@@ -94,6 +104,8 @@ const Footer = () => {
             >
               <Facebook size={22} />
             </a>
+
+            {/* Instagram */}
             <a
               href="https://www.instagram.com/bebidaseldanes/"
               target="_blank"
@@ -102,6 +114,8 @@ const Footer = () => {
             >
               <Instagram size={22} />
             </a>
+
+            {/* Compartir */}
             <button
               type="button"
               onClick={handleShare}
@@ -216,17 +230,17 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Tu email..."
-              value={emailNL}
-              onChange={(e) => setEmailNL(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404] bg-white text-[#04090C]"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404]"
             />
             <button
               className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-60"
               type="button"
-              onClick={handleNewsletter}
-              disabled={loadingNL}
+              onClick={handleNewsletterSubmit}
+              disabled={newsletterLoading}
             >
-              {loadingNL ? (
+              {newsletterLoading ? (
                 <span className="text-xs">Enviando...</span>
               ) : (
                 <Mail size={18} />
@@ -234,8 +248,16 @@ const Footer = () => {
             </button>
           </div>
 
-          {mensajeNL && (
-            <p className="mt-2 text-xs text-[#04090C]">{mensajeNL}</p>
+          {newsletterEstado.mensaje && (
+            <p
+              className={`mt-2 text-xs ${
+                newsletterEstado.tipo === "ok"
+                  ? "text-green-700"
+                  : "text-red-700"
+              }`}
+            >
+              {newsletterEstado.mensaje}
+            </p>
           )}
         </div>
       </div>
