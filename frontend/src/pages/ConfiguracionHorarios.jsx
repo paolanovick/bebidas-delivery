@@ -18,6 +18,12 @@ const ConfiguracionHorarios = () => {
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
+  // 👇 errores específicos de cada campo de hora
+  const [errores, setErrores] = useState({
+    horaInicio: "",
+    horaFin: "",
+  });
+
   const diasSemana = [
     { value: "lunes", label: "Lunes" },
     { value: "martes", label: "Martes" },
@@ -57,13 +63,110 @@ const ConfiguracionHorarios = () => {
     }));
   };
 
+  // 🕒 Función para normalizar y validar una hora
+  // Soporta:
+  //  - "8"      -> "08:00"
+  //  - "18"     -> "18:00"
+  //  - "8:30"   -> "08:30"
+  //  - "0830"   -> "08:30"
+  // Devuelve "HH:MM" o null si es inválida
+  const formatearHora = (valorCrudo) => {
+    if (!valorCrudo) return null;
+
+    let v = String(valorCrudo).trim();
+    if (!v) return null;
+
+    // reemplazo puntos/comas por :
+    v = v.replace(/[.,]/g, ":");
+
+    // si es solo HH
+    if (/^\d{1,2}$/.test(v)) {
+      const h = parseInt(v, 10);
+      if (isNaN(h) || h < 0 || h > 23) return null;
+      return `${h.toString().padStart(2, "0")}:00`;
+    }
+
+    // si viene HH:MM (permito H:MM también)
+    if (/^\d{1,2}:[0-5]\d$/.test(v)) {
+      const [hStr, mStr] = v.split(":");
+      const h = parseInt(hStr, 10);
+      if (isNaN(h) || h < 0 || h > 23) return null;
+      return `${h.toString().padStart(2, "0")}:${mStr}`;
+    }
+
+    // si viene tipo 830 / 0830
+    if (/^\d{3,4}$/.test(v)) {
+      const soloNums = v;
+      const minsPart = soloNums.slice(-2); // últimos 2 dígitos
+      const hourPart = soloNums.slice(0, soloNums.length - 2);
+      const h = parseInt(hourPart, 10);
+      const m = parseInt(minsPart, 10);
+
+      if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+        return null;
+      }
+
+      return `${h.toString().padStart(2, "0")}:${minsPart}`;
+    }
+
+    return null; // formato no reconocido
+  };
+
+  // cuando el usuario sale del campo (blur) normalizamos
+  const handleHoraBlur = (campo) => (e) => {
+    const valor = e.target.value;
+
+    if (!valor.trim()) {
+      setErrores((prev) => ({ ...prev, [campo]: "" }));
+      return;
+    }
+
+    const normalizada = formatearHora(valor);
+
+    if (!normalizada) {
+      setErrores((prev) => ({
+        ...prev,
+        [campo]:
+          "Ingresá una hora válida en formato HH:MM (por ej. 08:00, 830, 18).",
+      }));
+    } else {
+      setConfig((prev) => ({ ...prev, [campo]: normalizada }));
+      setErrores((prev) => ({ ...prev, [campo]: "" }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMensaje("");
 
+    // Normalizamos y validamos ambas horas antes de enviar
+    const nuevoErrores = { horaInicio: "", horaFin: "" };
+    const configNormalizado = { ...config };
+    let esValido = true;
+
+    ["horaInicio", "horaFin"].forEach((campo) => {
+      const valor = config[campo] || "";
+      const normalizada = formatearHora(valor);
+
+      if (!normalizada) {
+        nuevoErrores[campo] =
+          "Ingresá una hora válida en formato HH:MM (por ej. 08:00, 830, 18).";
+        esValido = false;
+      } else {
+        configNormalizado[campo] = normalizada;
+      }
+    });
+
+    if (!esValido) {
+      setErrores((prev) => ({ ...prev, ...nuevoErrores }));
+      setLoading(false);
+      return;
+    }
+
     try {
-      await actualizarConfiguracionHorarios(config);
+      await actualizarConfiguracionHorarios(configNormalizado);
+      setConfig(configNormalizado);
       setMensaje("Configuración actualizada correctamente");
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
@@ -73,6 +176,9 @@ const ConfiguracionHorarios = () => {
       setLoading(false);
     }
   };
+
+  const baseInputClass =
+    "w-full px-3 py-2 border rounded-lg bg-white text-[#04090C] focus:ring-2 focus:outline-none";
 
   return (
     <div className="bg-white shadow-xl rounded-xl p-6 max-w-4xl">
@@ -130,7 +236,7 @@ const ConfiguracionHorarios = () => {
           </div>
         </div>
 
-        {/* Rango de horario (inputs de texto simples) */}
+        {/* Rango de horario (texto, totalmente controlado) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Hora inicio */}
           <div>
@@ -139,14 +245,29 @@ const ConfiguracionHorarios = () => {
             </label>
             <input
               type="text"
+              inputMode="numeric"
               placeholder="08:00"
               value={config.horaInicio}
-              onChange={(e) =>
-                setConfig({ ...config, horaInicio: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] placeholder:text-[#736D66] focus:ring-2 focus:ring-[#590707] focus:outline-none"
-              required
+              onChange={(e) => {
+                setConfig({ ...config, horaInicio: e.target.value });
+                if (errores.horaInicio) {
+                  setErrores((prev) => ({ ...prev, horaInicio: "" }));
+                }
+              }}
+              onBlur={handleHoraBlur("horaInicio")}
+              className={`${baseInputClass} ${
+                errores.horaInicio
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-[#590707] focus:ring-[#590707]"
+              }`}
             />
+            {errores.horaInicio ? (
+              <p className="mt-1 text-xs text-red-600">{errores.horaInicio}</p>
+            ) : (
+              <p className="mt-1 text-xs text-[#736D66]">
+                Ejemplo: 08:00, 8, 0830, 8:30
+              </p>
+            )}
           </div>
 
           {/* Hora fin */}
@@ -156,14 +277,29 @@ const ConfiguracionHorarios = () => {
             </label>
             <input
               type="text"
+              inputMode="numeric"
               placeholder="20:00"
               value={config.horaFin}
-              onChange={(e) =>
-                setConfig({ ...config, horaFin: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] placeholder:text-[#736D66] focus:ring-2 focus:ring-[#590707] focus:outline-none"
-              required
+              onChange={(e) => {
+                setConfig({ ...config, horaFin: e.target.value });
+                if (errores.horaFin) {
+                  setErrores((prev) => ({ ...prev, horaFin: "" }));
+                }
+              }}
+              onBlur={handleHoraBlur("horaFin")}
+              className={`${baseInputClass} ${
+                errores.horaFin
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-[#590707] focus:ring-[#590707]"
+              }`}
             />
+            {errores.horaFin ? (
+              <p className="mt-1 text-xs text-red-600">{errores.horaFin}</p>
+            ) : (
+              <p className="mt-1 text-xs text-[#736D66]">
+                Ejemplo: 20:00, 20, 2130, 21:30
+              </p>
+            )}
           </div>
         </div>
 
