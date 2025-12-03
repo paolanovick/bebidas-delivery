@@ -27,7 +27,7 @@ const Footer = () => {
     }
   };
 
-  // 👉 ACA se llama al webhook de n8n
+  // 👉 ACA se llama al webhook de n8n (NO hay más alert de "Pronto conectamos...")
   const handleNewsletter = async () => {
     if (!newsletterEmail || !newsletterEmail.includes("@")) {
       setNewsletterMensaje("Ingresá un email válido 🙏");
