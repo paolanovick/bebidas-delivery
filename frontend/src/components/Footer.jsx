@@ -4,6 +4,7 @@ import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  // Estado para el email del newsletter
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [newsletterMensaje, setNewsletterMensaje] = useState("");
@@ -26,6 +27,7 @@ const Footer = () => {
     }
   };
 
+  // 👉 ACA se llama al webhook de n8n
   const handleNewsletter = async () => {
     if (!newsletterEmail || !newsletterEmail.includes("@")) {
       setNewsletterMensaje("Ingresá un email válido 🙏");
@@ -45,7 +47,6 @@ const Footer = () => {
           },
           body: JSON.stringify({
             email: newsletterEmail,
-            // En el futuro si agregamos nombre: nombre: newsletterNombre
           }),
         }
       );
