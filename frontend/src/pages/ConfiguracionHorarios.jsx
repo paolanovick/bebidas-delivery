@@ -130,7 +130,7 @@ const ConfiguracionHorarios = () => {
           </div>
         </div>
 
-        {/* Rango de horario (inputs de texto, no time) */}
+        {/* Rango de horario (inputs de texto simples) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Hora inicio */}
           <div>
@@ -139,15 +139,12 @@ const ConfiguracionHorarios = () => {
             </label>
             <input
               type="text"
-              inputMode="numeric"
-              pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
               placeholder="08:00"
-              title="Usá el formato HH:MM (por ej. 08:00)"
               value={config.horaInicio}
               onChange={(e) =>
                 setConfig({ ...config, horaInicio: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] placeholder:text-[#736D66] focus:ring-2 focus:ring-[#590707] focus:outline-none"
               required
             />
           </div>
@@ -159,15 +156,12 @@ const ConfiguracionHorarios = () => {
             </label>
             <input
               type="text"
-              inputMode="numeric"
-              pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
               placeholder="20:00"
-              title="Usá el formato HH:MM (por ej. 20:00)"
               value={config.horaFin}
               onChange={(e) =>
                 setConfig({ ...config, horaFin: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] placeholder:text-[#736D66] focus:ring-2 focus:ring-[#590707] focus:outline-none"
               required
             />
           </div>
