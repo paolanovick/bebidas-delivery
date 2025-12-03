@@ -1,10 +1,12 @@
 // src/components/Footer.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
-  const navigate = useNavigate();
+  const [emailNL, setEmailNL] = useState("");
+  const [loadingNL, setLoadingNL] = useState(false);
+  const [mensajeNL, setMensajeNL] = useState("");
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -19,9 +21,52 @@ const Footer = () => {
         })
         .catch(() => {});
     } else {
-      // fallback simple: copia link
       navigator.clipboard.writeText(url).catch(() => {});
       alert("Enlace copiado al portapapeles ✅");
+    }
+  };
+
+  const validarEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleNewsletter = async () => {
+    setMensajeNL("");
+
+    if (!emailNL || !validarEmail(emailNL)) {
+      setMensajeNL("Ingresá un email válido 📧");
+      return;
+    }
+
+    try {
+      setLoadingNL(true);
+
+      const res = await fetch(
+        "https://n8n.triptest.com.ar/webhook/suscripcionNL",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: emailNL,
+            // Si más adelante agregamos nombre, se lo mandamos también
+            // nombre: nombreNL,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Error en la suscripción");
+      }
+
+      setMensajeNL("¡Gracias por suscribirte! Revisá tu mail 💌");
+      setEmailNL("");
+    } catch (error) {
+      console.error("Error al suscribir al newsletter:", error);
+      setMensajeNL("Hubo un error al suscribirte, probá de nuevo más tarde.");
+    } finally {
+      setLoadingNL(false);
     }
   };
 
@@ -41,7 +86,6 @@ const Footer = () => {
 
           {/* Redes Sociales */}
           <div className="flex gap-4 mt-2">
-            {/* Facebook */}
             <a
               href="https://www.facebook.com/ivanito10?locale=es_LA"
               target="_blank"
@@ -50,8 +94,6 @@ const Footer = () => {
             >
               <Facebook size={22} />
             </a>
-
-            {/* Instagram */}
             <a
               href="https://www.instagram.com/bebidaseldanes/"
               target="_blank"
@@ -60,8 +102,6 @@ const Footer = () => {
             >
               <Instagram size={22} />
             </a>
-
-            {/* Compartir */}
             <button
               type="button"
               onClick={handleShare}
@@ -176,19 +216,27 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Tu email..."
-              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404]"
+              value={emailNL}
+              onChange={(e) => setEmailNL(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404] bg-white text-[#04090C]"
             />
             <button
-              className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md"
+              className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-60"
               type="button"
-              // 👉 Más adelante acá llamamos a tu webhook de n8n
-              onClick={() =>
-                alert("Pronto conectamos esto con tu newsletter en n8n 💌")
-              }
+              onClick={handleNewsletter}
+              disabled={loadingNL}
             >
-              <Mail size={18} />
+              {loadingNL ? (
+                <span className="text-xs">Enviando...</span>
+              ) : (
+                <Mail size={18} />
+              )}
             </button>
           </div>
+
+          {mensajeNL && (
+            <p className="mt-2 text-xs text-[#04090C]">{mensajeNL}</p>
+          )}
         </div>
       </div>
 
