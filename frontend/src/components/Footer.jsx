@@ -4,13 +4,9 @@ import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  // 🔹 Estado para el newsletter
   const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [newsletterEstado, setNewsletterEstado] = useState({
-    tipo: null, // "ok" | "error"
-    mensaje: "",
-  });
   const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterMensaje, setNewsletterMensaje] = useState("");
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -30,19 +26,15 @@ const Footer = () => {
     }
   };
 
-  const handleNewsletterSubmit = async () => {
-    // 🔹 Validación simple de email
+  const handleNewsletter = async () => {
     if (!newsletterEmail || !newsletterEmail.includes("@")) {
-      setNewsletterEstado({
-        tipo: "error",
-        mensaje: "Ingresá un email válido 😊",
-      });
+      setNewsletterMensaje("Ingresá un email válido 🙏");
       return;
     }
 
     try {
       setNewsletterLoading(true);
-      setNewsletterEstado({ tipo: null, mensaje: "" });
+      setNewsletterMensaje("");
 
       const res = await fetch(
         "https://n8n.triptest.com.ar/webhook/suscripcionNL",
@@ -53,27 +45,22 @@ const Footer = () => {
           },
           body: JSON.stringify({
             email: newsletterEmail,
-            // si después sumás nombre en el form, podés enviar: nombre: ...
+            // En el futuro si agregamos nombre: nombre: newsletterNombre
           }),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Error al llamar al webhook");
+        throw new Error("Error en el servidor");
       }
 
-      setNewsletterEstado({
-        tipo: "ok",
-        mensaje: "¡Listo! Te suscribimos al newsletter 🍷",
-      });
+      setNewsletterMensaje("¡Listo! Te suscribimos al newsletter ✅");
       setNewsletterEmail("");
     } catch (error) {
-      console.error("Error al suscribir newsletter:", error);
-      setNewsletterEstado({
-        tipo: "error",
-        mensaje:
-          "Hubo un problema al suscribirte. Probá de nuevo en unos minutos 🙏",
-      });
+      console.error("Error al suscribirse:", error);
+      setNewsletterMensaje(
+        "Hubo un problema al suscribirte. Probá de nuevo en unos minutos 🙇‍♀️"
+      );
     } finally {
       setNewsletterLoading(false);
     }
@@ -232,32 +219,24 @@ const Footer = () => {
               placeholder="Tu email..."
               value={newsletterEmail}
               onChange={(e) => setNewsletterEmail(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404]"
+              className="w-full px-3 py-2 rounded-lg border border-[#590707] focus:outline-none focus:border-[#A30404] bg-white text-[#04090C]"
             />
             <button
-              className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md disabled:opacity-60"
+              className="bg-[#590707] hover:bg-[#A30404] transition text-white px-4 py-2 rounded-lg shadow-md disabled:bg-[#736D66]"
               type="button"
-              onClick={handleNewsletterSubmit}
+              onClick={handleNewsletter}
               disabled={newsletterLoading}
             >
               {newsletterLoading ? (
-                <span className="text-xs">Enviando...</span>
+                <span className="text-xs px-2">...</span>
               ) : (
                 <Mail size={18} />
               )}
             </button>
           </div>
 
-          {newsletterEstado.mensaje && (
-            <p
-              className={`mt-2 text-xs ${
-                newsletterEstado.tipo === "ok"
-                  ? "text-green-700"
-                  : "text-red-700"
-              }`}
-            >
-              {newsletterEstado.mensaje}
-            </p>
+          {newsletterMensaje && (
+            <p className="mt-2 text-xs text-[#04090C]">{newsletterMensaje}</p>
           )}
         </div>
       </div>
