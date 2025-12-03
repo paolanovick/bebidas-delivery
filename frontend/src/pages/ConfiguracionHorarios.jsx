@@ -143,13 +143,13 @@ const ConfiguracionHorarios = () => {
               type="text"
               inputMode="numeric"
               pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
-              placeholder="09:00"
-              title="Usá el formato HH:MM (por ej. 09:00)"
+              placeholder="08:00"
+              title="Usá el formato HH:MM (por ej. 08:00)"
               value={config.horaInicio}
               onChange={(e) =>
                 setConfig({ ...config, horaInicio: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
             />
           </div>
 
@@ -168,7 +168,7 @@ const ConfiguracionHorarios = () => {
               onChange={(e) =>
                 setConfig({ ...config, horaFin: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
             />
           </div>
         </div>
