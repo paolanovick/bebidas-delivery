@@ -138,13 +138,20 @@ const ConfiguracionHorarios = () => {
             <label className="block text-[#04090C] font-semibold mb-2">
               Hora de inicio de entregas:
             </label>
+            {/* Hora de inicio */}
             <input
               type="time"
               value={config.horaInicio}
               onChange={(e) =>
                 setConfig({ ...config, horaInicio: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] [color-scheme:light] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none bg-white"
+              style={{
+                color: "#04090C",
+                WebkitTextFillColor: "#04090C", // fuerza color en navegadores WebKit
+                backgroundColor: "#FFFFFF",
+                colorScheme: "light",
+              }}
               required
             />
           </div>
@@ -153,13 +160,20 @@ const ConfiguracionHorarios = () => {
             <label className="block text-[#04090C] font-semibold mb-2">
               Hora de fin de entregas:
             </label>
+            {/* Hora de fin */}
             <input
               type="time"
               value={config.horaFin}
               onChange={(e) =>
                 setConfig({ ...config, horaFin: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] [color-scheme:light] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none bg-white"
+              style={{
+                color: "#04090C",
+                WebkitTextFillColor: "#04090C",
+                backgroundColor: "#FFFFFF",
+                colorScheme: "light",
+              }}
               required
             />
           </div>
