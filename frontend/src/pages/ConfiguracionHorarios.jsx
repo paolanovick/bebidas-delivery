@@ -140,19 +140,16 @@ const ConfiguracionHorarios = () => {
             </label>
             {/* Hora de inicio */}
             <input
-              type="time"
+              type="text"
+              inputMode="numeric"
+              pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
+              placeholder="09:00"
+              title="Usá el formato HH:MM (por ej. 09:00)"
               value={config.horaInicio}
               onChange={(e) =>
                 setConfig({ ...config, horaInicio: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none bg-white"
-              style={{
-                color: "#04090C",
-                WebkitTextFillColor: "#04090C", // fuerza color en navegadores WebKit
-                backgroundColor: "#FFFFFF",
-                colorScheme: "light",
-              }}
-              required
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
             />
           </div>
 
@@ -162,19 +159,16 @@ const ConfiguracionHorarios = () => {
             </label>
             {/* Hora de fin */}
             <input
-              type="time"
+              type="text"
+              inputMode="numeric"
+              pattern="^([01]\\d|2[0-3]):[0-5]\\d$"
+              placeholder="20:00"
+              title="Usá el formato HH:MM (por ej. 20:00)"
               value={config.horaFin}
               onChange={(e) =>
                 setConfig({ ...config, horaFin: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none bg-white"
-              style={{
-                color: "#04090C",
-                WebkitTextFillColor: "#04090C",
-                backgroundColor: "#FFFFFF",
-                colorScheme: "light",
-              }}
-              required
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
             />
           </div>
         </div>
