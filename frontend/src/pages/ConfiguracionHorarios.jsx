@@ -144,7 +144,7 @@ const ConfiguracionHorarios = () => {
               onChange={(e) =>
                 setConfig({ ...config, horaInicio: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] [color-scheme:light] focus:ring-2 focus:ring-[#590707] focus:outline-none"
               required
             />
           </div>
@@ -159,7 +159,7 @@ const ConfiguracionHorarios = () => {
               onChange={(e) =>
                 setConfig({ ...config, horaFin: e.target.value })
               }
-              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              className="w-full px-3 py-2 border border-[#CDC7BD] rounded-lg bg-white text-[#04090C] [color-scheme:light] focus:ring-2 focus:ring-[#590707] focus:outline-none"
               required
             />
           </div>
