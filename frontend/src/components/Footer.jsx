@@ -1,4 +1,3 @@
-// src/components/Footer.jsx
 import React, { useState } from "react";
 import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -27,7 +26,7 @@ const Footer = () => {
     }
   };
 
-  // 👉 ACA se llama al webhook de n8n (NO hay más alert de "Pronto conectamos...")
+  // 👉 Acá se llama al webhook de n8n
   const handleNewsletter = async () => {
     if (!newsletterEmail || !newsletterEmail.includes("@")) {
       setNewsletterMensaje("Ingresá un email válido 🙏");
