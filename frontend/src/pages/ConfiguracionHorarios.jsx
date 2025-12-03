@@ -10,9 +10,9 @@ const ConfiguracionHorarios = () => {
     diasDisponibles: [],
     horaInicio: "09:00",
     horaFin: "20:00",
-    duracionSlot: 60, // 👈 sigue existiendo pero no lo mostramos
-    diasAnticipacion: 0, // idem
-    pedidosSimultaneosPorSlot: 5, // idem
+    duracionSlot: 60,
+    diasAnticipacion: 0,
+    pedidosSimultaneosPorSlot: 5,
     activo: true,
   });
   const [loading, setLoading] = useState(false);
@@ -36,8 +36,6 @@ const ConfiguracionHorarios = () => {
     try {
       const data = await obtenerConfiguracionHorarios();
 
-      // 🔹 Mezclamos lo que viene de la API con los defaults,
-      // por si la primera vez viene {} desde el backend
       setConfig((prev) => ({
         ...prev,
         ...data,
@@ -132,13 +130,13 @@ const ConfiguracionHorarios = () => {
           </div>
         </div>
 
-        {/* Rango de horario (solo info) */}
+        {/* Rango de horario (inputs de texto, no time) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Hora inicio */}
           <div>
             <label className="block text-[#04090C] font-semibold mb-2">
               Hora de inicio de entregas:
             </label>
-            {/* Hora de inicio */}
             <input
               type="text"
               inputMode="numeric"
@@ -150,14 +148,15 @@ const ConfiguracionHorarios = () => {
                 setConfig({ ...config, horaInicio: e.target.value })
               }
               className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              required
             />
           </div>
 
+          {/* Hora fin */}
           <div>
             <label className="block text-[#04090C] font-semibold mb-2">
               Hora de fin de entregas:
             </label>
-            {/* Hora de fin */}
             <input
               type="text"
               inputMode="numeric"
@@ -169,6 +168,7 @@ const ConfiguracionHorarios = () => {
                 setConfig({ ...config, horaFin: e.target.value })
               }
               className="w-full px-3 py-2 border border-[#590707] rounded-lg bg-white text-[#04090C] focus:ring-2 focus:ring-[#590707] focus:outline-none"
+              required
             />
           </div>
         </div>
@@ -183,7 +183,7 @@ const ConfiguracionHorarios = () => {
         </button>
       </form>
 
-      {/* Vista previa simple */}
+      {/* Vista previa */}
       <div className="mt-6 p-4 bg-[#CDC7BD] rounded-lg">
         <h3 className="font-semibold text-[#04090C] mb-2">📋 Vista previa:</h3>
         <ul className="text-sm text-[#04090C] space-y-1">
