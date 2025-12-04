@@ -33,6 +33,8 @@ import {
 import AgeGateModal from "./components/AgeGateModal";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
+import PublicidadModal from "./components/PublicidadModal";
+
 
 function AppContent() {
   const { usuario, loading } = useAuth();
@@ -258,11 +260,15 @@ export default function App() {
     <Router>
       <BebidasProvider>
         <CarritoProvider>
-          {/* 🔹 El modal vive acá, por encima de todo lo demás */}
+          {/* MODALES GLOBALES */}
           <AgeGateModal />
+          <PublicidadModal />
+
+          {/* CONTENIDO GENERAL */}
           <AppContent />
         </CarritoProvider>
       </BebidasProvider>
     </Router>
   );
 }
+

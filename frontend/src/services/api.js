@@ -182,3 +182,23 @@ export async function obtenerSlotsDisponibles(fecha) {
   return res.json();
 }
 */
+/* ============================
+   PUBLICIDAD
+============================ */
+
+export const getPublicidad = async () => {
+  const res = await fetch("/api/publicidad");
+  return res.json();
+};
+
+export const actualizarPublicidad = async (data) => {
+  const res = await fetch("/api/publicidad", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+};
