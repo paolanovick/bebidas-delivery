@@ -128,10 +128,19 @@ const BebidasListCategorias = ({
           </p>
         </div>
 
+        {/* 👉 BOTÓN PUBLICIDAD — NUEVO */}
+        <button
+          onClick={() => navigate("/admin?seccion=publicidad")}
+          className="px-4 py-2 bg-[#e9e4dd] text-[#04090C] rounded-lg shadow hover:bg-[#d6d0c8] flex items-center gap-2 text-sm"
+        >
+          🖼️ Publicidad
+        </button>
+
         <div className="flex flex-wrap gap-2 text-xs items-center">
           <div className="bg-white text-[#04090C] shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
             Total: <span className="font-bold text-[#590707]">{total}</span>
           </div>
+
           <div className="bg-white text-[#04090C] shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
             Sin stock:{" "}
             <span className="font-bold text-[#A30404]">{sinStockCount}</span>
