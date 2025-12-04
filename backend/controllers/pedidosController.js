@@ -155,3 +155,38 @@ export const eliminarHistorialUsuario = async (req, res) => {
     res.status(500).json({ mensaje: "Error al eliminar historial" });
   }
 };
+// Convertir automáticamente URLs de Google Drive
+const convertirDriveURL = (url) => {
+  if (!url.includes("drive.google.com")) return url;
+
+  const match = url.match(/\/d\/(.+?)\//);
+  if (!match || !match[1]) return url;
+
+  const fileId = match[1];
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};
+export const actualizarPublicidad = async (req, res) => {
+  try {
+    let { imagenUrl, activo } = req.body;
+
+    // Convertir si es link de Google Drive
+    imagenUrl = convertirDriveURL(imagenUrl);
+
+    let publicidad = await Publicidad.findOne();
+
+    if (!publicidad) {
+      publicidad = new Publicidad({ imagenUrl, activo });
+    } else {
+      publicidad.imagenUrl = imagenUrl;
+      publicidad.activo = activo;
+    }
+
+    await publicidad.save();
+
+    res.json({ mensaje: "Publicidad actualizada", publicidad });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar publicidad" });
+  }
+};
+

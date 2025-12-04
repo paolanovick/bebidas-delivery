@@ -11,6 +11,8 @@ import {
   editarBebida,
   eliminarBebida,
 } from "../services/api";
+import PublicidadAdmin from "../admin/PublicidadAdmin";
+
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
@@ -113,6 +115,16 @@ const Admin = () => {
           >
             ⏰ Horarios
           </button>
+          <button
+            onClick={() => cambiarSeccion("publicidad")}
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
+              seccion === "publicidad"
+                ? "bg-[#A30404] shadow-lg"
+                : "hover:bg-[#A30404] hover:shadow-md"
+            }`}
+          >
+            🖼️ Publicidad
+          </button>
         </nav>
       </aside>
 
@@ -165,6 +177,16 @@ const Admin = () => {
             }`}
           >
             ⏰ Horarios
+          </button>
+          <button
+            onClick={() => cambiarSeccion("publicidad")}
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
+              seccion === "publicidad"
+                ? "bg-[#A30404] shadow-lg"
+                : "hover:bg-[#A30404] hover:shadow-md"
+            }`}
+          >
+            🖼️ Publicidad
           </button>
         </nav>
       </div>
@@ -241,6 +263,7 @@ const Admin = () => {
 
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
+        {seccion === "publicidad" && <PublicidadAdmin />}
       </main>
     </div>
   );
