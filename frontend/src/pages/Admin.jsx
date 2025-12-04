@@ -208,12 +208,28 @@ const Admin = () => {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-[#04090C]">
+                <h1 className="text-3xl font-bold text-[#f3f5f7]">
                   Gestión de Bebidas
                 </h1>
                 <p className="text-sm text-[#736D66]">
                   Carga, edita y organiza tus productos de forma rápida.
                 </p>
+              </div>
+              {/* Botones de acceso rápido */}
+              <div className="flex gap-3">
+                {/* <button
+                  onClick={() => cambiarSeccion("horarios")}
+                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md text-sm hover:bg-[#A30404] transition"
+                >
+                  ⏰ Horarios
+                </button> */}
+
+                <button
+                  onClick={() => cambiarSeccion("publicidad")}
+                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md text-sm hover:bg-[#A30404] transition"
+                >
+                  🖼️ Publicidad
+                </button>
               </div>
 
               {/* Pequeño resumen rápido */}

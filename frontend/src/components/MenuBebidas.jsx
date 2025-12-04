@@ -283,7 +283,7 @@ export default function MenuBebidas() {
                 estadoDelivery.estado === "durante"
                   ? "bg-[#590707] text-white"
                   : estadoDelivery.estado === "antes"
-                  ? "bg-amber-500 text-[#04090C]"
+                  ? "bg-[#590707] text-white"
                   : estadoDelivery.estado === "despues" ||
                     estadoDelivery.estado === "no_hoy"
                   ? "bg-[#736D66] text-white"
