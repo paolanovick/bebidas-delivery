@@ -3,14 +3,16 @@ import {
   obtenerPublicidad,
   actualizarPublicidad,
 } from "../controllers/publicidadController.js";
-import { authMiddleware, adminMiddleware } from "../middleware/auth.js";
+
+import { verificarToken } from "../middleware/auth.js";
+import esAdmin from "../middleware/auth.js"; // tu middleware real
 
 const router = express.Router();
 
-// Público → carga la publicidad para mostrar en el sitio
+// GET público → cualquier visitante puede ver la publicidad
 router.get("/", obtenerPublicidad);
 
-// Solo admin puede actualizar
-router.put("/", authMiddleware, adminMiddleware, actualizarPublicidad);
+// PUT privado → solo admin con token
+router.put("/", verificarToken, esAdmin, actualizarPublicidad);
 
 export default router;
