@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { obtenerPublicidad, actualizarPublicidad } from "../services/api";
+import { getPublicidad, actualizarPublicidad } from "../services/api";
+
 
 export default function PublicidadAdmin() {
   const [imagenUrl, setImagenUrl] = useState("");
@@ -9,7 +10,8 @@ export default function PublicidadAdmin() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const data = await obtenerPublicidad();
+        const data = await getPublicidad();
+
         if (data) {
           setImagenUrl(data.imagenUrl || "");
           setActivo(data.activo ?? false);
