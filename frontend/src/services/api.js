@@ -175,15 +175,25 @@ export const actualizarConfiguracionHorarios = async (config) => {
   });
   return res.json();
 };
-/* ============================
-   PUBLICIDAD
-============================ */
-
+// ============================
+//   PUBLICIDAD (GET público)
+// ============================
 export const getPublicidad = async () => {
-  const res = await fetch("/api/publicidad");
-  if (!res.ok) throw new Error("Error al obtener publicidad");
-  return res.json();
+  try {
+    const res = await fetch("/api/publicidad");
+
+    if (!res.ok) {
+      console.warn("⚠ Error al obtener publicidad:", res.status);
+      return { imagenUrl: null, activo: false };
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("⚠ Error fetch publicidad:", error);
+    return { imagenUrl: null, activo: false };
+  }
 };
+
 
 export const actualizarPublicidad = async (data) => {
   const token = getToken();

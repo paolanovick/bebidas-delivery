@@ -183,7 +183,7 @@ const ConfiguracionHorarios = () => {
   return (
     <div className="bg-white shadow-xl rounded-xl p-6 max-w-4xl">
       <h2 className="text-2xl font-bold mb-6 text-[#04090C] border-b border-[#CDC7BD] pb-3">
-        ⏰ Configuración de Horarios de Entrega
+        Configuración de Horarios de Entrega
       </h2>
 
       {mensaje && (
