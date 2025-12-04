@@ -133,7 +133,7 @@ const BebidasListCategorias = ({
           onClick={() => navigate("/admin?seccion=publicidad")}
           className="px-4 py-2 bg-[#e9e4dd] text-[#04090C] rounded-lg shadow hover:bg-[#d6d0c8] flex items-center gap-2 text-sm"
         >
-          🖼️ Publicidad
+           Publicidad
         </button> */}
 
         <div className="flex flex-wrap gap-2 text-xs items-center">
@@ -147,7 +147,6 @@ const BebidasListCategorias = ({
           </div>
 
           <div className="flex items-center gap-1">
-           
             <select
               value={orden}
               onChange={(e) => setOrden(e.target.value)}
@@ -165,20 +164,25 @@ const BebidasListCategorias = ({
       {categorias.length > 0 && (
         <div className="mb-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {categorias.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategoriaActiva(cat)}
-                className={`px-4 py-2 rounded-full border text-xs whitespace-nowrap transition ${
-                  categoriaActiva === cat
-                    ? "bg-[#590707] text-white border-[#590707]"
-                    : "bg-white text-[#04090C] border-[#CDC7BD] hover:bg-[#F2ECE4]"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            {categorias.map((cat) => {
+              const activa = categoriaActiva === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategoriaActiva(cat)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200
+              ${
+                activa
+                  ? "bg-[#590707] text-white shadow-lg scale-105"
+                  : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95] hover:bg-[#bfb7ad] hover:shadow"
+              }
+            `}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

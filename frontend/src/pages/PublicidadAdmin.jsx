@@ -38,7 +38,7 @@ export default function PublicidadAdmin() {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-xl max-w-xl">
-      <h2 className="text-2xl font-bold mb-4 text-[#04090C]">🖼️ Publicidad</h2>
+      <h2 className="text-2xl font-bold mb-4 text-[#04090C]"> Publicidad</h2>
 
       {mensaje && (
         <div className="p-3 mb-4 rounded bg-green-200 text-green-800">

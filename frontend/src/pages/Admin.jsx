@@ -80,7 +80,7 @@ const Admin = () => {
               seccion === "pedidos" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-            📋 Pedidos
+             Pedidos
           </button>
 
           <button
@@ -88,8 +88,7 @@ const Admin = () => {
             className={`text-left px 4 py-3 rounded-lg transition-all ${
               seccion === "bebidas" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
-          >
-            🥤 Bebidas
+          > Bebidas
           </button>
 
           <button
@@ -97,8 +96,7 @@ const Admin = () => {
             className={`text-left px 4 py-3 rounded-lg transition-all ${
               seccion === "usuarios" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
-          >
-            👥 Usuarios
+          > Usuarios
           </button>
 
           <button
@@ -107,7 +105,7 @@ const Admin = () => {
               seccion === "horarios" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-            ⏰ Horarios
+            Horarios
           </button>
 
           <button
@@ -116,7 +114,7 @@ const Admin = () => {
               seccion === "publicidad" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-            🖼️ Publicidad
+            Publicidad
           </button>
         </nav>
       </aside>
@@ -136,31 +134,31 @@ const Admin = () => {
             onClick={() => cambiarSeccion("pedidos")}
             className="admin-btn"
           >
-            📋 Pedidos
+             Pedidos
           </button>
           <button
             onClick={() => cambiarSeccion("bebidas")}
             className="admin-btn"
           >
-            🥤 Bebidas
+             Bebidas
           </button>
           <button
             onClick={() => cambiarSeccion("usuarios")}
             className="admin-btn"
           >
-            👥 Usuarios
+             Usuarios
           </button>
           <button
             onClick={() => cambiarSeccion("horarios")}
             className="admin-btn"
           >
-            ⏰ Horarios
+            Horarios
           </button>
           <button
             onClick={() => cambiarSeccion("publicidad")}
             className="admin-btn"
           >
-            🖼️ Publicidad
+            Publicidad
           </button>
         </nav>
       </div>
@@ -201,14 +199,14 @@ const Admin = () => {
                   onClick={() => cambiarSeccion("horarios")}
                   className="bg-[#CDC7BD] text-[#04090C] px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
                 >
-                  ⏰ Horarios de entrega
+                   Horarios de entrega
                 </button>
 
                 <button
                   onClick={() => cambiarSeccion("publicidad")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                  🖼️ Publicidad
+                   Publicidad
                 </button>
               </div>
             </div>
@@ -259,14 +257,14 @@ const Admin = () => {
                   onClick={() => cambiarSeccion("publicidad")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                  🖼️ Publicidad
+                   Publicidad
                 </button>
 
                 <button
                   onClick={() => cambiarSeccion("horarios")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                  ⏰ Horarios de entrega
+                   Horarios de entrega
                 </button>
               </div>
             </div>
