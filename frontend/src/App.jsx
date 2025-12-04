@@ -154,6 +154,7 @@ function AppContent() {
           />
 
           {/* /admin -> SOLO formulario */}
+          {/* /admin -> SOLO formulario de bebidas */}
           <Route
             path="/admin"
             element={
@@ -178,6 +179,13 @@ function AppContent() {
                       >
                         ⏰ Horarios de entrega
                       </Link>
+
+                      <Link
+                        to="/admin/publicidad"
+                        className="bg-[#e9e4dd] hover:bg-[#fff] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border"
+                      >
+                        🖼️ Publicidad
+                      </Link>
                     </div>
                   </div>
 
@@ -193,7 +201,7 @@ function AppContent() {
             }
           />
 
-          {/* Lista moderna por categoría */}
+          {/* Catálogo por categoría */}
           <Route
             path="/admin/bebidas-categorias"
             element={
@@ -218,6 +226,13 @@ function AppContent() {
                       >
                         ⏰ Horarios de entrega
                       </Link>
+
+                      <Link
+                        to="/admin/publicidad"
+                        className="bg-[#e9e4dd] hover:bg-[#fff] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border"
+                      >
+                        🖼️ Publicidad
+                      </Link>
                     </div>
                   </div>
 
@@ -234,11 +249,12 @@ function AppContent() {
             }
           />
 
+          {/* Pantalla independiente de PUBLICIDAD */}
           <Route
-            path="/admin-pedidos"
+            path="/admin/publicidad"
             element={
               usuario && usuario.rol === "admin" ? (
-                <AdminPedidos />
+                <PublicidadAdmin />
               ) : (
                 <Navigate to="/login-admin" />
               )
