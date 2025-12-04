@@ -5,14 +5,14 @@ import {
 } from "../controllers/publicidadController.js";
 
 import { verificarToken } from "../middleware/auth.js";
-import esAdmin from "../middleware/esAdmin.js"; // ← CORRECTO
+import esAdmin from "../middleware/esAdmin.js";
 
 const router = express.Router();
 
-// GET público
+// GET → público
 router.get("/", obtenerPublicidad);
 
-// PUT solo admin
+// PUT → privado
 router.put("/", verificarToken, esAdmin, actualizarPublicidad);
 
 export default router;

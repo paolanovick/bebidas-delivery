@@ -274,6 +274,7 @@ function AppContent() {
           />
 
           <Route path="/pedido" element={<Pedido />} />
+          
         </Routes>
       </div>
 
