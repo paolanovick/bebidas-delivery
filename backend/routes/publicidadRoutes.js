@@ -5,14 +5,14 @@ import {
 } from "../controllers/publicidadController.js";
 
 import { verificarToken } from "../middleware/auth.js";
-import esAdmin from "../middleware/auth.js"; // tu middleware real
+import esAdmin from "../middleware/esAdmin.js"; // ← CORRECTO
 
 const router = express.Router();
 
-// GET público → cualquier visitante puede ver la publicidad
+// GET público
 router.get("/", obtenerPublicidad);
 
-// PUT privado → solo admin con token
+// PUT solo admin
 router.put("/", verificarToken, esAdmin, actualizarPublicidad);
 
 export default router;

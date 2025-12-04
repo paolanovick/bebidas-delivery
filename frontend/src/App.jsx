@@ -262,6 +262,16 @@ function AppContent() {
               )
             }
           />
+          <Route
+            path="/admin-pedidos"
+            element={
+              usuario && usuario.rol === "admin" ? (
+                <AdminPedidos />
+              ) : (
+                <Navigate to="/login-admin" />
+              )
+            }
+          />
 
           <Route path="/pedido" element={<Pedido />} />
         </Routes>
