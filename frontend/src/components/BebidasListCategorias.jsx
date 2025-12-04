@@ -118,7 +118,7 @@ const BebidasListCategorias = ({
       {/* Encabezado + stats */}
       <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-[#04090C]">
+          <h3 className="text-2xl font-bold text-[#f1f2f3]">
             Bebidas por categoría
           </h3>
           <p className="text-xs text-[#736D66]">
@@ -128,13 +128,13 @@ const BebidasListCategorias = ({
           </p>
         </div>
 
-        {/* 👉 BOTÓN PUBLICIDAD — NUEVO */}
+        {/* 👉 BOTÓN PUBLICIDAD — NUEVO
         <button
           onClick={() => navigate("/admin?seccion=publicidad")}
           className="px-4 py-2 bg-[#e9e4dd] text-[#04090C] rounded-lg shadow hover:bg-[#d6d0c8] flex items-center gap-2 text-sm"
         >
           🖼️ Publicidad
-        </button>
+        </button> */}
 
         <div className="flex flex-wrap gap-2 text-xs items-center">
           <div className="bg-white text-[#04090C] shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
