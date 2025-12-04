@@ -264,7 +264,7 @@ const Admin = () => {
 
                 <button
                   onClick={() => cambiarSeccion("horarios")}
-                  className="bg-[#CDC7BD] text-[#04090C] px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
+                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
                   ⏰ Horarios de entrega
                 </button>

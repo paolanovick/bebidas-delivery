@@ -224,14 +224,14 @@ function AppContent() {
 
                       <Link
                         to="/admin/horarios"
-                        className="bg-[#CDC7BD] hover:bg-[#F0E7D9] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
                       >
                         ⏰ Horarios de entrega
                       </Link>
 
                       <Link
                         to="/admin/publicidad"
-                        className="bg-[#e9e4dd] hover:bg-[#fff] text-[#04090C] text-sm px-4 py-2 rounded-lg shadow-md border"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
                       >
                         🖼️ Publicidad
                       </Link>

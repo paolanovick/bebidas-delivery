@@ -117,7 +117,7 @@ const BebidasListCategorias = ({
     <div className="mt-6">
       {/* Encabezado + stats */}
       <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
-        <div>
+        {/* <div>
           <h3 className="text-2xl font-bold text-[#f1f2f3]">
             Bebidas por categoría
           </h3>
@@ -126,7 +126,7 @@ const BebidasListCategorias = ({
             <span className="font-semibold">{categoriaActiva || "—"}</span> de
             un total de {total}.
           </p>
-        </div>
+        </div> */}
 
         {/* 👉 BOTÓN PUBLICIDAD — NUEVO
         <button
@@ -147,7 +147,7 @@ const BebidasListCategorias = ({
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[#736D66]">Ordenar por:</span>
+           
             <select
               value={orden}
               onChange={(e) => setOrden(e.target.value)}

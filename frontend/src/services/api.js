@@ -175,30 +175,38 @@ export const actualizarConfiguracionHorarios = async (config) => {
   });
   return res.json();
 };
-
-/*
-export async function obtenerSlotsDisponibles(fecha) {
-  const res = await fetch(`${API_URL_HORARIOS}/slots-disponibles?fecha=${fecha}`);
-  return res.json();
-}
-*/
 /* ============================
    PUBLICIDAD
 ============================ */
 
 export const getPublicidad = async () => {
   const res = await fetch("/api/publicidad");
+  if (!res.ok) throw new Error("Error al obtener publicidad");
   return res.json();
 };
 
 export const actualizarPublicidad = async (data) => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No hay token de administrador");
+  }
+
   const res = await fetch("/api/publicidad", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${token}`, // 👈 AHORA SEGURÍSIMO
     },
     body: JSON.stringify(data),
   });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new Error("No autorizado. Inicia sesión nuevamente.");
+    }
+    throw new Error("Error al actualizar publicidad");
+  }
+
   return res.json();
 };
