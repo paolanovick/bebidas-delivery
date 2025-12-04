@@ -11,12 +11,13 @@ export default function PublicidadModal() {
         const data = await getPublicidad();
         // data = { imagen: "...", activo: true }
 
-        if (data.activo && data.imagen) {
-          setTimeout(() => {
-            setPublicidad({ imagenUrl: data.imagen });
-            setVisible(true);
-          }, 3000);
-        }
+       if (data.activo && data.imagenUrl) {
+         setTimeout(() => {
+           setPublicidad({ imagenUrl: data.imagenUrl });
+           setVisible(true);
+         }, 3000);
+       }
+
       } catch (err) {
         console.error("Error al cargar publicidad:", err);
       }
