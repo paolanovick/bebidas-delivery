@@ -9,10 +9,10 @@ import esAdmin from "../middleware/esAdmin.js";
 
 const router = express.Router();
 
-// GET → público
+// GET público
 router.get("/", obtenerPublicidad);
 
-// PUT → privado
+// PUT solo admin
 router.put("/", verificarToken, esAdmin, actualizarPublicidad);
 
 export default router;
