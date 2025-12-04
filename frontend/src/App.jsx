@@ -34,6 +34,8 @@ import AgeGateModal from "./components/AgeGateModal";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
 import PublicidadModal from "./components/PublicidadModal";
+import PublicidadAdmin from "./pages/PublicidadAdmin";
+
 
 
 function AppContent() {
