@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { getPublicidad, actualizarPublicidad } from "../services/api";
 
-
 export default function PublicidadAdmin() {
   const [imagenUrl, setImagenUrl] = useState("");
   const [activo, setActivo] = useState(false);
   const [mensaje, setMensaje] = useState("");
+
+  // ⭐ Conversor automático de Google Drive
+  const convertirDrive = (url) => {
+    if (!url.includes("drive.google.com")) return url;
+
+    try {
+      const match = url.match(/\/d\/(.*?)\//);
+      if (!match || !match[1]) return url;
+
+      const id = match[1];
+      return `https://drive.google.com/uc?export=view&id=${id}`;
+    } catch (e) {
+      console.error("Error convirtiendo URL de Drive:", e);
+      return url;
+    }
+  };
 
   useEffect(() => {
     const cargar = async () => {
@@ -26,8 +41,11 @@ export default function PublicidadAdmin() {
   const handleGuardar = async (e) => {
     e.preventDefault();
 
+    const urlFinal = convertirDrive(imagenUrl);
+
     try {
-      await actualizarPublicidad({ imagenUrl, activo });
+      await actualizarPublicidad({ imagenUrl: urlFinal, activo });
+      setImagenUrl(urlFinal); // actualizar vista previa
       setMensaje("Publicidad actualizada correctamente");
       setTimeout(() => setMensaje(""), 3000);
     } catch (err) {
@@ -81,7 +99,7 @@ export default function PublicidadAdmin() {
         <div className="mt-6">
           <p className="font-semibold text-[#04090C] mb-2">Vista previa:</p>
           <img
-            src={imagenUrl}
+            src={convertirDrive(imagenUrl)}
             alt="Publicidad"
             className="rounded-xl shadow border"
           />
