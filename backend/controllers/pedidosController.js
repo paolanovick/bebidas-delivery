@@ -1,8 +1,6 @@
 import Pedido from "../models/Pedido.js";
 import Bebida from "../models/Bebida.js";
-
-// 🟢 Costo fijo de envío a domicilio
-const COSTO_ENVIO = 1000; // Cambialo cuando quieras
+import Configuracion from "../models/Configuracion.js";
 
 // 🟢 Crear pedido (sin login)
 export const crearPedido = async (req, res) => {
@@ -54,11 +52,22 @@ export const crearPedido = async (req, res) => {
       });
     }
 
-    // 🟢 Determinar costo de envío SOLO si hay dirección (envío a domicilio)
+    // 🟢 Cargar configuración actual de envío desde MongoDB
+    const config = (await Configuracion.findOne()) || {
+      costoEnvio: 0,
+      envioHabilitado: false,
+    };
+
+    // 🟢 Determinar costo de envío dinámico
     let costoEnvio = 0;
 
-    if (direccionEntrega && direccionEntrega.trim() !== "") {
-      costoEnvio = COSTO_ENVIO;
+    // Tiene dirección (es envío) + envío habilitado → se cobra
+    if (
+      direccionEntrega &&
+      direccionEntrega.trim() !== "" &&
+      config.envioHabilitado
+    ) {
+      costoEnvio = config.costoEnvio ?? 0;
     }
 
     const totalFinal = total + costoEnvio;
@@ -171,33 +180,5 @@ export const eliminarHistorialUsuario = async (req, res) => {
   } catch (error) {
     console.error("Error al eliminar historial:", error);
     res.status(500).json({ mensaje: "Error al eliminar historial" });
-  }
-};
-
-// 🔧 Publicidad (sin cambios)
-const convertirDriveURL = (url) => {
-  if (!url.includes("drive.google.com")) return url;
-  const match = url.match(/\/d\/(.+?)\//);
-  if (!match || !match[1]) return url;
-  return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-};
-
-export const actualizarPublicidad = async (req, res) => {
-  try {
-    let { imagenUrl, activo } = req.body;
-    imagenUrl = convertirDriveURL(imagenUrl);
-    let publicidad = await Publicidad.findOne();
-
-    if (!publicidad) publicidad = new Publicidad({ imagenUrl, activo });
-    else {
-      publicidad.imagenUrl = imagenUrl;
-      publicidad.activo = activo;
-    }
-
-    await publicidad.save();
-    res.json({ mensaje: "Publicidad actualizada", publicidad });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al actualizar publicidad" });
   }
 };
