@@ -1,6 +1,9 @@
 import Pedido from "../models/Pedido.js";
 import Bebida from "../models/Bebida.js";
 
+// 🟢 Costo fijo de envío a domicilio
+const COSTO_ENVIO = 1000; // Cambialo cuando quieras
+
 // 🟢 Crear pedido (sin login)
 export const crearPedido = async (req, res) => {
   try {
@@ -17,7 +20,9 @@ export const crearPedido = async (req, res) => {
     const usuarioId = req.usuario?.id || null;
 
     if (!items || items.length === 0)
-      return res.status(400).json({ mensaje: "Debes agregar bebidas al pedido" });
+      return res
+        .status(400)
+        .json({ mensaje: "Debes agregar bebidas al pedido" });
 
     if (!emailCliente)
       return res.status(400).json({ mensaje: "El email es obligatorio" });
@@ -25,6 +30,7 @@ export const crearPedido = async (req, res) => {
     let total = 0;
     const itemsValidados = [];
 
+    // 🟢 Validar items y calcular subtotal
     for (const item of items) {
       const bebida = await Bebida.findById(item.bebida);
       if (!bebida)
@@ -39,6 +45,7 @@ export const crearPedido = async (req, res) => {
       await bebida.save();
 
       total += bebida.precio * item.cantidad;
+
       itemsValidados.push({
         bebida: bebida._id,
         nombre: bebida.nombre,
@@ -47,31 +54,39 @@ export const crearPedido = async (req, res) => {
       });
     }
 
-   const pedidoData = {
-     usuario: usuarioId,
-     emailCliente,
-     items: itemsValidados,
-     total,
-     direccionEntrega,
-     telefono,
-     notas,
-   };
+    // 🟢 Determinar costo de envío SOLO si hay dirección (envío a domicilio)
+    let costoEnvio = 0;
 
-   // Solo seteo estos campos si vienen desde el front (en el futuro, si volvés a usarlos)
-   if (fechaEntrega) {
-     pedidoData.fechaEntrega = new Date(fechaEntrega);
-   }
-   if (horaEntrega) {
-     pedidoData.horaEntrega = horaEntrega;
-   }
+    if (direccionEntrega && direccionEntrega.trim() !== "") {
+      costoEnvio = COSTO_ENVIO;
+    }
 
-   const nuevoPedido = new Pedido(pedidoData);
+    const totalFinal = total + costoEnvio;
 
-   await nuevoPedido.save();
-   await nuevoPedido.populate("items.bebida", "nombre imagen");
+    // 🟢 Crear pedido con envío incluido
+    const pedidoData = {
+      usuario: usuarioId,
+      emailCliente,
+      items: itemsValidados,
+      total: totalFinal,
+      costoEnvio,
+      direccionEntrega,
+      telefono,
+      notas,
+    };
 
+    if (fechaEntrega) pedidoData.fechaEntrega = new Date(fechaEntrega);
+    if (horaEntrega) pedidoData.horaEntrega = horaEntrega;
 
-    res.status(201).json({ mensaje: "Pedido creado exitosamente", pedido: nuevoPedido });
+    const nuevoPedido = new Pedido(pedidoData);
+
+    await nuevoPedido.save();
+    await nuevoPedido.populate("items.bebida", "nombre imagen");
+
+    res.status(201).json({
+      mensaje: "Pedido creado exitosamente",
+      pedido: nuevoPedido,
+    });
   } catch (error) {
     console.error("Error al crear pedido:", error);
     res.status(500).json({ mensaje: "Error al crear pedido" });
@@ -93,7 +108,10 @@ export const obtenerMisPedidos = async (req, res) => {
 // 🟣 Listar todos los pedidos (admin)
 export const listarTodosPedidos = async (req, res) => {
   try {
-    const pedidos = await Pedido.find().populate("items.bebida", "nombre imagen");
+    const pedidos = await Pedido.find().populate(
+      "items.bebida",
+      "nombre imagen"
+    );
     res.json(pedidos);
   } catch (error) {
     console.error("Error al listar pedidos:", error);
@@ -144,7 +162,7 @@ export const eliminarTodosPedidos = async (req, res) => {
   }
 };
 
-// 🧾 Eliminar historial de un usuario específico (admin)
+// 🧾 Eliminar historial de un usuario específico
 export const eliminarHistorialUsuario = async (req, res) => {
   try {
     const { usuarioId } = req.params;
@@ -155,38 +173,31 @@ export const eliminarHistorialUsuario = async (req, res) => {
     res.status(500).json({ mensaje: "Error al eliminar historial" });
   }
 };
-// Convertir automáticamente URLs de Google Drive
+
+// 🔧 Publicidad (sin cambios)
 const convertirDriveURL = (url) => {
   if (!url.includes("drive.google.com")) return url;
-
   const match = url.match(/\/d\/(.+?)\//);
   if (!match || !match[1]) return url;
-
-  const fileId = match[1];
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  return `https://drive.google.com/uc?export=view&id=${match[1]}`;
 };
+
 export const actualizarPublicidad = async (req, res) => {
   try {
     let { imagenUrl, activo } = req.body;
-
-    // Convertir si es link de Google Drive
     imagenUrl = convertirDriveURL(imagenUrl);
-
     let publicidad = await Publicidad.findOne();
 
-    if (!publicidad) {
-      publicidad = new Publicidad({ imagenUrl, activo });
-    } else {
+    if (!publicidad) publicidad = new Publicidad({ imagenUrl, activo });
+    else {
       publicidad.imagenUrl = imagenUrl;
       publicidad.activo = activo;
     }
 
     await publicidad.save();
-
     res.json({ mensaje: "Publicidad actualizada", publicidad });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al actualizar publicidad" });
   }
 };
-

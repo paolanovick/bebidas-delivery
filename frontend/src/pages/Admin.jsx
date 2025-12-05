@@ -12,6 +12,8 @@ import {
   eliminarBebida,
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
+import AdminEnvio from "./AdminEnvio";
+
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
@@ -51,14 +53,15 @@ const Admin = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await eliminarBebidas(id);
-      setBebidas(bebidas.filter((b) => b._id !== id));
-    } catch (error) {
-      console.error("Error al eliminar bebida:", error);
-    }
-  };
+const handleDelete = async (id) => {
+  try {
+    await eliminarBebida(id); // ✔ nombre correcto
+    setBebidas(bebidas.filter((b) => b._id !== id));
+  } catch (error) {
+    console.error("Error al eliminar bebida:", error);
+  }
+};
+
 
   const cambiarSeccion = (nuevaSeccion) => {
     setSeccion(nuevaSeccion);
@@ -80,7 +83,7 @@ const Admin = () => {
               seccion === "pedidos" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-             Pedidos
+            Pedidos
           </button>
 
           <button
@@ -88,7 +91,9 @@ const Admin = () => {
             className={`text-left px 4 py-3 rounded-lg transition-all ${
               seccion === "bebidas" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
-          > Bebidas
+          >
+            {" "}
+            Bebidas
           </button>
 
           <button
@@ -96,7 +101,9 @@ const Admin = () => {
             className={`text-left px 4 py-3 rounded-lg transition-all ${
               seccion === "usuarios" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
-          > Usuarios
+          >
+            {" "}
+            Usuarios
           </button>
 
           <button
@@ -134,19 +141,19 @@ const Admin = () => {
             onClick={() => cambiarSeccion("pedidos")}
             className="admin-btn"
           >
-             Pedidos
+            Pedidos
           </button>
           <button
             onClick={() => cambiarSeccion("bebidas")}
             className="admin-btn"
           >
-             Bebidas
+            Bebidas
           </button>
           <button
             onClick={() => cambiarSeccion("usuarios")}
             className="admin-btn"
           >
-             Usuarios
+            Usuarios
           </button>
           <button
             onClick={() => cambiarSeccion("horarios")}
@@ -199,14 +206,14 @@ const Admin = () => {
                   onClick={() => cambiarSeccion("horarios")}
                   className="bg-[#CDC7BD] text-[#04090C] px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
                 >
-                   Horarios de entrega
+                  Horarios de entrega
                 </button>
 
                 <button
                   onClick={() => cambiarSeccion("publicidad")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                   Publicidad
+                  Publicidad
                 </button>
               </div>
             </div>
@@ -257,14 +264,33 @@ const Admin = () => {
                   onClick={() => cambiarSeccion("publicidad")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                   Publicidad
+                  Publicidad
+                </button>
+                <button
+                  onClick={() => cambiarSeccion("envio")}
+                  className={`text-left px-4 py-3 rounded-lg transition-all ${
+                    seccion === "envio"
+                      ? "bg-[#A30404] text-white"
+                      : "hover:bg-[#A30404] hover:text-white"
+                  }`}
+                >
+                  Envío / Delivery
+                </button>
+
+                <button
+                  onClick={() => cambiarSeccion("envio")}
+                  className={`text-left px 4 py-3 rounded-lg transition-all ${
+                    seccion === "envio" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
+                  }`}
+                >
+                  Envío / Delivery
                 </button>
 
                 <button
                   onClick={() => cambiarSeccion("horarios")}
                   className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
-                   Horarios de entrega
+                  Horarios de entrega
                 </button>
               </div>
             </div>
@@ -286,6 +312,8 @@ const Admin = () => {
 
         {/* ---------------- PUBLICIDAD ---------------- */}
         {seccion === "publicidad" && <PublicidadAdmin />}
+        {/* ---------------- ENVÍO / DELIVERY ---------------- */}
+        {seccion === "envio" && <AdminEnvio />}
       </main>
     </div>
   );

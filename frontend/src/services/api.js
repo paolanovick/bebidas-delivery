@@ -220,3 +220,23 @@ export const actualizarPublicidad = async (data) => {
 
   return res.json();
 };
+
+// ============================
+//  envios
+// ============================
+export const getEnvioConfig = async () => {
+  const res = await fetch("/api/configuracion-envio");
+  return res.json();
+};
+
+export const updateEnvioConfig = async (data) => {
+  const res = await fetch("/api/configuracion-envio", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+};

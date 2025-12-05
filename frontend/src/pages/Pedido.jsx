@@ -28,10 +28,23 @@ export default function Pedido() {
     guardarCarrito(nuevo);
   };
 
-  const total = carrito.reduce(
+  // 🔹 modo de entrega primero (SOLUCIONA EL ERROR)
+  const [modoEntrega, setModoEntrega] = useState("envio");
+
+  // 🍷 Subtotal sin envío
+  const subtotal = carrito.reduce(
     (sum, it) => sum + (Number(it.precio) || 0) * (Number(it.cantidad) || 0),
     0
   );
+
+  // 🚚 Costo fijo de envío
+  const COSTO_ENVIO = 3000;
+
+  // Si el usuario elige TAKE AWAY → envío = 0
+  const costoEnvio = modoEntrega === "envio" ? COSTO_ENVIO : 0;
+
+  // 💰 Total final
+  const total = subtotal + costoEnvio;
 
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -39,10 +52,7 @@ export default function Pedido() {
   const [coordenadas, setCoordenadas] = useState(null);
   const [comentarios, setComentarios] = useState("");
 
-  // 🔹 modo de entrega (envío / take away)
-  const [modoEntrega, setModoEntrega] = useState("envio"); // "envio" | "takeaway"
-
-  // obtener ubicación si es envío
+  // ubicacion GPS
   useEffect(() => {
     if (!coordenadas && "geolocation" in navigator && modoEntrega === "envio") {
       navigator.geolocation.getCurrentPosition(
@@ -90,7 +100,7 @@ export default function Pedido() {
       notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
         comentarios || ""
       }`.trim(),
-      total,
+      total, // AHORA INCLUYE ENVÍO
     };
 
     const ubicacion =
@@ -109,19 +119,34 @@ export default function Pedido() {
 
     const mensaje = `Nuevo Pedido ${
       modoEntrega === "envio" ? "🛵 Envío a domicilio" : "🛍️ Take Away"
-    }\n\n${textoProductos}\n\nTotal: $${total.toLocaleString(
-      "es-AR"
-    )}\n\nModo de entrega: ${
+    }
+
+${textoProductos}
+
+Subtotal: $${subtotal.toLocaleString("es-AR")}
+${
+  modoEntrega === "envio"
+    ? `Envío: $${COSTO_ENVIO.toLocaleString("es-AR")}`
+    : "Envío: $0 (take away)"
+}
+Total final: $${total.toLocaleString("es-AR")}
+
+Modo de entrega: ${
       modoEntrega === "envio"
         ? "Envío a domicilio"
         : "Retira en el local (take away)"
-    }\n${
-      modoEntrega === "envio"
-        ? `Dirección: ${direccion}\nUbicación: ${ubicacion}\n`
-        : ""
-    }Teléfono: ${telefono}\nEmail: ${email}\n\nNotas\n${
-      comentarios || "Sin notas"
-    }`;
+    }
+${
+  modoEntrega === "envio"
+    ? `Dirección: ${direccion}\nUbicación: ${ubicacion}\n`
+    : ""
+}
+Teléfono: ${telefono}
+Email: ${email}
+
+Notas:
+${comentarios || "Sin notas"}
+`;
 
     try {
       await crearPedido(pedido);
@@ -217,14 +242,23 @@ export default function Pedido() {
         );
       })}
 
+      {/* RESUMEN FINAL */}
+      <div className="text-right text-xl font-bold text-[#590707] mb-1">
+        Subtotal: ${subtotal.toLocaleString("es-AR")}
+      </div>
+
+      <div className="text-right text-xl font-bold text-[#590707] mb-1">
+        Envío: ${costoEnvio.toLocaleString("es-AR")}
+      </div>
+
       <div className="text-right text-2xl font-bold text-[#590707] mb-6">
         Total: ${total.toLocaleString("es-AR")}
       </div>
 
       {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
-        {/* MODO ENTREGA */}
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
+
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -245,13 +279,10 @@ export default function Pedido() {
               checked={modoEntrega === "takeaway"}
               onChange={() => setModoEntrega("takeaway")}
             />
-            <span className="text-[#04090C]">
-              Take Away (retira en el local)
-            </span>
+            <span className="text-[#04090C]">Take Away</span>
           </label>
         </div>
 
-        {/* Dirección solo si es envío */}
         {modoEntrega === "envio" && (
           <>
             <label className="font-semibold text-[#04090C]">Dirección *</label>
