@@ -90,9 +90,10 @@ app.use(
 );
 
 // 🟢 RUTA CATCH-ALL — debe ir AL FINAL
-app.get("*", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
 });
+
 
 // ============= INICIAR SERVIDOR =============
 const PORT = process.env.PORT || 5000;
