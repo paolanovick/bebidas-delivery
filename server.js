@@ -13,7 +13,6 @@ import migracionRoutes from "./backend/routes/migrar.js";
 import publicidadRoutes from "./backend/routes/publicidadRoutes.js";
 import configuracionRoutes from "./backend/routes/configuracion.js";
 
-
 dotenv.config();
 conectarDB();
 
@@ -47,27 +46,42 @@ app.use("/api/geo", geoRouter);
 app.use("/api/migracion", migracionRoutes);
 app.use("/api/configuracion-envio", configuracionRoutes);
 
-// 🔥 PUBLICIDAD — DEBE IR ANTES DEL FRONTEND
+// 🔥 PUBLICIDAD — ANTES DEL FRONTEND
 app.use("/api/publicidad", publicidadRoutes);
 
-// Ruta test
-app.get("/", (req, res) => {
+// Ruta test API
+app.get("/api", (req, res) => {
   res.json({ mensaje: "API funcionando 🚀" });
 });
 
-// ============= SERVIR FRONTEND (REACT) =============
+// ================= SERVIR FRONTEND ==================
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, "frontend/build")));
+// 🟢 SERVIR ARCHIVOS ESTÁTICOS (IMPORTANTE PARA OG IMAGE)
+app.use(
+  express.static(path.join(__dirname, "frontend/build"), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".png")) {
+        res.setHeader("Content-Type", "image/png");
+      }
+      if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
+        res.setHeader("Content-Type", "image/jpeg");
+      }
+      if (filePath.endsWith(".webp")) {
+        res.setHeader("Content-Type", "image/webp");
+      }
+    },
+  })
+);
 
+// 🟢 ESTE "*" ES EL CORRECTO PARA EXPRESS 5
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
 });
-
 
 // ============= INICIAR SERVIDOR =============
 const PORT = process.env.PORT || 5000;
