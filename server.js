@@ -61,7 +61,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🟢 SERVIR ARCHIVOS ESTÁTICOS (IMPORTANTE PARA OG IMAGE)
+// 🟢 ARCHIVOS ESTÁTICOS (incluye OG images)
 app.use(
   express.static(path.join(__dirname, "frontend/build"), {
     setHeaders: (res, filePath) => {
@@ -78,7 +78,18 @@ app.use(
   })
 );
 
-// 🟢 ESTE "*" ES EL CORRECTO PARA EXPRESS 5
+// 🟢 SERVIR TAMBIÉN PUBLIC/ (favicon y logoMeta.png original)
+app.use(
+  express.static(path.join(__dirname, "frontend/public"), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".png")) res.setHeader("Content-Type", "image/png");
+      if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg"))
+        res.setHeader("Content-Type", "image/jpeg");
+    },
+  })
+);
+
+// 🟢 RUTA CATCH-ALL — debe ir AL FINAL
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
 });
