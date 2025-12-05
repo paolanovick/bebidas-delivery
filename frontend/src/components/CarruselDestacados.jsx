@@ -56,35 +56,45 @@ export default function CarruselDestacados({
         w-56 sm:w-64 md:w-72 flex-shrink-0
       "
                 >
-                  {/* CONTENEDOR IMAGEN + CINTA */}
                   <div className="relative mb-3 md:mb-4">
                     {/* CINTA DESTACADO */}
                     <div
                       className="
-            absolute left-0 top-2
-            px-3 py-1
-            bg-gradient-to-r from-[#A30404] to-[#590707]
-            text-white text-[10px] md:text-xs font-bold
-            uppercase shadow-md
-            -rotate-6
-            origin-left
-            pointer-events-none
-          "
+      absolute left-0 top-2
+      px-3 py-1
+      bg-gradient-to-r from-[#A30404] to-[#590707]
+      text-white text-[10px] md:text-xs font-bold
+      uppercase shadow-md
+      -rotate-6
+      origin-left
+      pointer-events-none
+    "
                     >
                       Destacado
                     </div>
+
+                    {/* CINTA SIN STOCK */}
+                    {b.stock <= 0 && (
+                      <div
+                        className="
+        absolute right-0 top-2
+        px-3 py-1
+        bg-gray-800 text-white
+        text-[10px] md:text-xs font-bold uppercase
+        shadow-md rotate-6 origin-right pointer-events-none
+      "
+                      >
+                        Sin Stock
+                      </div>
+                    )}
 
                     <img
                       src={b.imagen}
                       alt={b.nombre}
                       className="
-            w-full h-24 sm:h-32 md:h-40
-            object-cover rounded-lg mt-4
-          "
-                      onError={(e) =>
-                        (e.currentTarget.src =
-                          "https://placehold.co/600x400/CDC7BD/04090C?text=Sin+Imagen")
-                      }
+      w-full h-24 sm:h-32 md:h-40
+      object-cover rounded-lg mt-4
+    "
                     />
                   </div>
 

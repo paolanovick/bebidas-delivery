@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarrito } from "../context/CarritoContext";
-import { crearPedido } from "../services/api";
+import { crearPedido, getEnvioConfig } from "../services/api";
 
 import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
@@ -14,6 +14,28 @@ export default function Pedido() {
 
   // carrito
   const { carrito, guardarCarrito, vaciarCarrito } = useCarrito();
+
+  // 🔹 modo de entrega primero
+  const [modoEntrega, setModoEntrega] = useState("envio");
+
+  // 🔹 configuración dinámica del envío (desde backend)
+  const [configEnvio, setConfigEnvio] = useState({
+    costoEnvio: 0,
+    envioHabilitado: true,
+  });
+
+  // CARGAR CONFIGURACIÓN DE ENVÍO
+  useEffect(() => {
+    async function cargarConfig() {
+      try {
+        const data = await getEnvioConfig();
+        setConfigEnvio(data);
+      } catch (err) {
+        console.error("Error cargando config de envío", err);
+      }
+    }
+    cargarConfig();
+  }, []);
 
   const cambiarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return eliminarItem(id);
@@ -28,20 +50,17 @@ export default function Pedido() {
     guardarCarrito(nuevo);
   };
 
-  // 🔹 modo de entrega primero (SOLUCIONA EL ERROR)
-  const [modoEntrega, setModoEntrega] = useState("envio");
-
-  // 🍷 Subtotal sin envío
+  // 🍷 Subtotal
   const subtotal = carrito.reduce(
     (sum, it) => sum + (Number(it.precio) || 0) * (Number(it.cantidad) || 0),
     0
   );
 
-  // 🚚 Costo fijo de envío
-  const COSTO_ENVIO = 3000;
+  // 🚚 Costo envío dinámico
+  const COSTO_ENVIO = configEnvio.costoEnvio || 0;
 
-  // Si el usuario elige TAKE AWAY → envío = 0
-  const costoEnvio = modoEntrega === "envio" ? COSTO_ENVIO : 0;
+  const costoEnvio =
+    modoEntrega === "envio" && configEnvio.envioHabilitado ? COSTO_ENVIO : 0;
 
   // 💰 Total final
   const total = subtotal + costoEnvio;
@@ -100,7 +119,7 @@ export default function Pedido() {
       notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
         comentarios || ""
       }`.trim(),
-      total, // AHORA INCLUYE ENVÍO
+      total,
     };
 
     const ubicacion =
@@ -177,7 +196,7 @@ ${comentarios || "Sin notas"}
         </div>
       )}
 
-      {/* LISTA DE PRODUCTOS */}
+      {/* LISTA */}
       {carrito.map((item) => {
         const id = item._id || item.id;
         return (
@@ -242,7 +261,7 @@ ${comentarios || "Sin notas"}
         );
       })}
 
-      {/* RESUMEN FINAL */}
+      {/* RESUMEN */}
       <div className="text-right text-xl font-bold text-[#590707] mb-1">
         Subtotal: ${subtotal.toLocaleString("es-AR")}
       </div>
