@@ -402,6 +402,9 @@ export default function MenuBebidas() {
                       <h3 className="text-sm md:text-base font-semibold text-[#04090C] line-clamp-2 mb-1">
                         {b.nombre}
                       </h3>
+                      <p className="text-[#736D66] text-xs md:text-sm line-clamp-2 mb-1">
+                        {b.descripcion}
+                      </p>
 
                       <p className="text-[#590707] font-bold text-lg mb-2">
                         ${fmt(b.precio)}
@@ -440,6 +443,9 @@ export default function MenuBebidas() {
                 <h3 className="text-sm md:text-lg font-semibold text-[#04090C] mb-1 line-clamp-2">
                   {b.nombre}
                 </h3>
+                <p className="text-[#736D66] text-xs md:text-sm line-clamp-2 mb-1">
+                  {b.descripcion}
+                </p>
 
                 <p className="text-[#590707] font-bold text-xl mb-2">
                   ${fmt(b.precio)}
