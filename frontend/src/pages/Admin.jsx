@@ -229,6 +229,14 @@ const Admin = () => {
                 >
                   Publicidad
                 </button>
+
+                {/* 🔥 BOTÓN NUEVO — CONFIGURACIÓN DE ENVÍO */}
+                <button
+                  onClick={() => cambiarSeccion("envio")}
+                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
+                >
+                  Envío / Delivery
+                </button>
               </div>
             </div>
 

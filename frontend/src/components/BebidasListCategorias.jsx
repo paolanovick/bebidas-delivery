@@ -1,8 +1,21 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ← AGREGAR ESTA LÍNEA
-
+import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 6;
+
+// 🔥 CATEGORÍAS OFICIALES DEL CLIENTE
+const CATEGORIAS_OFICIALES = [
+  "Combos",
+  "Cervezas",
+  "Vinos",
+  "Aperitivos y Licores",
+  "Destilados",
+  "Gaseosas y jugos",
+  "Energizantes",
+  "Snacks",
+  "Ofertas",
+  "Cigarrillos",
+];
 
 const BebidasListCategorias = ({
   bebidas = [],
@@ -11,52 +24,42 @@ const BebidasListCategorias = ({
   showStock = true,
 }) => {
   const [categoriaActiva, setCategoriaActiva] = useState("");
-  const [orden, setOrden] = useState("recientes"); // recientes | stock | alfabetico
+  const [orden, setOrden] = useState("recientes");
   const [pagina, setPagina] = useState(1);
 
-  const hayBebidas = bebidas.length > 0;
   const navigate = useNavigate();
+  const hayBebidas = bebidas.length > 0;
 
- const obtenerCategoriasBebida = (b) => {
-   // 1) Si viene "categorias" como array, perfecto
-   if (Array.isArray(b.categorias) && b.categorias.length > 0) {
-     return b.categorias;
-   }
+  // Normaliza categorías de una bebida
+  const obtenerCategoriasBebida = (b) => {
+    if (Array.isArray(b.categorias) && b.categorias.length > 0) {
+      return b.categorias;
+    }
+    if (typeof b.categorias === "string") return [b.categorias];
+    if (Array.isArray(b.categoria) && b.categoria.length > 0)
+      return b.categoria;
+    if (typeof b.categoria === "string") return [b.categoria];
+    return ["Sin categoría"];
+  };
 
-   // 2) Si viene "categorias" como string (por ej. "Vinos")
-   if (typeof b.categorias === "string" && b.categorias.trim() !== "") {
-     return [b.categorias.trim()];
-   }
-
-   // 3) Si viene "categoria" como array (por las dudas)
-   if (Array.isArray(b.categoria) && b.categoria.length > 0) {
-     return b.categoria;
-   }
-
-   // 4) Si viene "categoria" como string
-   if (typeof b.categoria === "string" && b.categoria.trim() !== "") {
-     return [b.categoria.trim()];
-   }
-
-   // 5) Si nada de lo anterior, lo consideramos sin categoría
-   return ["Sin categoría"];
- };
-
+  // Categorías presentes en DB que coinciden con las oficiales
   const categorias = useMemo(() => {
     if (!hayBebidas) return [];
-    const set = new Set();
-    bebidas.forEach((b) => {
-      obtenerCategoriasBebida(b).forEach((cat) => set.add(cat));
-    });
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
+
+    const encontradas = new Set();
+
+    bebidas.forEach((b) =>
+      obtenerCategoriasBebida(b).forEach((cat) => {
+        if (CATEGORIAS_OFICIALES.includes(cat)) encontradas.add(cat);
+      })
+    );
+
+    // Mantener el orden oficial
+    return CATEGORIAS_OFICIALES.filter((c) => encontradas.has(c));
   }, [bebidas, hayBebidas]);
 
   useEffect(() => {
-    if (categorias.length === 0) {
-      setCategoriaActiva("");
-      return;
-    }
-    if (!categoriaActiva || !categorias.includes(categoriaActiva)) {
+    if (categorias.length > 0 && !categorias.includes(categoriaActiva)) {
       setCategoriaActiva(categorias[0]);
     }
   }, [categorias, categoriaActiva]);
@@ -65,6 +68,7 @@ const BebidasListCategorias = ({
     setPagina(1);
   }, [categoriaActiva, orden]);
 
+  // Filtrado según categoría activa
   const bebidasFiltradas = useMemo(() => {
     if (!hayBebidas || !categoriaActiva) return [];
 
@@ -80,13 +84,12 @@ const BebidasListCategorias = ({
         case "alfabetico":
           return (a.nombre || "").localeCompare(b.nombre || "");
         case "stock":
-          return stockB - stockA; // mayor stock primero
+          return stockB - stockA;
         case "recientes":
-        default: {
+        default:
           const idxA = bebidas.findIndex((x) => x._id === a._id);
           const idxB = bebidas.findIndex((x) => x._id === b._id);
-          return idxB - idxA; // últimos cargados primero
-        }
+          return idxB - idxA;
       }
     });
 
@@ -104,10 +107,10 @@ const BebidasListCategorias = ({
     return (
       <div className="bg-white shadow-xl rounded-xl p-8 text-center border border-[#CDC7BD] mt-6">
         <p className="text-[#736D66] text-lg mb-4">
-          No hay bebidas registradas todavía
+          No hay bebidas registradas.
         </p>
         <p className="text-[#04090C] font-semibold">
-          ¡Agrega tu primera bebida usando el formulario!
+          ¡Agregá tu primera bebida usando el formulario!
         </p>
       </div>
     );
@@ -115,27 +118,8 @@ const BebidasListCategorias = ({
 
   return (
     <div className="mt-6">
-      {/* Encabezado + stats */}
+      {/* Encabezado */}
       <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
-        {/* <div>
-          <h3 className="text-2xl font-bold text-[#f1f2f3]">
-            Bebidas por categoría
-          </h3>
-          <p className="text-xs text-[#736D66]">
-            Mostrando {bebidasFiltradas.length} bebidas en{" "}
-            <span className="font-semibold">{categoriaActiva || "—"}</span> de
-            un total de {total}.
-          </p>
-        </div> */}
-
-        {/* 👉 BOTÓN PUBLICIDAD — NUEVO
-        <button
-          onClick={() => navigate("/admin?seccion=publicidad")}
-          className="px-4 py-2 bg-[#e9e4dd] text-[#04090C] rounded-lg shadow hover:bg-[#d6d0c8] flex items-center gap-2 text-sm"
-        >
-           Publicidad
-        </button> */}
-
         <div className="flex flex-wrap gap-2 text-xs items-center">
           <div className="bg-white text-[#04090C] shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
             Total: <span className="font-bold text-[#590707]">{total}</span>
@@ -146,21 +130,19 @@ const BebidasListCategorias = ({
             <span className="font-bold text-[#A30404]">{sinStockCount}</span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <select
-              value={orden}
-              onChange={(e) => setOrden(e.target.value)}
-              className="border border-[#CDC7BD] rounded-lg px-2 py-1 bg-white text-[#04090C] focus:outline-none focus:ring-2 focus:ring-[#590707]"
-            >
-              <option value="recientes">Últimos cargados</option>
-              <option value="alfabetico">Nombre (A-Z)</option>
-              <option value="stock">Stock (mayor a menor)</option>
-            </select>
-          </div>
+          <select
+            value={orden}
+            onChange={(e) => setOrden(e.target.value)}
+            className="border border-[#CDC7BD] rounded-lg px-2 py-1 bg-white text-[#04090C] focus:outline-none focus:ring-2 focus:ring-[#590707]"
+          >
+            <option value="recientes">Últimos cargados</option>
+            <option value="alfabetico">Nombre (A-Z)</option>
+            <option value="stock">Stock (mayor a menor)</option>
+          </select>
         </div>
       </div>
 
-      {/* Pestañas de categorías */}
+      {/* Categorías */}
       {categorias.length > 0 && (
         <div className="mb-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -169,15 +151,12 @@ const BebidasListCategorias = ({
               return (
                 <button
                   key={cat}
-                  type="button"
                   onClick={() => setCategoriaActiva(cat)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200
-              ${
-                activa
-                  ? "bg-[#590707] text-white shadow-lg scale-105"
-                  : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95] hover:bg-[#bfb7ad] hover:shadow"
-              }
-            `}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                    activa
+                      ? "bg-[#590707] text-white shadow-lg scale-105"
+                      : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95] hover:bg-[#bfb7ad]"
+                  }`}
                 >
                   {cat}
                 </button>
@@ -187,12 +166,10 @@ const BebidasListCategorias = ({
         </div>
       )}
 
-      {/* Si no hay resultados */}
+      {/* Si no hay bebidas en categoría */}
       {bebidasFiltradas.length === 0 ? (
         <div className="bg-white shadow-xl rounded-xl p-6 text-center border border-[#CDC7BD]">
-          <p className="text-[#736D66]">
-            No hay bebidas en la categoría seleccionada.
-          </p>
+          <p className="text-[#736D66]">No hay bebidas en esta categoría.</p>
         </div>
       ) : (
         <>
@@ -204,7 +181,7 @@ const BebidasListCategorias = ({
                   <th className="py-3 px-4 text-left">Imagen</th>
                   <th className="py-3 px-4 text-left">Nombre</th>
                   <th className="py-3 px-4 text-left">Categorías</th>
-                  <th className="py-3 px-4 text-left">Tipo</th>
+                  <th className="py-3 px-4 text-left">Subcategoría</th>
                   <th className="py-3 px-4 text-left">Precio</th>
                   <th className="py-3 px-4 text-left">Stock</th>
                   <th className="py-3 px-4 text-left">Acciones</th>
@@ -227,10 +204,10 @@ const BebidasListCategorias = ({
                           src={b.imagen}
                           alt={b.nombre}
                           className="w-14 h-14 object-cover rounded-lg border border-[#CDC7BD]"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://placehold.co/80x80/CDC7BD/04090C?text=Sin+Img";
-                          }}
+                          onError={(e) =>
+                            (e.currentTarget.src =
+                              "https://placehold.co/80x80/CDC7BD/04090C?text=Sin+Img")
+                          }
                         />
                       </td>
 
@@ -280,13 +257,14 @@ const BebidasListCategorias = ({
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              onEdit(b); // setEditing en AppContent
-                              navigate("/admin"); // te lleva al form
+                              onEdit(b);
+                              navigate("/admin");
                             }}
                             className="px-3 py-1 rounded-lg bg-[#590707] text-white hover:bg-[#A30404] transition text-sm"
                           >
                             Editar
                           </button>
+
                           <button
                             onClick={() => onDelete(b._id)}
                             className="px-3 py-1 rounded-lg bg-red-600 text-white hover:bg-red-700 transition text-sm"
@@ -306,12 +284,11 @@ const BebidasListCategorias = ({
           {totalPaginas > 1 && (
             <div className="flex items-center justify-center gap-2 mt-4 text-xs">
               <button
-                type="button"
                 onClick={() => setPagina((p) => Math.max(1, p - 1))}
                 disabled={pagina === 1}
                 className={`px-3 py-1 rounded-lg border ${
                   pagina === 1
-                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2] cursor-not-allowed"
+                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2]"
                     : "text-[#04090C] border-[#CDC7BD] bg-white hover:bg-[#F2ECE4]"
                 }`}
               >
@@ -321,7 +298,6 @@ const BebidasListCategorias = ({
               {Array.from({ length: totalPaginas }).map((_, i) => (
                 <button
                   key={i}
-                  type="button"
                   onClick={() => setPagina(i + 1)}
                   className={`px-3 py-1 rounded-lg border ${
                     pagina === i + 1
@@ -334,12 +310,11 @@ const BebidasListCategorias = ({
               ))}
 
               <button
-                type="button"
                 onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
                 disabled={pagina === totalPaginas}
                 className={`px-3 py-1 rounded-lg border ${
                   pagina === totalPaginas
-                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2] cursor-not-allowed"
+                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2]"
                     : "text-[#04090C] border-[#CDC7BD] bg-white hover:bg-[#F2ECE4]"
                 }`}
               >

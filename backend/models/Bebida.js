@@ -7,19 +7,29 @@ const bebidaSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   imagen: { type: String },
 
-  // ✅ AHORA ES UN ARRAY para selección múltiple
+  /* ============================================
+     CATEGORÍAS — múltiple selección (array)
+     Mantiene compatibilidad con datos viejos
+  ============================================ */
   categorias: {
     type: [String],
     default: [],
   },
 
-  // ✅ SUBCATEGORÍA para vinos (Blanco, Rosé, Tinto)
+  /* ============================================
+     SUBCATEGORÍAS — depende de la categoría
+     Whisky: Bourbon | Scotch | Irish
+     Destilados: Vodka | Gin | Ron | Tequila
+     Vinos: Tinto | Blanco | Rosé
+  ============================================ */
   subcategoria: {
     type: String,
     default: "",
   },
 
-  // ✅ PRODUCTO ESTRELLA
+  /* ============================================
+     PRODUCTO ESTRELLA
+  ============================================ */
   esEstrella: {
     type: Boolean,
     default: false,

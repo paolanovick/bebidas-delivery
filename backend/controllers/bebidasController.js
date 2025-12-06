@@ -14,6 +14,23 @@ export const getBebidas = async (req, res) => {
   }
 };
 
+/* ======================================================
+   FUNCIÓN AUXILIAR — NORMALIZA TODAS LAS CATEGORÍAS
+====================================================== */
+const normalizarCategorias = (categorias, categoria) => {
+  // Si viene array válido → usarlo
+  if (Array.isArray(categorias) && categorias.length > 0) {
+    return categorias.map((c) => String(c).trim());
+  }
+
+  // Si viene una sola categoría → convertirlo a array
+  if (categoria && typeof categoria === "string") {
+    return [categoria.trim()];
+  }
+
+  return [];
+};
+
 /* ============================
    POST /api/bebidas
 ============================ */
@@ -26,18 +43,12 @@ export const agregarBebida = async (req, res) => {
       stock,
       imagen,
       categorias,
-      categoria, // por si viene en singular
+      categoria,
       subcategoria,
       esEstrella,
     } = req.body;
 
-    // 👇 Normalizamos siempre a array
-    const categoriasNormalizadas =
-      Array.isArray(categorias) && categorias.length > 0
-        ? categorias
-        : categoria
-        ? [categoria]
-        : [];
+    const categoriasNormalizadas = normalizarCategorias(categorias, categoria);
 
     const nuevaBebida = new Bebida({
       nombre,
@@ -77,12 +88,7 @@ export const editarBebida = async (req, res) => {
       esEstrella,
     } = req.body;
 
-    const categoriasNormalizadas =
-      Array.isArray(categorias) && categorias.length > 0
-        ? categorias
-        : categoria
-        ? [categoria]
-        : [];
+    const categoriasNormalizadas = normalizarCategorias(categorias, categoria);
 
     const bebidaActualizada = await Bebida.findByIdAndUpdate(
       id,
@@ -115,11 +121,13 @@ export const editarBebida = async (req, res) => {
 ============================ */
 export const eliminarBebida = async (req, res) => {
   const { id } = req.params;
+
   try {
     const bebidaEliminada = await Bebida.findByIdAndDelete(id);
     if (!bebidaEliminada) {
       return res.status(404).json({ mensaje: "Bebida no encontrada" });
     }
+
     res.json({ mensaje: "Bebida eliminada" });
   } catch (error) {
     console.error("Error al eliminar bebida:", error);

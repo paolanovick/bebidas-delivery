@@ -7,35 +7,35 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
     precio: "",
     stock: "",
     imagen: "",
-    categorias: [], // Array para múltiples categorías
-    subcategoria: "", // Para vinos: Blanco, Rosé, Tinto
-    esEstrella: false, // Producto destacado
+    categorias: [],
+    subcategoria: "",
+    esEstrella: false,
   });
 
-  // ✅ CATEGORÍAS DISPONIBLES
+  // ============================
+  // ✔ CATEGORÍAS NUEVAS DEL CLIENTE
+  // ============================
   const categoriasDisponibles = [
-    "Vinos",
-    "Cervezas",
-    "Gaseosas",
-    "Jugos",
-    "Espumantes",
-    "Whisky",
-    "Blancas",
-    "Licores",
-    "Aperitivos",
-    "Energéticas",
-    "Aguas",
     "Combos",
-    "Mayoristas",
+    "Cervezas",
+    "Vinos",
+    "Aperitivos y Licores",
+    "Destilados",
+    "Gaseosas y jugos",
+    "Energizantes",
+    "Snacks",
     "Ofertas",
-    "Regalos",
-    "Gift Cards",
-    "Wine Club",
-    "Experiencias",
+    "Cigarrillos",
   ];
 
-  // ✅ SUBCATEGORÍAS DE VINOS
+  // SUBCATEGORÍAS DE VINOS
   const subcategoriasVinos = ["Tinto", "Blanco", "Rosé"];
+
+  // SUBCATEGORÍAS DE DESTILADOS (primer nivel)
+  const subDestilados = ["Vodka", "Gin", "Ron", "Tequila", "Whisky"];
+
+  // SUB-SUBCATEGORÍAS SOLO PARA "Whisky"
+  const subWhisky = ["Bourbon", "Scotch", "Irish"];
 
   useEffect(() => {
     if (bebidaEditar) {
@@ -45,17 +45,16 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
         precio: bebidaEditar.precio || "",
         stock: bebidaEditar.stock || "",
         imagen: bebidaEditar.imagen || "",
-        // 👇 si no viene "categorias" pero sí "categoria", lo transformamos
         categorias:
           (Array.isArray(bebidaEditar.categorias) &&
             bebidaEditar.categorias.length > 0 &&
             bebidaEditar.categorias) ||
           (bebidaEditar.categoria ? [bebidaEditar.categoria] : []),
+
         subcategoria: bebidaEditar.subcategoria || "",
         esEstrella: bebidaEditar.esEstrella || false,
       });
     } else {
-      // si no estoy editando, limpio
       setFormData({
         nombre: "",
         descripcion: "",
@@ -69,7 +68,6 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
     }
   }, [bebidaEditar]);
 
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -78,56 +76,51 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
     });
   };
 
-  // ✅ MANEJO DE CATEGORÍAS MÚLTIPLES
   const handleCategoriaToggle = (categoria) => {
     setFormData((prev) => {
-      const nuevasCategorias = prev.categorias.includes(categoria)
+      const nuevas = prev.categorias.includes(categoria)
         ? prev.categorias.filter((c) => c !== categoria)
         : [...prev.categorias, categoria];
 
-      return { ...prev, categorias: nuevasCategorias };
+      return {
+        ...prev,
+        categorias: nuevas,
+      };
     });
   };
 
- const handleSubmit = (e) => {
-   e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-   // 👇 tomamos la primera categoría elegida (si hay)
-   const categoriaPrincipal =
-     Array.isArray(formData.categorias) && formData.categorias.length > 0
-       ? formData.categorias[0]
-       : "";
+    const categoriaPrincipal =
+      Array.isArray(formData.categorias) && formData.categorias.length > 0
+        ? formData.categorias[0]
+        : "";
 
-   const payload = {
-     ...formData,
-     categoria: categoriaPrincipal, // 👈 compatibilidad con datos que usan "categoria"
-   };
+    const payload = {
+      ...formData,
+      categoria: categoriaPrincipal,
+    };
 
-   onSubmit(payload);
+    onSubmit(payload);
 
-   // si NO estoy editando (alta nueva), limpio el form
-   if (!bebidaEditar) {
-     setFormData({
-       nombre: "",
-       descripcion: "",
-       precio: "",
-       stock: "",
-       imagen: "",
-       categorias: [],
-       subcategoria: "",
-       esEstrella: false,
-     });
-   }
- };
-
+    if (!bebidaEditar) {
+      setFormData({
+        nombre: "",
+        descripcion: "",
+        precio: "",
+        stock: "",
+        imagen: "",
+        categorias: [],
+        subcategoria: "",
+        esEstrella: false,
+      });
+    }
+  };
 
   const handleCancel = () => {
-    // si estamos editando, avisamos al padre para salir del modo edición
-    if (bebidaEditar && onCancel) {
-      onCancel();
-    }
+    if (bebidaEditar && onCancel) onCancel();
 
-    // limpiamos los campos
     setFormData({
       nombre: "",
       descripcion: "",
@@ -140,8 +133,14 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
     });
   };
 
-  // ✅ Verifica si "Vinos" está seleccionado
+  // ============================
+  // LOGICA DE SUBCATEGORÍAS
+  // ============================
+
   const esVinoSeleccionado = formData.categorias.includes("Vinos");
+  const esDestiladoSeleccionado = formData.categorias.includes("Destilados");
+
+  const subcategoriaEsWhisky = formData.subcategoria === "Whisky";
 
   return (
     <form
@@ -152,7 +151,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
         {bebidaEditar ? "Editar Bebida" : "Agregar Bebida"}
       </h2>
 
-      {/* Nombre */}
+      {/* NOMBRE */}
       <div className="mb-5">
         <label className="block text-sm font-semibold mb-2">Nombre *</label>
         <input
@@ -161,12 +160,12 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
           value={formData.nombre}
           onChange={handleChange}
           required
-          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
-          placeholder="Malbec Reserva 2019"
+          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
+          placeholder="Ej: Malbec Reserva 2019"
         />
       </div>
 
-      {/* Descripción */}
+      {/* DESCRIPCIÓN */}
       <div className="mb-5">
         <label className="block text-sm font-semibold mb-2">Descripción</label>
         <textarea
@@ -174,15 +173,15 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
           value={formData.descripcion}
           onChange={handleChange}
           rows="3"
-          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
+          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
           placeholder="Notas de cata..."
         />
       </div>
 
-      {/* ✅ CATEGORÍAS MÚLTIPLES */}
+      {/* CATEGORÍAS */}
       <div className="mb-5">
         <label className="block text-sm font-semibold mb-3">
-          Categorías * (Selección múltiple)
+          Categorías * (selección múltiple)
         </label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 border border-[#CDC7BD] rounded-lg p-4 bg-[#F7F5F2]">
           {categoriasDisponibles.map((cat) => (
@@ -200,14 +199,9 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
             </label>
           ))}
         </div>
-        {formData.categorias.length > 0 && (
-          <p className="text-xs text-[#736D66] mt-2">
-            Seleccionadas: {formData.categorias.join(", ")}
-          </p>
-        )}
       </div>
 
-      {/* ✅ SUBCATEGORÍA DE VINOS (solo si "Vinos" está seleccionado) */}
+      {/* SUBCATEGORÍAS VINOS */}
       {esVinoSeleccionado && (
         <div className="mb-5">
           <label className="block text-sm font-semibold mb-2">
@@ -217,7 +211,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
             name="subcategoria"
             value={formData.subcategoria}
             onChange={handleChange}
-            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C] focus:ring-2 focus:ring-[#A30404] outline-none"
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
           >
             <option value="">Seleccionar tipo</option>
             {subcategoriasVinos.map((sub) => (
@@ -229,7 +223,55 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
         </div>
       )}
 
-      {/* ✅ PRODUCTO ESTRELLA */}
+      {/* SUBCATEGORÍAS DESTILADOS */}
+      {esDestiladoSeleccionado && (
+        <div className="mb-5">
+          <label className="block text-sm font-semibold mb-2">
+            Tipo de Destilado
+          </label>
+
+          <select
+            name="subcategoria"
+            value={formData.subcategoria}
+            onChange={handleChange}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
+          >
+            <option value="">Seleccionar tipo</option>
+
+            {subDestilados.map((tipo) => (
+              <option key={tipo} value={tipo}>
+                {tipo}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* SUB-SUBCATEGORÍAS WHISKY */}
+      {esDestiladoSeleccionado && subcategoriaEsWhisky && (
+        <div className="mb-5">
+          <label className="block text-sm font-semibold mb-2">
+            Tipo de Whisky
+          </label>
+
+          <select
+            name="subcategoria"
+            value={formData.subcategoria}
+            onChange={handleChange}
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
+          >
+            <option value="">Seleccionar tipo</option>
+
+            {subWhisky.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* PRODUCTO ESTRELLA */}
       <div className="mb-5 bg-[#FFF9E6] border-2 border-[#FFD700] rounded-lg p-4">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
@@ -239,17 +281,14 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
             onChange={handleChange}
             className="w-5 h-5 accent-[#FFD700]"
           />
-          <span className="text-sm font-semibold text-[#04090C]">
-            ⭐ Destacar como Producto Estrella
-          </span>
+          <span className="text-sm font-semibold">⭐ Producto Estrella</span>
         </label>
         <p className="text-xs text-[#736D66] mt-2">
-          Los productos destacados aparecen en la sección principal antes del
-          catálogo
+          Aparece en la sección destacada del catálogo
         </p>
       </div>
 
-      {/* Precio & Stock */}
+      {/* PRECIO Y STOCK */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div>
           <label className="block text-sm font-semibold mb-2">Precio *</label>
@@ -260,8 +299,7 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
             onChange={handleChange}
             required
             step="0.01"
-            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C]"
-            placeholder="0.00"
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
           />
         </div>
 
@@ -272,13 +310,12 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
             name="stock"
             value={formData.stock}
             onChange={handleChange}
-            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C]"
-            placeholder="0"
+            className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
           />
         </div>
       </div>
 
-      {/* Imagen */}
+      {/* IMAGEN */}
       <div className="mb-5">
         <label className="block text-sm font-semibold mb-2">
           URL de la Imagen
@@ -289,34 +326,35 @@ const BebidasForm = ({ onSubmit, bebidaEditar, onCancel }) => {
           value={formData.imagen}
           onChange={handleChange}
           placeholder="https://ejemplo.com/botella.jpg"
-          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4 text-[#04090C]"
+          className="bg-white border border-[#CDC7BD] rounded-lg w-full py-3 px-4"
         />
+
         {formData.imagen && (
           <img
             src={formData.imagen}
             alt="Preview"
             className="w-32 h-32 object-cover rounded-lg shadow-md border-2 border-[#CDC7BD] mt-3 mx-auto"
-            onError={(e) => {
-              e.currentTarget.src =
-                "https://placehold.co/128x128/CDC7BD/04090C?text=Sin+Img";
-            }}
+            onError={(e) =>
+              (e.currentTarget.src =
+                "https://placehold.co/128x128/CDC7BD/04090C?text=Sin+Img")
+            }
           />
         )}
       </div>
 
-      {/* Botones */}
+      {/* BOTONES */}
       <div className="flex flex-col md:flex-row gap-3 justify-end mt-4">
         <button
           type="button"
           onClick={handleCancel}
-          className="border border-[#CDC7BD] text-[#04090C] font-semibold py-3 px-5 rounded-lg shadow-sm bg-white hover:bg-[#F2ECE4] transition md:w-auto w-full"
+          className="border border-[#CDC7BD] text-[#04090C] font-semibold py-3 px-5 rounded-lg bg-white hover:bg-[#F2ECE4] transition"
         >
           Cancelar
         </button>
 
         <button
           type="submit"
-          className="bg-[#590707] hover:bg-[#A30404] text-white font-bold py-3 px-6 rounded-lg shadow-lg transition md:w-auto w-full"
+          className="bg-[#590707] hover:bg-[#A30404] text-white font-bold py-3 px-6 rounded-lg shadow-lg transition"
         >
           {bebidaEditar ? "✓ Actualizar Bebida" : "+ Agregar Bebida"}
         </button>
