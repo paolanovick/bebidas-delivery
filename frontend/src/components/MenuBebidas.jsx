@@ -101,11 +101,21 @@ export default function MenuBebidas() {
   const [paused, setPaused] = useState(false);
   const carouselRef = useRef(null);
 
-  const handleAgregar = (b) => {
-    agregar(b);
-    setMensajeAgregado(`${b.nombre} agregado al carrito 🛒`);
-    setTimeout(() => setMensajeAgregado(""), 3000);
-  };
+ const handleAgregar = (b) => {
+   // 🛑 si no hay stock, mostrar alerta roja y NO agregar
+   if (!b.stock || b.stock <= 0) {
+     setMensajeAgregado(`❗ "${b.nombre}" está sin stock`);
+     setTimeout(() => setMensajeAgregado(""), 3000);
+     return; // 👈 CÓRTA ACÁ
+   }
+
+   // ✔ si hay stock, agregar normalmente
+   agregar(b);
+
+   setMensajeAgregado(`"${b.nombre}" agregado al carrito 🛒`);
+   setTimeout(() => setMensajeAgregado(""), 3000);
+ };
+
 
   const fmt = (n) =>
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
