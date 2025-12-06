@@ -14,7 +14,6 @@ import {
 import PublicidadAdmin from "../admin/PublicidadAdmin";
 import AdminEnvio from "./AdminEnvio";
 
-
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -53,15 +52,14 @@ const Admin = () => {
     }
   };
 
-const handleDelete = async (id) => {
-  try {
-    await eliminarBebida(id); // ✔ nombre correcto
-    setBebidas(bebidas.filter((b) => b._id !== id));
-  } catch (error) {
-    console.error("Error al eliminar bebida:", error);
-  }
-};
-
+  const handleDelete = async (id) => {
+    try {
+      await eliminarBebida(id);
+      setBebidas(bebidas.filter((b) => b._id !== id));
+    } catch (error) {
+      console.error("Error al eliminar bebida:", error);
+    }
+  };
 
   const cambiarSeccion = (nuevaSeccion) => {
     setSeccion(nuevaSeccion);
@@ -79,7 +77,7 @@ const handleDelete = async (id) => {
         <nav className="flex flex-col gap-3">
           <button
             onClick={() => cambiarSeccion("pedidos")}
-            className={`text-left px 4 py-3 rounded-lg transition-all ${
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
               seccion === "pedidos" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
@@ -88,27 +86,25 @@ const handleDelete = async (id) => {
 
           <button
             onClick={() => cambiarSeccion("bebidas")}
-            className={`text-left px 4 py-3 rounded-lg transition-all ${
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
               seccion === "bebidas" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-            {" "}
             Bebidas
           </button>
 
           <button
             onClick={() => cambiarSeccion("usuarios")}
-            className={`text-left px 4 py-3 rounded-lg transition-all ${
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
               seccion === "usuarios" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
-            {" "}
             Usuarios
           </button>
 
           <button
             onClick={() => cambiarSeccion("horarios")}
-            className={`text-left px 4 py-3 rounded-lg transition-all ${
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
               seccion === "horarios" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
@@ -117,11 +113,21 @@ const handleDelete = async (id) => {
 
           <button
             onClick={() => cambiarSeccion("publicidad")}
-            className={`text-left px 4 py-3 rounded-lg transition-all ${
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
               seccion === "publicidad" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
             }`}
           >
             Publicidad
+          </button>
+
+          {/* ✅ NUEVO — ENVÍO / DELIVERY */}
+          <button
+            onClick={() => cambiarSeccion("envio")}
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
+              seccion === "envio" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
+            }`}
+          >
+            Envío / Delivery
           </button>
         </nav>
       </aside>
@@ -139,33 +145,45 @@ const handleDelete = async (id) => {
         <nav className="flex flex-col gap-3">
           <button
             onClick={() => cambiarSeccion("pedidos")}
-            className="admin-btn"
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Pedidos
           </button>
+
           <button
             onClick={() => cambiarSeccion("bebidas")}
-            className="admin-btn"
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Bebidas
           </button>
+
           <button
             onClick={() => cambiarSeccion("usuarios")}
-            className="admin-btn"
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Usuarios
           </button>
+
           <button
             onClick={() => cambiarSeccion("horarios")}
-            className="admin-btn"
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Horarios
           </button>
+
           <button
             onClick={() => cambiarSeccion("publicidad")}
-            className="admin-btn"
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Publicidad
+          </button>
+
+          {/* ✅ AGREGADO TAMBIÉN EN MOBILE */}
+          <button
+            onClick={() => cambiarSeccion("envio")}
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
+          >
+            Envío / Delivery
           </button>
         </nav>
       </div>
@@ -182,13 +200,9 @@ const handleDelete = async (id) => {
 
       {/* 📌 CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 md:p-8 mt-16 md:mt-0">
-        {/* ---------------- PEDIDOS ---------------- */}
         {seccion === "pedidos" && <AdminPedidos />}
-
-        {/* ---------------- BEBIDAS (FORM Y LISTA) ---------------- */}
         {seccion === "bebidas" && (
           <div className="space-y-6">
-            {/* 🔘 BOTONES: CATALOGO + HORARIOS + PUBLICIDAD */}
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-[#04090C]">
                 Gestión de Bebidas
@@ -218,7 +232,6 @@ const handleDelete = async (id) => {
               </div>
             </div>
 
-            {/* FORM + LISTA */}
             <div className="grid md:grid-cols-2 gap-6 items-start">
               <div className="bg-white shadow-xl rounded-xl p-4">
                 <h2 className="text-xl font-semibold mb-3 text-[#04090C]">
@@ -244,7 +257,6 @@ const handleDelete = async (id) => {
           </div>
         )}
 
-        {/* ---------------- CATALOGO ---------------- */}
         {seccion === "categorias" && (
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -266,22 +278,10 @@ const handleDelete = async (id) => {
                 >
                   Publicidad
                 </button>
-                <button
-                  onClick={() => cambiarSeccion("envio")}
-                  className={`text-left px-4 py-3 rounded-lg transition-all ${
-                    seccion === "envio"
-                      ? "bg-[#A30404] text-white"
-                      : "hover:bg-[#A30404] hover:text-white"
-                  }`}
-                >
-                  Envío / Delivery
-                </button>
 
                 <button
                   onClick={() => cambiarSeccion("envio")}
-                  className={`text-left px 4 py-3 rounded-lg transition-all ${
-                    seccion === "envio" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
-                  }`}
+                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
                 >
                   Envío / Delivery
                 </button>
@@ -304,15 +304,11 @@ const handleDelete = async (id) => {
           </div>
         )}
 
-        {/* ---------------- USUARIOS ---------------- */}
         {seccion === "usuarios" && <AdminUsuarios />}
-
-        {/* ---------------- HORARIOS ---------------- */}
         {seccion === "horarios" && <ConfiguracionHorarios />}
-
-        {/* ---------------- PUBLICIDAD ---------------- */}
         {seccion === "publicidad" && <PublicidadAdmin />}
-        {/* ---------------- ENVÍO / DELIVERY ---------------- */}
+
+        {/* ✅ AHORA SÍ SE MUESTRA */}
         {seccion === "envio" && <AdminEnvio />}
       </main>
     </div>
