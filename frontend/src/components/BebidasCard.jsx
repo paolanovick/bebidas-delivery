@@ -2,8 +2,17 @@
 import React from "react";
 
 const BebidasCard = ({ bebida, onEdit, onDelete }) => {
+  const sinStock = (bebida.stock ?? 0) <= 0;
+
   return (
-    <div className="bg-white shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-2xl transition-all border border-[#CDC7BD] hover:border-[#A30404]">
+    <div className="relative bg-white shadow-lg rounded-xl p-5 flex flex-col justify-between hover:shadow-2xl transition-all border border-[#CDC7BD] hover:border-[#A30404]">
+      {/* 🔥 CINTA ROJA AUTOMÁTICA */}
+      {sinStock && (
+        <div className="absolute top-3 left-0 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-r-lg shadow-md">
+          SIN STOCK
+        </div>
+      )}
+
       {bebida.imagen && (
         <div className="mb-4">
           <img
@@ -22,6 +31,7 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
         <h3 className="text-xl font-bold text-[#04090C] mb-2">
           {bebida.nombre}
         </h3>
+
         {bebida.descripcion && (
           <p className="text-[#736D66] mb-3 text-sm">{bebida.descripcion}</p>
         )}

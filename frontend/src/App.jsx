@@ -155,7 +155,6 @@ function AppContent() {
             }
           />
 
-          {/* /admin -> SOLO formulario */}
           {/* /admin -> SOLO formulario de bebidas */}
           <Route
             path="/admin"
@@ -187,6 +186,12 @@ function AppContent() {
                         className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
                       >
                         Publicidad
+                      </Link>
+                      <Link
+                        to="/admin/envio"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                      >
+                        Envío / Delivery
                       </Link>
                     </div>
                   </div>
@@ -235,6 +240,12 @@ function AppContent() {
                       >
                         Publicidad
                       </Link>
+                      <Link
+                        to="/admin/envio"
+                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
+                      >
+                        Envío / Delivery
+                      </Link>
                     </div>
                   </div>
 
@@ -274,7 +285,6 @@ function AppContent() {
           />
 
           <Route path="/pedido" element={<Pedido />} />
-          
         </Routes>
       </div>
 

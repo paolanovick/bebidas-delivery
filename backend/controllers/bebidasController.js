@@ -1,23 +1,21 @@
 // controllers/bebidasController.js
 import Bebida from "../models/Bebida.js";
+import { CATEGORIAS_OFICIALES, SUBCATEGORIAS } from "../models/Bebida.js";
 
 /* =====================================================
-   MAPA DE NORMALIZACIÓN OFICIAL DEL CLIENTE
+   NORMALIZADOR DE CATEGORÍA (para productos viejos)
 ===================================================== */
 const MAPA_CATEGORIAS = {
-  // GASEOSAS Y JUGOS
-  Gaseosas: "Gaseosas y jugos",
   Gaseosa: "Gaseosas y jugos",
+  Gaseosas: "Gaseosas y jugos",
   Jugos: "Gaseosas y jugos",
   Jugo: "Gaseosas y jugos",
 
-  // APERITIVOS Y LICORES
   Licores: "Aperitivos y Licores",
   Licor: "Aperitivos y Licores",
   Aperitivos: "Aperitivos y Licores",
   Aperitivo: "Aperitivos y Licores",
 
-  // DESTILADOS
   Blancas: "Destilados",
   Whisky: "Destilados",
   Whiskys: "Destilados",
@@ -27,65 +25,37 @@ const MAPA_CATEGORIAS = {
   Ron: "Destilados",
   Tequila: "Destilados",
 
-  // OFERTAS
   Mayoristas: "Ofertas",
   Mayorista: "Ofertas",
 
-  // SNACKS
   Regalos: "Snacks",
   "Gift Cards": "Snacks",
 
-  // VINOS
   "Wine Club": "Vinos",
   Experiencias: "Vinos",
-
-  // Las categorías oficiales quedan igual
-  Combos: "Combos",
-  Cervezas: "Cervezas",
-  Vinos: "Vinos",
-  "Aperitivos y Licores": "Aperitivos y Licores",
-  Destilados: "Destilados",
-  "Gaseosas y jugos": "Gaseosas y jugos",
-  Energizantes: "Energizantes",
-  Snacks: "Snacks",
-  Ofertas: "Ofertas",
-  Cigarrillos: "Cigarrillos",
 };
 
-/* =====================================================
-   NORMALIZADOR PRINCIPAL
-===================================================== */
+/* -----------------------------------------------------
+ Normaliza categoría antigua -> categoría oficial
+----------------------------------------------------- */
 function normalizarCategoria(cat) {
   if (!cat) return null;
   return MAPA_CATEGORIAS[cat] || cat;
 }
 
-function normalizarCategorias(lista) {
-  if (!lista) return [];
-  if (!Array.isArray(lista)) lista = [lista];
-
-  const saneadas = lista.map((c) => normalizarCategoria(c)).filter(Boolean);
-
-  return [...new Set(saneadas)];
-}
-
 /* =====================================================
-   GET /api/bebidas  (corrige productos viejos)
+   GET /api/bebidas
 ===================================================== */
 export const getBebidas = async (req, res) => {
   try {
     const bebidas = await Bebida.find().sort({ creadoEn: -1 });
 
-    const corregidas = bebidas.map((b) => {
-      const normalizadas = normalizarCategorias(b.categorias || b.categoria);
-
-      return {
-        ...b._doc,
-        categorias: normalizadas,
-        subcategoria: b.subcategoria || "",
-        tipoWhisky: b.tipoWhisky || "",
-      };
-    });
+    const corregidas = bebidas.map((b) => ({
+      ...b._doc,
+      categoria: normalizarCategoria(b.categoria) || "Sin categoría",
+      subcategoria: b.subcategoria || "",
+      tipoWhisky: b.tipoWhisky || "",
+    }));
 
     res.json(corregidas);
   } catch (error) {
@@ -105,28 +75,27 @@ export const agregarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categorias,
       categoria,
       subcategoria,
       tipoWhisky,
       esEstrella,
     } = req.body;
 
-    const categoriasFinal = normalizarCategorias(categorias || categoria);
+    categoria = normalizarCategoria(categoria);
 
-    const nuevaBebida = new Bebida({
+    const nueva = new Bebida({
       nombre,
       descripcion,
       precio,
       stock,
       imagen,
-      categorias: categoriasFinal,
+      categoria,
       subcategoria: subcategoria || "",
       tipoWhisky: tipoWhisky || "",
       esEstrella: !!esEstrella,
     });
 
-    const guardada = await nuevaBebida.save();
+    const guardada = await nueva.save();
     res.json(guardada);
   } catch (error) {
     console.error("Error al agregar bebida:", error);
@@ -147,14 +116,13 @@ export const editarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categorias,
       categoria,
       subcategoria,
       tipoWhisky,
       esEstrella,
     } = req.body;
 
-    const categoriasFinal = normalizarCategorias(categorias || categoria);
+    categoria = normalizarCategoria(categoria);
 
     const bebidaActualizada = await Bebida.findByIdAndUpdate(
       id,
@@ -164,12 +132,12 @@ export const editarBebida = async (req, res) => {
         precio,
         stock,
         imagen,
-        categorias: categoriasFinal,
+        categoria,
         subcategoria: subcategoria || "",
         tipoWhisky: tipoWhisky || "",
         esEstrella: !!esEstrella,
       },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
     if (!bebidaActualizada) {
@@ -179,7 +147,7 @@ export const editarBebida = async (req, res) => {
     res.json(bebidaActualizada);
   } catch (error) {
     console.error("Error al actualizar bebida:", error);
-    res.status(400).json({ mensaje: "Error al actualizar bebida" });
+    res.status(500).json({ mensaje: "Error al actualizar bebida" });
   }
 };
 
@@ -188,14 +156,17 @@ export const editarBebida = async (req, res) => {
 ===================================================== */
 export const eliminarBebida = async (req, res) => {
   const { id } = req.params;
+
   try {
     const bebidaEliminada = await Bebida.findByIdAndDelete(id);
+
     if (!bebidaEliminada) {
       return res.status(404).json({ mensaje: "Bebida no encontrada" });
     }
-    res.json({ mensaje: "Bebida eliminada" });
+
+    res.json({ mensaje: "Bebida eliminada correctamente" });
   } catch (error) {
     console.error("Error al eliminar bebida:", error);
-    res.status(400).json({ mensaje: "Error al eliminar bebida" });
+    res.status(500).json({ mensaje: "Error al eliminar bebida" });
   }
 };

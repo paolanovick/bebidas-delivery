@@ -2,73 +2,69 @@ import React, { useEffect, useState } from "react";
 import { getEnvioConfig, updateEnvioConfig } from "../services/api";
 
 export default function AdminEnvio() {
-  const [costoEnvio, setCostoEnvio] = useState(1000);
-  const [envioHabilitado, setEnvioHabilitado] = useState(true);
-  const [guardando, setGuardando] = useState(false);
+  const [activo, setActivo] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [guardado, setGuardado] = useState("");
 
-  // 🔹 Cargar configuración actual
   useEffect(() => {
     const cargar = async () => {
       try {
         const data = await getEnvioConfig();
-        setCostoEnvio(data.costoEnvio);
-        setEnvioHabilitado(data.envioHabilitado);
-      } catch (e) {
-        console.error("Error cargando config:", e);
+        setActivo(data.activo);
+        setMensaje(data.mensaje || "");
+      } catch (err) {
+        console.error("Error cargando configuración de envío:", err);
       }
     };
     cargar();
   }, []);
 
-  // 🔹 Guardar cambios
-  const guardar = async () => {
-    setGuardando(true);
+  const handleGuardar = async () => {
     try {
-      await updateEnvioConfig({ costoEnvio, envioHabilitado });
-      alert("Configuración guardada ✔");
-    } catch (e) {
-      alert("Error al guardar");
-      console.error(e);
+      await updateEnvioConfig({ activo, mensaje });
+      setGuardado("Cambios guardados ✔");
+      setTimeout(() => setGuardado(""), 2500);
+    } catch (err) {
+      console.error("Error guardando configuración:", err);
     }
-    setGuardando(false);
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow max-w-xl">
-      <h2 className="text-2xl font-bold mb-4 text-[#04090C]">
-        Configuración de Envío
-      </h2>
+    <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg text-[#04090C]">
+      <h2 className="text-2xl font-bold mb-4">Configuración de Envíos</h2>
 
-      {/* Habilitar / deshabilitar envío */}
-      <label className="flex items-center gap-2 mb-4 cursor-pointer">
+      <label className="flex items-center gap-2 mb-4">
         <input
           type="checkbox"
-          checked={envioHabilitado}
-          onChange={() => setEnvioHabilitado(!envioHabilitado)}
+          checked={activo}
+          onChange={(e) => setActivo(e.target.checked)}
         />
-        <span className="text-[#04090C] font-semibold">
-          Envío a domicilio habilitado
-        </span>
+        <span className="font-semibold">Activar envíos hoy</span>
       </label>
 
-      {/* Costo del envío */}
-      <label className="block font-semibold text-[#04090C]">
-        Costo del envío ($)
-      </label>
-      <input
-        type="number"
-        value={costoEnvio}
-        onChange={(e) => setCostoEnvio(Number(e.target.value))}
-        className="border p-2 rounded w-full mb-4 bg-white text-[#04090C]"
-      />
+      <div className="mb-4">
+        <label className="font-semibold">
+          Mensaje para mostrar al cliente:
+        </label>
+        <textarea
+          value={mensaje}
+          onChange={(e) => setMensaje(e.target.value)}
+          placeholder="Ej: Hoy los envíos cuestan $800"
+          className="w-full p-3 border rounded-lg bg-white"
+          rows={3}
+        />
+      </div>
 
       <button
-        onClick={guardar}
-        disabled={guardando}
-        className="bg-[#590707] text-white px-4 py-2 rounded-lg hover:bg-[#A30404] disabled:opacity-50"
+        onClick={handleGuardar}
+        className="bg-[#590707] hover:bg-[#A30404] text-white px-6 py-2 rounded-lg font-semibold"
       >
-        {guardando ? "Guardando..." : "Guardar cambios"}
+        Guardar cambios
       </button>
+
+      {guardado && (
+        <p className="text-green-700 mt-3 font-semibold">{guardado}</p>
+      )}
     </div>
   );
 }

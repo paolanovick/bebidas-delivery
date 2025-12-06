@@ -17,7 +17,7 @@ const CATEGORIAS_OFICIALES = [
 const SUBCATEGORIAS = {
   Vinos: ["Tinto", "Blanco", "Rosado"],
   Destilados: ["Vodka", "Gin", "Ron", "Tequila", "Whisky"],
-  Whisky: ["Bourbon", "Scotch", "Irish"], // SOLO cuando subcategoria = Whisky
+  Whisky: ["Bourbon", "Scotch", "Irish"], // SOLO si subcategoria = Whisky
 };
 
 export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
@@ -29,6 +29,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     imagen: "",
     categorias: [],
     subcategoria: "",
+    tipoWhisky: "", // 🟢 agregado
     esEstrella: false,
   });
 
@@ -43,50 +44,73 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         imagen: bebidaEditar.imagen || "",
         categorias: bebidaEditar.categorias || [],
         subcategoria: bebidaEditar.subcategoria || "",
+        tipoWhisky: bebidaEditar.tipoWhisky || "",
         esEstrella: bebidaEditar.esEstrella || false,
       });
     }
   }, [bebidaEditar]);
 
+  /* =========================================================
+     HANDLERS
+  ========================================================= */
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
+  // Selección/deselección de categoría
   const toggleCategoria = (cat) => {
     setFormData((prev) => {
       const yaEsta = prev.categorias.includes(cat);
-      return {
-        ...prev,
-        categorias: yaEsta
-          ? prev.categorias.filter((c) => c !== cat)
-          : [...prev.categorias, cat],
-      };
+
+      let nuevasCats = yaEsta
+        ? prev.categorias.filter((c) => c !== cat)
+        : [...prev.categorias, cat];
+
+      // 🟡 Si cambió la categoría principal → reset subcategorías
+      const categoriaPrincipalNueva = nuevasCats[0] || "";
+
+      if (categoriaPrincipalNueva !== prev.categorias[0]) {
+        return {
+          ...prev,
+          categorias: nuevasCats,
+          subcategoria: "",
+          tipoWhisky: "",
+        };
+      }
+
+      return { ...prev, categorias: nuevasCats };
     });
   };
 
-  // Categoría principal = primera seleccionada
+  /* =========================================================
+     DERIVADOS
+  ========================================================= */
+
   const categoriaPrincipal = formData.categorias[0] || "";
 
-  // Subcategorías disponibles según categoría principal
   const subcategoriasDisponibles = SUBCATEGORIAS[categoriaPrincipal] || [];
 
-  // Sub-subcategoría si eligen Whisky
   const tiposWhisky =
     formData.subcategoria === "Whisky" ? SUBCATEGORIAS.Whisky : [];
+
+  /* =========================================================
+     SUBMIT
+  ========================================================= */
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Siempre guardamos categorías como array
     const dataEnviar = {
       ...formData,
       categorias: formData.categorias,
       subcategoria: formData.subcategoria || "",
+      tipoWhisky: formData.tipoWhisky || "",
     };
 
     onSubmit(dataEnviar);
@@ -100,16 +124,21 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         imagen: "",
         categorias: [],
         subcategoria: "",
+        tipoWhisky: "",
         esEstrella: false,
       });
     }
   };
 
+  /* =========================================================
+     UI
+  ========================================================= */
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Nombre */}
+      {/* NOMBRE */}
       <div>
-        <label className="font-semibold text-[#04090C]">Nombre</label>
+        <label className="font-semibold">Nombre</label>
         <input
           name="nombre"
           value={formData.nombre}
@@ -119,9 +148,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         />
       </div>
 
-      {/* Descripción */}
+      {/* DESCRIPCIÓN */}
       <div>
-        <label className="font-semibold text-[#04090C]">Descripción</label>
+        <label className="font-semibold">Descripción</label>
         <textarea
           name="descripcion"
           value={formData.descripcion}
@@ -130,9 +159,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         />
       </div>
 
-      {/* Precio */}
+      {/* PRECIO */}
       <div>
-        <label className="font-semibold text-[#04090C]">Precio</label>
+        <label className="font-semibold">Precio</label>
         <input
           name="precio"
           type="number"
@@ -143,9 +172,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         />
       </div>
 
-      {/* Stock */}
+      {/* STOCK */}
       <div>
-        <label className="font-semibold text-[#04090C]">Stock</label>
+        <label className="font-semibold">Stock</label>
         <input
           name="stock"
           type="number"
@@ -155,9 +184,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         />
       </div>
 
-      {/* Imagen */}
+      {/* IMAGEN */}
       <div>
-        <label className="font-semibold text-[#04090C]">Imagen (URL)</label>
+        <label className="font-semibold">Imagen (URL)</label>
         <input
           name="imagen"
           value={formData.imagen}
@@ -168,7 +197,8 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* CATEGORÍAS */}
       <div>
-        <label className="font-semibold text-[#04090C]">Categorías</label>
+        <label className="font-semibold">Categorías</label>
+
         <div className="grid grid-cols-2 gap-2 mt-2">
           {CATEGORIAS_OFICIALES.map((cat) => (
             <button
@@ -177,8 +207,8 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
               onClick={() => toggleCategoria(cat)}
               className={`px-3 py-2 rounded border text-sm ${
                 formData.categorias.includes(cat)
-                  ? "bg-[#590707] text-white border-[#590707]"
-                  : "bg-white border-[#CDC7BD]"
+                  ? "bg-[#590707] text-white"
+                  : "bg-white border-gray-300"
               }`}
             >
               {cat}
@@ -190,15 +220,20 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       {/* SUBCATEGORÍAS */}
       {subcategoriasDisponibles.length > 0 && (
         <div>
-          <label className="font-semibold text-[#04090C]">Subcategoría</label>
-
+          <label className="font-semibold">Subcategoría</label>
           <select
             name="subcategoria"
             value={formData.subcategoria}
-            onChange={handleChange}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                subcategoria: e.target.value,
+                tipoWhisky: "", // Reset
+              })
+            }
             className="w-full p-2 border rounded bg-white mt-1"
           >
-            <option value="">Seleccionar...</option>
+            <option value="">Seleccionar…</option>
             {subcategoriasDisponibles.map((sub) => (
               <option key={sub} value={sub}>
                 {sub}
@@ -208,20 +243,20 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         </div>
       )}
 
-      {/* TIPOS DE WHISKY */}
+      {/* TIPO DE WHISKY */}
       {tiposWhisky.length > 0 && (
         <div>
-          <label className="font-semibold text-[#04090C]">Tipo de Whisky</label>
-
+          <label className="font-semibold">Tipo de Whisky</label>
           <select
-            name="subcategoria"
-            value={formData.subcategoria}
+            name="tipoWhisky"
+            value={formData.tipoWhisky}
             onChange={handleChange}
             className="w-full p-2 border rounded bg-white mt-1"
           >
-            {tiposWhisky.map((tipo) => (
-              <option key={tipo} value={tipo}>
-                {tipo}
+            <option value="">Seleccionar…</option>
+            {tiposWhisky.map((t) => (
+              <option key={t} value={t}>
+                {t}
               </option>
             ))}
           </select>
@@ -236,9 +271,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
           checked={formData.esEstrella}
           onChange={handleChange}
         />
-        <span className="font-semibold text-[#04090C]">
-          Producto destacado ⭐
-        </span>
+        <span className="font-semibold">Producto destacado ⭐</span>
       </div>
 
       {/* BOTONES */}

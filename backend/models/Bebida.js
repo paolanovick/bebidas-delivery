@@ -1,12 +1,5 @@
-// models/Bebida.js
 import mongoose from "mongoose";
 
-/*
--------------------------------------------------------------
- CATEGORÍAS OFICIALES DEL CLIENTE
- (TODO lo que no coincida será normalizado del lado del controller)
--------------------------------------------------------------
-*/
 export const CATEGORIAS_OFICIALES = [
   "Combos",
   "Cervezas",
@@ -20,23 +13,10 @@ export const CATEGORIAS_OFICIALES = [
   "Cigarrillos",
 ];
 
-/*
--------------------------------------------------------------
- SUBCATEGORÍAS OFICIALES
--------------------------------------------------------------
-*/
 export const SUBCATEGORIAS = {
   Vinos: ["Tinto", "Blanco", "Rosado"],
-
-  Destilados: [
-    "Vodka",
-    "Gin",
-    "Ron",
-    "Tequila",
-    "Whisky", // Whisky es una subcategoría dentro de Destilados
-  ],
-
-  Whisky: ["Bourbon", "Scotch", "Irish"], // Sub–subcategoría
+  Destilados: ["Vodka", "Gin", "Ron", "Tequila", "Whisky"],
+  Whisky: ["Bourbon", "Scotch", "Irish"],
 };
 
 const bebidaSchema = new mongoose.Schema({
@@ -46,41 +26,24 @@ const bebidaSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   imagen: { type: String },
 
-  /*
-  -------------------------------------------------------------
-   CATEGORÍAS (array, siempre normalizado)
-  -------------------------------------------------------------
-  */
-  categorias: {
-    type: [String],
-    default: [],
+  // ✔ CATEGORÍA ÚNICA (NUNCA MÁS UN ARRAY)
+  categoria: {
+    type: String,
+    required: true,
   },
 
-  /*
-  -------------------------------------------------------------
-   SUBCATEGORÍAS
-   - Para vinos: Tinto, Blanco, Rosado
-   - Para destilados: Vodka, Gin, Ron, Tequila, Whisky
-   - Para whisky: Bourbon, Scotch, Irish
-  -------------------------------------------------------------
-  */
+  // ✔ SUBCATEGORÍA (solo cuando corresponde)
   subcategoria: {
     type: String,
     default: "",
   },
 
-  /*
-  -------------------------------------------------------------
-   TIPO de whisky (sub-subcategoría)
-   SOLO aplica si subcategoria = "Whisky"
-  -------------------------------------------------------------
-  */
+  // ✔ TIPO DE WHISKY (solo si subcategoria === "Whisky")
   tipoWhisky: {
     type: String,
     default: "",
   },
 
-  // Producto destacado
   esEstrella: {
     type: Boolean,
     default: false,

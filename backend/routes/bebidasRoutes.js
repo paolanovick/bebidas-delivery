@@ -10,12 +10,16 @@ import { verificarToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// ✅ Lista bebidas (público)
-router.get("/", getBebidas);
+// ------------------------------------------------------
+// 🔓 RUTAS PÚBLICAS
+// ------------------------------------------------------
+router.get("/", getBebidas); // Obtener bebidas (con categorías normalizadas)
 
-// ✅ Las siguientes requieren token (solo admin)
-router.post("/", verificarToken, agregarBebida);
-router.put("/:id", verificarToken, editarBebida);
-router.delete("/:id", verificarToken, eliminarBebida);
+// ------------------------------------------------------
+// 🔐 RUTAS PROTEGIDAS (solo admin)
+// ------------------------------------------------------
+router.post("/", verificarToken, agregarBebida); // Crear bebida
+router.put("/:id", verificarToken, editarBebida); // Editar bebida
+router.delete("/:id", verificarToken, eliminarBebida); // Eliminar bebida
 
 export default router;

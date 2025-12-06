@@ -13,6 +13,7 @@ import {
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
 import AdminEnvio from "./AdminEnvio";
+import BebidasListCategorias from "../components/BebidasListCategorias";
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
@@ -33,18 +34,46 @@ const Admin = () => {
     cargarBebidas();
   }, []);
 
+  // ================================================
+  //  ADD BEBIDA — AHORA ACEPTA categoria, subcategoria y tipoWhisky
+  // ================================================
   const handleAdd = async (bebida) => {
     try {
-      await agregarBebida(bebida);
+      await agregarBebida({
+        nombre: bebida.nombre,
+        descripcion: bebida.descripcion,
+        precio: bebida.precio,
+        stock: bebida.stock,
+        imagen: bebida.imagen,
+        categorias: bebida.categorias,
+        subcategoria: bebida.subcategoria,
+        tipoWhisky: bebida.tipoWhisky || "",
+        esEstrella: bebida.esEstrella,
+      });
+
       await cargarBebidas();
     } catch (error) {
       console.error("Error al agregar bebida:", error);
     }
   };
 
+  // ================================================
+  //  EDIT BEBIDA — AHORA TAMBIÉN ENVÍA tipoWhisky
+  // ================================================
   const handleEdit = async (bebida) => {
     try {
-      await editarBebida(editing._id, bebida);
+      await editarBebida(editing._id, {
+        nombre: bebida.nombre,
+        descripcion: bebida.descripcion,
+        precio: bebida.precio,
+        stock: bebida.stock,
+        imagen: bebida.imagen,
+        categorias: bebida.categorias,
+        subcategoria: bebida.subcategoria,
+        tipoWhisky: bebida.tipoWhisky || "",
+        esEstrella: bebida.esEstrella,
+      });
+
       await cargarBebidas();
       setEditing(null);
     } catch (error) {
@@ -52,10 +81,11 @@ const Admin = () => {
     }
   };
 
+  // ================================================
   const handleDelete = async (id) => {
     try {
       await eliminarBebida(id);
-      setBebidas(bebidas.filter((b) => b._id !== id));
+      setBebidas((prev) => prev.filter((b) => b._id !== id));
     } catch (error) {
       console.error("Error al eliminar bebida:", error);
     }
@@ -68,7 +98,7 @@ const Admin = () => {
 
   return (
     <div className="flex min-h-screen bg-[#CDC7BD]">
-      {/* 📌 SIDEBAR ESCRITORIO */}
+      {/* SIDEBAR DESKTOP */}
       <aside className="hidden md:flex md:flex-col w-64 bg-[#590707] text-white py-6 px-4 shadow-xl">
         <h2 className="text-2xl font-bold mb-8 text-center border-b border-[#A30404] pb-4">
           Admin Panel
@@ -120,7 +150,6 @@ const Admin = () => {
             Publicidad
           </button>
 
-          {/* ✅ NUEVO — ENVÍO / DELIVERY */}
           <button
             onClick={() => cambiarSeccion("envio")}
             className={`text-left px-4 py-3 rounded-lg transition-all ${
@@ -132,7 +161,7 @@ const Admin = () => {
         </nav>
       </aside>
 
-      {/* 📱 SIDEBAR MOBILE */}
+      {/* SIDEBAR MOBILE */}
       <div
         className={`fixed inset-y-0 left-0 bg-[#590707] text-white w-64 transform ${
           menuAbierto ? "translate-x-0" : "-translate-x-full"
@@ -149,36 +178,30 @@ const Admin = () => {
           >
             Pedidos
           </button>
-
           <button
             onClick={() => cambiarSeccion("bebidas")}
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Bebidas
           </button>
-
           <button
             onClick={() => cambiarSeccion("usuarios")}
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Usuarios
           </button>
-
           <button
             onClick={() => cambiarSeccion("horarios")}
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Horarios
           </button>
-
           <button
             onClick={() => cambiarSeccion("publicidad")}
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Publicidad
           </button>
-
-          {/* ✅ AGREGADO TAMBIÉN EN MOBILE */}
           <button
             onClick={() => cambiarSeccion("envio")}
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
@@ -198,7 +221,7 @@ const Admin = () => {
         </button>
       </div>
 
-      {/* 📌 CONTENIDO PRINCIPAL */}
+      {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 md:p-8 mt-16 md:mt-0">
         {seccion === "pedidos" && <AdminPedidos />}
         {seccion === "bebidas" && (
@@ -207,37 +230,6 @@ const Admin = () => {
               <h1 className="text-3xl font-bold text-[#04090C]">
                 Gestión de Bebidas
               </h1>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => cambiarSeccion("categorias")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Ver catálogo por categoría
-                </button>
-
-                <button
-                  onClick={() => cambiarSeccion("horarios")}
-                  className="bg-[#CDC7BD] text-[#04090C] px-4 py-2 rounded-lg shadow-md border border-[#CDC7BD]"
-                >
-                  Horarios de entrega
-                </button>
-
-                <button
-                  onClick={() => cambiarSeccion("publicidad")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Publicidad
-                </button>
-
-                {/* 🔥 BOTÓN NUEVO — CONFIGURACIÓN DE ENVÍO */}
-                <button
-                  onClick={() => cambiarSeccion("envio")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Envío / Delivery
-                </button>
-              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 items-start">
@@ -266,57 +258,16 @@ const Admin = () => {
         )}
 
         {seccion === "categorias" && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-[#04090C]">
-                Catálogo de Bebidas
-              </h2>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => cambiarSeccion("bebidas")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  + Nueva / Editar bebida
-                </button>
-
-                <button
-                  onClick={() => cambiarSeccion("publicidad")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Publicidad
-                </button>
-
-                <button
-                  onClick={() => cambiarSeccion("envio")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Envío / Delivery
-                </button>
-
-                <button
-                  onClick={() => cambiarSeccion("horarios")}
-                  className="bg-[#590707] text-white px-4 py-2 rounded-lg shadow-md hover:bg-[#A30404]"
-                >
-                  Horarios de entrega
-                </button>
-              </div>
-            </div>
-
-            <BebidasList
-              bebidas={bebidas}
-              onEdit={setEditing}
-              onDelete={handleDelete}
-              showStock={true}
-            />
-          </div>
+          <BebidasListCategorias
+            bebidas={bebidas}
+            onEdit={setEditing}
+            onDelete={handleDelete}
+          />
         )}
 
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
         {seccion === "publicidad" && <PublicidadAdmin />}
-
-        {/* ✅ AHORA SÍ SE MUESTRA */}
         {seccion === "envio" && <AdminEnvio />}
       </main>
     </div>
