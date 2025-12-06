@@ -1,3 +1,7 @@
+// ===============================
+//  MenuBebidas.jsx - VERSIÓN FINAL
+// ===============================
+
 import React, { useState, useRef, useEffect } from "react";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
@@ -12,7 +16,7 @@ export default function MenuBebidas() {
 
   const [categoria, setCategoria] = useState("Todas");
   const [subcategoria, setSubcategoria] = useState("Todas");
-  const [tipo, setTipo] = useState("Todas"); // SUB-SUBCATEGORÍA (Whisky)
+  const [tipo, setTipo] = useState("Todas");
   const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
 
@@ -25,9 +29,9 @@ export default function MenuBebidas() {
     tipo === "Todas" &&
     busqueda.trim() === "";
 
-  // ============================
-  // 🔥 NUEVAS CATEGORÍAS CLIENTE
-  // ============================
+  // ============================================
+  // 🔥 CATEGORÍAS OFICIALES (fijas)
+  // ============================================
   const categorias = [
     "Todas",
     "Combos",
@@ -42,28 +46,28 @@ export default function MenuBebidas() {
     "Cigarrillos",
   ];
 
-  // ================================
-  // SUBCATEGORÍAS POR CATEGORÍA
-  // ================================
+  // ============================================
+  // SUBCATEGORÍAS DEFINIDAS
+  // ============================================
   const subcategoriasMapa = {
-    Vinos: ["Todas", "Tinto", "Blanco", "Rosé"],
+    Vinos: ["Todas", "Tinto", "Blanco", "Rosado"],
     Destilados: ["Todas", "Vodka", "Gin", "Ron", "Tequila", "Whisky"],
   };
 
-  // SUB-SUBCATEGORÍAS cuando eligen Whisky
+  // TIPOS EXCLUSIVOS PARA WHISKY
   const tiposWhisky = ["Todas", "Bourbon", "Scotch", "Irish"];
 
-  // ================================
-  // AGRUPACIÓN PARA VISTA TIPO NETFLIX
-  // ================================
+  // ============================================
+  // AGRUPACIÓN PARA CATÁLOGO NETFLIX
+  // ============================================
   const bebidasPorCategoria = bebidas.reduce((acc, b) => {
-    const categoriaPrincipal =
+    const principal =
       Array.isArray(b.categorias) && b.categorias.length > 0
         ? b.categorias[0]
         : b.categoria || "Sin categoría";
 
-    if (!acc[categoriaPrincipal]) acc[categoriaPrincipal] = [];
-    acc[categoriaPrincipal].push(b);
+    if (!acc[principal]) acc[principal] = [];
+    acc[principal].push(b);
 
     return acc;
   }, {});
@@ -72,9 +76,9 @@ export default function MenuBebidas() {
     (c) => c !== "Todas" && bebidasPorCategoria[c]
   );
 
-  // ================================
-  // FILTROS PRINCIPALES
-  // ================================
+  // ============================================
+  // FILTRO PRINCIPAL
+  // ============================================
   const bebidasFiltradas = bebidas.filter((b) => {
     let categoriasProducto = [];
 
@@ -84,17 +88,22 @@ export default function MenuBebidas() {
       categoriasProducto = [b.categoria];
     }
 
-    const matchCat =
+    const matchCategoria =
       categoria === "Todas" ||
       categoriasProducto.some(
         (cat) => cat.toLowerCase() === categoria.toLowerCase()
       );
 
-    const matchSubcat =
+    const matchSubcategoria =
       subcategoria === "Todas" ||
       (b.subcategoria && b.subcategoria === subcategoria);
 
-    const matchTipo = tipo === "Todas" || b.subcategoria === tipo;
+    const matchTipoWhisky =
+      categoria === "Destilados" &&
+      subcategoria === "Whisky" &&
+      tipo !== "Todas"
+        ? b.subcategoria === tipo
+        : true;
 
     const q = busqueda.toLowerCase();
     const matchTxt =
@@ -102,17 +111,17 @@ export default function MenuBebidas() {
       (b.nombre || "").toLowerCase().includes(q) ||
       (b.descripcion || "").toLowerCase().includes(q);
 
-    return matchCat && matchSubcat && matchTipo && matchTxt;
+    return matchCategoria && matchSubcategoria && matchTipoWhisky && matchTxt;
   });
 
-  // ================================
-  // PRODUCTOS ESTRELLA
-  // ================================
+  // ============================================
+  // PRODUCTOS DESTACADOS
+  // ============================================
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
-  // ================================
-  // AGREGAR AL CARRITO
-  // ================================
+  // ============================================
+  // CARRITO
+  // ============================================
   const [mensajeAgregado, setMensajeAgregado] = useState("");
   const [paused, setPaused] = useState(false);
   const carouselRef = useRef(null);
@@ -125,16 +134,16 @@ export default function MenuBebidas() {
     }
 
     agregar(b);
-    setMensajeAgregado(`"${b.nombre}" agregado al carrito 🛒`);
+    setMensajeAgregado(`"${b.nombre}" agregado 🛒`);
     setTimeout(() => setMensajeAgregado(""), 3000);
   };
 
   const fmt = (n) =>
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
-  // ================================
+  // ============================================
   // HORARIOS DELIVERY
-  // ================================
+  // ============================================
   useEffect(() => {
     const cargarEstado = async () => {
       try {
@@ -142,23 +151,17 @@ export default function MenuBebidas() {
         const estado = getEstadoDelivery(config);
         setEstadoDelivery(estado);
       } catch (err) {
-        console.error("Error al cargar configuración de horarios:", err);
-        setEstadoDelivery({
-          estado: "error",
-          mensaje:
-            "No pudimos cargar los horarios de entrega. Puedes hacer tu pedido igual 😊",
-        });
+        console.error("Error horarios:", err);
       } finally {
         setCargandoHorarios(false);
       }
     };
-
     cargarEstado();
   }, []);
 
-  // ================================
-  // CARRUSEL DESTACADOS
-  // ================================
+  // ============================================
+  // CARRUSEL DESTACADOS AUTOSCROLL
+  // ============================================
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
@@ -178,19 +181,9 @@ export default function MenuBebidas() {
     return () => clearInterval(interval);
   }, [paused]);
 
-  const scrollCarousel = (direction) => {
-    if (carouselRef.current) {
-      const scrollAmount = 300;
-      carouselRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  // ================================
-  // === RENDER PRINCIPAL ===
-  // ================================
+  // ===========================================================
+  // ===================== RENDER ==============================
+  // ===========================================================
   return (
     <div
       className="flex min-h-screen relative"
@@ -201,14 +194,14 @@ export default function MenuBebidas() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* MENSAJE AGREGADO */}
+      {/* MENSAJE CARRITO */}
       {mensajeAgregado && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded-full shadow-lg">
           {mensajeAgregado}
         </div>
       )}
 
-      {/* Overlay móvil */}
+      {/* OVERLAY MOVIL */}
       {menuAbierto && (
         <div
           className="fixed inset-0 bg-black/40 z-30 md:hidden"
@@ -216,13 +209,15 @@ export default function MenuBebidas() {
         />
       )}
 
-      {/* SIDEBAR */}
+      {/* -------------------- SIDEBAR -------------------- */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD] 
-        p-6 z-40 shadow transform transition-transform duration-300
-        pt-16 md:pt-6
-        ${menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        overflow-y-auto max-h-screen`}
+        className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
+          p-6 z-40 shadow transform transition-transform duration-300
+          pt-16 md:pt-6
+          ${
+            menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }
+          overflow-y-auto max-h-screen`}
       >
         <button
           onClick={() => setMenuAbierto(false)}
@@ -271,7 +266,7 @@ export default function MenuBebidas() {
             </div>
           </div>
 
-          {/* SUBCATEGORÍAS SI CORRESPONDE */}
+          {/* SUBCATEGORÍAS */}
           {subcategoriasMapa[categoria] && (
             <div>
               <label className="text-sm text-[#736D66] block mb-2">
@@ -299,7 +294,7 @@ export default function MenuBebidas() {
             </div>
           )}
 
-          {/* TIPOS PARA WHISKY */}
+          {/* TIPOS WHISKY */}
           {categoria === "Destilados" && subcategoria === "Whisky" && (
             <div>
               <label className="text-sm text-[#736D66] block mb-2">
@@ -326,21 +321,19 @@ export default function MenuBebidas() {
         </div>
       </aside>
 
-      {/* CONTENIDO PRINCIPAL */}
+      {/* -------------------- CONTENIDO PRINCIPAL -------------------- */}
       <main className="flex-1 p-3 sm:p-5 md:p-8 lg:p-10 overflow-x-hidden pt-16 md:pt-10">
         {/* HORARIO DELIVERY */}
         {!cargandoHorarios && estadoDelivery && (
           <div
-            className={`
-              mb-4 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-md 
-              ${
-                estadoDelivery.estado === "durante"
-                  ? "bg-[#590707] text-white"
-                  : estadoDelivery.estado === "antes"
-                  ? "bg-[#590707] text-white"
-                  : "bg-[#736D66] text-white"
-              }
-            `}
+            className={`mb-4 px-4 py-3 rounded-2xl flex items-center gap-3 shadow-md 
+            ${
+              estadoDelivery.estado === "durante"
+                ? "bg-[#590707] text-white"
+                : estadoDelivery.estado === "antes"
+                ? "bg-[#590707] text-white"
+                : "bg-[#736D66] text-white"
+            }`}
           >
             <span className="text-xl">🛵</span>
             <p>{estadoDelivery.mensaje}</p>
@@ -352,7 +345,14 @@ export default function MenuBebidas() {
           <CarruselDestacados
             productos={productosEstrella}
             handleAgregar={handleAgregar}
-            scrollCarousel={scrollCarousel}
+            scrollCarousel={(dir) => {
+              if (carouselRef.current) {
+                carouselRef.current.scrollBy({
+                  left: dir === "left" ? -300 : 300,
+                  behavior: "smooth",
+                });
+              }
+            }}
             carouselRef={carouselRef}
             paused={paused}
             setPaused={setPaused}
@@ -380,7 +380,9 @@ export default function MenuBebidas() {
             No se encontraron productos con ese filtro.
           </p>
         ) : sinFiltros ? (
-          /* VISTA NETFLIX */
+          // =============================
+          //   VISTA NETFLIX
+          // =============================
           <div className="space-y-10">
             {ordenCategoriasCatalogo.map((cat) => (
               <section key={cat} className="w-full">
@@ -438,7 +440,9 @@ export default function MenuBebidas() {
             ))}
           </div>
         ) : (
-          /* VISTA FILTRADA */
+          // =============================
+          //   VISTA FILTRADA
+          // =============================
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {bebidasFiltradas.map((b) => (
               <div

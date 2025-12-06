@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 6;
 
-// 🔥 CATEGORÍAS OFICIALES DEL CLIENTE
+// 🔥 CATEGORÍAS OFICIALES DEL CLIENTE (FIJAS)
 const CATEGORIAS_OFICIALES = [
   "Combos",
   "Cervezas",
@@ -17,6 +17,33 @@ const CATEGORIAS_OFICIALES = [
   "Cigarrillos",
 ];
 
+// 🔥 MAPEO de categorías viejas → nuevas (para evitar que desaparezcan productos)
+const NORMALIZAR = {
+  Gaseosas: "Gaseosas y jugos",
+  Jugos: "Gaseosas y jugos",
+
+  Licores: "Aperitivos y Licores",
+  Aperitivos: "Aperitivos y Licores",
+
+  Blancas: "Destilados",
+  Whisky: "Destilados",
+
+  Mayoristas: "Ofertas",
+  Ofertas: "Ofertas",
+
+  Regalos: "Snacks",
+  "Gift Cards": "Snacks",
+
+  "Wine Club": "Vinos",
+  Experiencias: "Vinos",
+};
+
+// Normaliza una categoría vieja a la nueva oficial
+const normalizarCategoria = (cat) => {
+  if (!cat) return "Sin categoría";
+  return NORMALIZAR[cat] || cat;
+};
+
 const BebidasListCategorias = ({
   bebidas = [],
   onEdit,
@@ -28,41 +55,34 @@ const BebidasListCategorias = ({
   const [pagina, setPagina] = useState(1);
 
   const navigate = useNavigate();
-  const hayBebidas = bebidas.length > 0;
+  
 
-  // Normaliza categorías de una bebida
+  // 🔥 Obtiene categorías normales siempre como array
   const obtenerCategoriasBebida = (b) => {
-    if (Array.isArray(b.categorias) && b.categorias.length > 0) {
-      return b.categorias;
-    }
-    if (typeof b.categorias === "string") return [b.categorias];
-    if (Array.isArray(b.categoria) && b.categoria.length > 0)
-      return b.categoria;
-    if (typeof b.categoria === "string") return [b.categoria];
-    return ["Sin categoría"];
+    let cats = [];
+
+    if (Array.isArray(b.categorias) && b.categorias.length > 0)
+      cats = b.categorias;
+    else if (typeof b.categorias === "string") cats = [b.categorias];
+    else if (Array.isArray(b.categoria)) cats = b.categoria;
+    else if (typeof b.categoria === "string") cats = [b.categoria];
+
+    // Normalizar todas
+    const normalizadas = cats.map((c) => normalizarCategoria(c));
+
+    // Filtrar solo categorías oficiales
+    return normalizadas.filter((n) => CATEGORIAS_OFICIALES.includes(n));
   };
 
-  // Categorías presentes en DB que coinciden con las oficiales
-  const categorias = useMemo(() => {
-    if (!hayBebidas) return [];
+  // ✔ Las 10 categorías oficiales SIEMPRE visibles
+  const categorias = CATEGORIAS_OFICIALES;
 
-    const encontradas = new Set();
+ useEffect(() => {
+   if (!categoriaActiva) {
+     setCategoriaActiva(categorias[0]);
+   }
+ }, [categoriaActiva, categorias]);
 
-    bebidas.forEach((b) =>
-      obtenerCategoriasBebida(b).forEach((cat) => {
-        if (CATEGORIAS_OFICIALES.includes(cat)) encontradas.add(cat);
-      })
-    );
-
-    // Mantener el orden oficial
-    return CATEGORIAS_OFICIALES.filter((c) => encontradas.has(c));
-  }, [bebidas, hayBebidas]);
-
-  useEffect(() => {
-    if (categorias.length > 0 && !categorias.includes(categoriaActiva)) {
-      setCategoriaActiva(categorias[0]);
-    }
-  }, [categorias, categoriaActiva]);
 
   useEffect(() => {
     setPagina(1);
@@ -70,11 +90,12 @@ const BebidasListCategorias = ({
 
   // Filtrado según categoría activa
   const bebidasFiltradas = useMemo(() => {
-    if (!hayBebidas || !categoriaActiva) return [];
+    if (!categoriaActiva) return [];
 
-    let resultado = bebidas.filter((b) =>
-      obtenerCategoriasBebida(b).includes(categoriaActiva)
-    );
+    let resultado = bebidas.filter((b) => {
+      const cats = obtenerCategoriasBebida(b);
+      return cats.includes(categoriaActiva);
+    });
 
     resultado.sort((a, b) => {
       const stockA = Number(a.stock) || 0;
@@ -94,7 +115,7 @@ const BebidasListCategorias = ({
     });
 
     return resultado;
-  }, [bebidas, hayBebidas, categoriaActiva, orden]);
+  }, [bebidas, categoriaActiva, orden]);
 
   const totalPaginas = Math.ceil(bebidasFiltradas.length / ITEMS_PER_PAGE);
   const inicio = (pagina - 1) * ITEMS_PER_PAGE;
@@ -103,22 +124,9 @@ const BebidasListCategorias = ({
   const total = bebidas.length;
   const sinStockCount = bebidas.filter((b) => (b.stock ?? 0) <= 0).length;
 
-  if (!hayBebidas) {
-    return (
-      <div className="bg-white shadow-xl rounded-xl p-8 text-center border border-[#CDC7BD] mt-6">
-        <p className="text-[#736D66] text-lg mb-4">
-          No hay bebidas registradas.
-        </p>
-        <p className="text-[#04090C] font-semibold">
-          ¡Agregá tu primera bebida usando el formulario!
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="mt-6">
-      {/* Encabezado */}
+      {/* STATS */}
       <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2 text-xs items-center">
           <div className="bg-white text-[#04090C] shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
@@ -133,7 +141,7 @@ const BebidasListCategorias = ({
           <select
             value={orden}
             onChange={(e) => setOrden(e.target.value)}
-            className="border border-[#CDC7BD] rounded-lg px-2 py-1 bg-white text-[#04090C] focus:outline-none focus:ring-2 focus:ring-[#590707]"
+            className="border border-[#CDC7BD] rounded-lg px-2 py-1 bg-white text-[#04090C]"
           >
             <option value="recientes">Últimos cargados</option>
             <option value="alfabetico">Nombre (A-Z)</option>
@@ -142,38 +150,38 @@ const BebidasListCategorias = ({
         </div>
       </div>
 
-      {/* Categorías */}
-      {categorias.length > 0 && (
-        <div className="mb-4">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categorias.map((cat) => {
-              const activa = categoriaActiva === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setCategoriaActiva(cat)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                    activa
-                      ? "bg-[#590707] text-white shadow-lg scale-105"
-                      : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95] hover:bg-[#bfb7ad]"
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
+      {/* 🔥 CATEGORÍAS OFICIALES SIEMPRE VISIBLES */}
+      <div className="mb-4">
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {categorias.map((cat) => {
+            const activa = categoriaActiva === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategoriaActiva(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                  activa
+                    ? "bg-[#590707] text-white shadow-lg scale-105"
+                    : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95]"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
-      {/* Si no hay bebidas en categoría */}
+      {/* Si no hay bebidas */}
       {bebidasFiltradas.length === 0 ? (
         <div className="bg-white shadow-xl rounded-xl p-6 text-center border border-[#CDC7BD]">
-          <p className="text-[#736D66]">No hay bebidas en esta categoría.</p>
+          <p className="text-[#736D66]">
+            No hay bebidas en esta categoría todavía.
+          </p>
         </div>
       ) : (
         <>
-          {/* Tabla */}
+          {/* TABLA */}
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-[#CDC7BD] rounded-xl shadow-lg text-[#04090C]">
               <thead className="bg-[#590707] text-white">
@@ -205,7 +213,7 @@ const BebidasListCategorias = ({
                           alt={b.nombre}
                           className="w-14 h-14 object-cover rounded-lg border border-[#CDC7BD]"
                           onError={(e) =>
-                            (e.currentTarget.src =
+                            (e.target.src =
                               "https://placehold.co/80x80/CDC7BD/04090C?text=Sin+Img")
                           }
                         />
@@ -280,17 +288,13 @@ const BebidasListCategorias = ({
             </table>
           </div>
 
-          {/* Paginación */}
+          {/* PAGINACIÓN */}
           {totalPaginas > 1 && (
             <div className="flex items-center justify-center gap-2 mt-4 text-xs">
               <button
                 onClick={() => setPagina((p) => Math.max(1, p - 1))}
                 disabled={pagina === 1}
-                className={`px-3 py-1 rounded-lg border ${
-                  pagina === 1
-                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2]"
-                    : "text-[#04090C] border-[#CDC7BD] bg-white hover:bg-[#F2ECE4]"
-                }`}
+                className="px-3 py-1 rounded-lg border bg-white hover:bg-[#F2ECE4]"
               >
                 ← Anterior
               </button>
@@ -301,8 +305,8 @@ const BebidasListCategorias = ({
                   onClick={() => setPagina(i + 1)}
                   className={`px-3 py-1 rounded-lg border ${
                     pagina === i + 1
-                      ? "bg-[#590707] text-white border-[#590707]"
-                      : "bg-white text-[#04090C] border-[#CDC7BD] hover:bg-[#F2ECE4]"
+                      ? "bg-[#590707] text-white"
+                      : "bg-white hover:bg-[#F2ECE4]"
                   }`}
                 >
                   {i + 1}
@@ -312,11 +316,7 @@ const BebidasListCategorias = ({
               <button
                 onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
                 disabled={pagina === totalPaginas}
-                className={`px-3 py-1 rounded-lg border ${
-                  pagina === totalPaginas
-                    ? "text-[#736D66] border-[#CDC7BD] bg-[#F7F5F2]"
-                    : "text-[#04090C] border-[#CDC7BD] bg-white hover:bg-[#F2ECE4]"
-                }`}
+                className="px-3 py-1 rounded-lg border bg-white hover:bg-[#F2ECE4]"
               >
                 Siguiente →
               </button>
