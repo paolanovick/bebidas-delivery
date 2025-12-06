@@ -397,8 +397,15 @@ export default function MenuBebidas() {
                   {bebidasPorCategoria[cat].map((b) => (
                     <div
                       key={b._id}
-                      className="bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 shadow-sm hover:shadow-xl transition hover:-translate-y-1 w-48 sm:w-56 md:w-64 flex-shrink-0 flex flex-col"
+                      className="relative bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 shadow-sm hover:shadow-xl transition hover:-translate-y-1 w-48 sm:w-56 md:w-64 flex-shrink-0 flex flex-col"
                     >
+                      {/* CINTA SIN STOCK */}
+                      {b.stock <= 0 && (
+                        <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded shadow">
+                          SIN STOCK
+                        </div>
+                      )}
+
                       <img
                         src={b.imagen}
                         alt={b.nombre}
@@ -412,6 +419,7 @@ export default function MenuBebidas() {
                       <h3 className="text-sm md:text-base font-semibold text-[#04090C] line-clamp-2 mb-1">
                         {b.nombre}
                       </h3>
+
                       <p className="text-[#736D66] text-xs md:text-sm line-clamp-2 mb-1">
                         {b.descripcion}
                       </p>
