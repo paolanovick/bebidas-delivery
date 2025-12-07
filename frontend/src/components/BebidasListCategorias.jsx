@@ -146,7 +146,7 @@ export default function BebidasListCategorias({
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 categoriaActiva === cat
                   ? "bg-[#590707] text-white shadow-lg scale-105"
-                  : "bg-[#CDC7BD] text-[#04090C] border border-[#a89f95]"
+                  : "bg-[#CDC7BD] text-[#04090C] border border-[#04090C]"
               }`}
             >
               {cat}
@@ -267,7 +267,11 @@ export default function BebidasListCategorias({
               <button
                 onClick={() => setPagina((p) => Math.max(1, p - 1))}
                 disabled={pagina === 1}
-                className="px-3 py-1 rounded-lg border bg-white hover:bg-[#F2ECE4]"
+                className={`px-3 py-1 rounded-lg border border-[#04090C] ${
+                  pagina === 1
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-white text-[#04090C] hover:bg-[#F2ECE4]"
+                }`}
               >
                 ← Anterior
               </button>
@@ -276,10 +280,10 @@ export default function BebidasListCategorias({
                 <button
                   key={i}
                   onClick={() => setPagina(i + 1)}
-                  className={`px-3 py-1 rounded-lg border ${
+                  className={`px-3 py-1 rounded-lg border border-[#04090C] ${
                     pagina === i + 1
                       ? "bg-[#590707] text-white"
-                      : "bg-white hover:bg-[#F2ECE4]"
+                      : "bg-white text-[#04090C] hover:bg-[#F2ECE4]"
                   }`}
                 >
                   {i + 1}
@@ -289,7 +293,11 @@ export default function BebidasListCategorias({
               <button
                 onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
                 disabled={pagina === totalPaginas}
-                className="px-3 py-1 rounded-lg border bg-white hover:bg-[#F2ECE4]"
+                className={`px-3 py-1 rounded-lg border border-[#04090C] ${
+                  pagina === totalPaginas
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-white text-[#04090C] hover:bg-[#F2ECE4]"
+                }`}
               >
                 Siguiente →
               </button>

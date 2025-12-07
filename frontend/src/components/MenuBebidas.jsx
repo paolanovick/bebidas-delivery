@@ -131,15 +131,20 @@ export default function MenuBebidas() {
 
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
-  const bebidasPorCategoria = bebidas.reduce((acc, b) => {
-    const principal = Array.isArray(b.categorias)
-      ? b.categorias[0]
-      : b.categoria || "Sin categoría";
+ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
+   const cats = Array.isArray(b.categorias)
+     ? b.categorias
+     : b.categoria
+     ? [b.categoria]
+     : [];
 
-    if (!acc[principal]) acc[principal] = [];
-    acc[principal].push(b);
-    return acc;
-  }, {});
+   cats.forEach((cat) => {
+     if (!acc[cat]) acc[cat] = [];
+     acc[cat].push(b);
+   });
+
+   return acc;
+ }, {});
 
   const ordenCategoriasCatalogo = categorias.filter(
     (c) => c !== "Todas" && bebidasPorCategoria[c]
