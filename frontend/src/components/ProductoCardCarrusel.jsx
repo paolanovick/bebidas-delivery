@@ -8,11 +8,12 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
   return (
     <div className="relative bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-56 sm:w-64 md:w-72 flex-shrink-0">
       <div className="relative mb-3 md:mb-4">
-        {/* CINTA DESTACADO */}
-        <div className="absolute left-0 top-2 px-3 py-1 bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold uppercase shadow-md -rotate-6 origin-left pointer-events-none">
-          Destacado
-        </div>
-
+        {/* CINTA DESTACADO - Solo si esEstrella es true */}
+        {producto.esEstrella && (
+          <div className="absolute left-0 top-2 px-3 py-1 bg-gradient-to-r from-[#A30404] to-[#590707] text-white text-[10px] md:text-xs font-bold uppercase shadow-md -rotate-6 origin-left pointer-events-none">
+            Destacado
+          </div>
+        )}
         {/* CINTA SIN STOCK */}
         {producto.stock <= 0 && (
           <div className="absolute right-0 top-2 px-3 py-1 bg-gray-800 text-white text-[10px] md:text-xs font-bold uppercase shadow-md rotate-6 origin-right pointer-events-none">

@@ -8,12 +8,7 @@ export default function SeccionCategoria({
 }) {
   return (
     <section className="w-full overflow-hidden">
-      <h2
-        className="text-xl md:text-2xl font-bold mb-3 text-[#590707] cursor-pointer hover:text-[#A30404] transition"
-        onClick={() => {
-          // Aquí se puede agregar lógica para hacer click en la categoría
-        }}
-      >
+      <h2 className="text-xl md:text-2xl font-bold mb-3 text-[#590707] cursor-pointer hover:text-[#A30404] transition">
         {categoria}
       </h2>
 
