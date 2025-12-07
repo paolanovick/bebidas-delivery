@@ -188,7 +188,7 @@ export default function MenuBebidas() {
   // ============================
   return (
     <div
-      className="flex min-h-screen relative"
+      className="flex min-h-screen relative w-screen overflow-hidden"
       style={{
         backgroundImage: "url('/fondo.png')",
         backgroundSize: "200px 200px",
@@ -304,7 +304,7 @@ export default function MenuBebidas() {
       </aside>
 
       {/* CONTENIDO */}
-      <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
         {/* HORARIOS */}
         {!cargandoHorarios && estadoDelivery && (
           <div
