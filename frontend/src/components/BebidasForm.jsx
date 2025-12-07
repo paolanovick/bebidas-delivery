@@ -138,7 +138,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* NOMBRE */}
       <div>
-        <label className="font-semibold text-[#04090C]">Nombre</label>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Nombre
+        </label>
         <input
           name="nombre"
           value={formData.nombre}
@@ -151,7 +153,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* DESCRIPCIÓN */}
       <div>
-        <label className="font-semibold text-[#04090C]">Descripción</label>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Descripción
+        </label>
         <textarea
           name="descripcion"
           value={formData.descripcion}
@@ -163,7 +167,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* PRECIO */}
       <div>
-        <label className="font-semibold text-[#04090C]">Precio</label>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Precio
+        </label>
         <input
           name="precio"
           type="number"
@@ -177,7 +183,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* STOCK */}
       <div>
-        <label className="font-semibold text-[#04090C]">Stock</label>
+        <label className="font-semibold text-[#590707] block mb-2">Stock</label>
         <input
           name="stock"
           type="number"
@@ -190,7 +196,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* IMAGEN */}
       <div>
-        <label className="font-semibold text-[#04090C]">Imagen (URL)</label>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Imagen (URL)
+        </label>
         <input
           name="imagen"
           value={formData.imagen}
@@ -202,7 +210,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
       {/* CATEGORÍAS */}
       <div>
-        <label className="font-semibold text-[#04090C]">Categorías</label>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Categorías
+        </label>
 
         <div className="grid grid-cols-2 gap-2 mt-2">
           {CATEGORIAS_OFICIALES.map((cat) => (
@@ -225,7 +235,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       {/* SUBCATEGORÍAS */}
       {subcategoriasDisponibles.length > 0 && (
         <div>
-          <label className="font-semibold text-[#04090C]">Subcategoría</label>
+          <label className="font-semibold text-[#590707] block mb-2">
+            Subcategoría
+          </label>
           <select
             name="subcategoria"
             value={formData.subcategoria}
@@ -251,7 +263,9 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       {/* TIPO DE WHISKY */}
       {tiposWhisky.length > 0 && (
         <div>
-          <label className="font-semibold text-[#04090C]">Tipo de Whisky</label>
+          <label className="font-semibold text-[#590707] block mb-2">
+            Tipo de Whisky
+          </label>
           <select
             name="tipoWhisky"
             value={formData.tipoWhisky}
@@ -277,7 +291,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
           onChange={handleChange}
           className="w-4 h-4 cursor-pointer"
         />
-        <span className="font-semibold text-[#04090C] cursor-pointer">
+        <span className="font-semibold text-[#590707] cursor-pointer">
           Producto destacado ⭐
         </span>
       </div>
