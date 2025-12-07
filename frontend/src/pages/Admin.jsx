@@ -12,7 +12,7 @@ import {
   eliminarBebida,
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
-import AdminEnvio from "./AdminEnvio";
+
 
 
 const Admin = () => {
@@ -150,14 +150,7 @@ const Admin = () => {
             Publicidad
           </button>
 
-          <button
-            onClick={() => cambiarSeccion("envio")}
-            className={`text-left px-4 py-3 rounded-lg transition-all ${
-              seccion === "envio" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
-            }`}
-          >
-            Envío / Delivery
-          </button>
+          
         </nav>
       </aside>
 
@@ -202,12 +195,7 @@ const Admin = () => {
           >
             Publicidad
           </button>
-          <button
-            onClick={() => cambiarSeccion("envio")}
-            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
-          >
-            Envío / Delivery
-          </button>
+         
         </nav>
       </div>
 
@@ -261,7 +249,7 @@ const Admin = () => {
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
         {seccion === "publicidad" && <PublicidadAdmin />}
-        {seccion === "envio" && <AdminEnvio />}
+       
       </main>
     </div>
   );
