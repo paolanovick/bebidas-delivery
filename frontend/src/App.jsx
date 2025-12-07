@@ -187,12 +187,7 @@ function AppContent() {
                       >
                         Publicidad
                       </Link>
-                      <Link
-                        to="/admin/envio"
-                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
-                      >
-                        Envío / Delivery
-                      </Link>
+                     
                     </div>
                   </div>
 
@@ -240,12 +235,7 @@ function AppContent() {
                       >
                         Publicidad
                       </Link>
-                      <Link
-                        to="/admin/envio"
-                        className="bg-[#590707] hover:bg-[#A30404] text-white text-sm px-4 py-2 rounded-lg shadow-md"
-                      >
-                        Envío / Delivery
-                      </Link>
+                     
                     </div>
                   </div>
 
