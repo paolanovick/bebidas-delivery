@@ -296,7 +296,7 @@ export default function MenuBebidas() {
       </aside>
 
       {/* CONTENIDO */}
-      <main className="flex-1 p-6 pt-20 md:pt-10">
+      <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full">
         {/* HORARIOS */}
         {!cargandoHorarios && estadoDelivery && (
           <div
