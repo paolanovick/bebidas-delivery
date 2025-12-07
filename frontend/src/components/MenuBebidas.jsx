@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import CarruselDestacados from "../components/CarruselDestacados";
-
+import Sidebar from "./Sidebar";
 import { obtenerConfiguracionHorarios, getEnvioConfig } from "../services/api";
 import { getEstadoDelivery } from "../utils/horariosDelivery";
 
@@ -212,96 +212,21 @@ export default function MenuBebidas() {
       )}
 
       {/* SIDEBAR */}
-      <aside
-        className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
-          p-6 z-40 shadow transform transition-transform duration-300
-          pt-16 md:pt-6 ${
-            menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          }`}
-      >
-        {/* BUSCADOR */}
-        <label className="text-sm text-[#736D66] block mb-2 font-semibold">
-          Buscar
-        </label>
-        <input
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] mb-6 bg-white text-[#04090C] placeholder-gray-400 font-medium"
-          placeholder="Ej: Malbec, Gin..."
-        />
-
-        {/* CATEGORÍAS */}
-        <label className="text-sm text-[#736D66] block mb-2 font-semibold">
-          Categorías
-        </label>
-        {categorias.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => {
-              setCategoria(cat);
-              setSubcategoria("Todas");
-              setTipo("Todas");
-            }}
-            className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition text-[#04090C] ${
-              categoria === cat
-                ? "bg-[#590707] text-white shadow"
-                : "hover:bg-[#CDC7BD]"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-
-        {/* SUBCATEGORÍAS */}
-        {subcategoriasMapa[categoria] && (
-          <>
-            <label className="text-sm text-[#736D66] block mt-4 mb-2">
-              Subcategoría
-            </label>
-
-            <select
-              value={subcategoria}
-              onChange={(e) => {
-                setSubcategoria(e.target.value);
-                setTipo("Todas");
-              }}
-              className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] bg-white text-[#04090C] mb-4 font-medium"
-            >
-              <option value="Todas">Todas</option>
-              {subcategoriasMapa[categoria]
-                .filter((s) => s !== "Todas")
-                .map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub}
-                  </option>
-                ))}
-            </select>
-          </>
-        )}
-
-        {/* TIPOS WHISKY */}
-        {categoria === "Destilados" && subcategoria === "Whisky" && (
-          <>
-            <label className="text-sm text-[#736D66] block mt-4 mb-2">
-              Tipo Whisky
-            </label>
-
-            {tiposWhisky.map((t) => (
-              <button
-                key={t}
-                onClick={() => setTipo(t)}
-                className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition text-[#04090C] ${
-                  tipo === t
-                    ? "bg-[#590707] text-white shadow"
-                    : "hover:bg-[#CDC7BD]"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </>
-        )}
-      </aside>
+      <Sidebar
+        categoria={categoria}
+        setCategoria={setCategoria}
+        subcategoria={subcategoria}
+        setSubcategoria={setSubcategoria}
+        tipo={tipo}
+        setTipo={setTipo}
+        busqueda={busqueda}
+        setBusqueda={setBusqueda}
+        categorias={categorias}
+        subcategoriasMapa={subcategoriasMapa}
+        tiposWhisky={tiposWhisky}
+        menuAbierto={menuAbierto}
+        setMenuAbierto={setMenuAbierto}
+      />
 
       {/* CONTENIDO */}
       <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
