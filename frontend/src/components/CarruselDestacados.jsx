@@ -39,7 +39,6 @@ export default function CarruselDestacados({
           >
             {productos
               .filter((p) => p.esEstrella)
-              .flatMap((p) => [p, p, p])
               .map((b, i) => {
                 const cats = Array.isArray(b.categorias)
                   ? b.categorias
