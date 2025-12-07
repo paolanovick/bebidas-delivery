@@ -20,6 +20,11 @@ const ConfiguracionHorariosSchema = new mongoose.Schema({
   diasAnticipacion: { type: Number, default: 0 }, // cuántos días de anticipación mínima
   pedidosSimultaneosPorSlot: { type: Number, default: 5 }, // cuántos pedidos por slot
   activo: { type: Boolean, default: true },
+
+  // ENVÍO
+  costoEnvio: { type: Number, default: 0 },
+  mensaje: { type: String, default: "" },
+
   creadoEn: { type: Date, default: Date.now },
   actualizadoEn: { type: Date, default: Date.now },
 });
@@ -29,4 +34,3 @@ export default mongoose.model(
   ConfiguracionHorariosSchema,
   "configuracionhorarios"
 );
-
