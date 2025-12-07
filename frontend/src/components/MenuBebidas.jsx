@@ -370,7 +370,10 @@ export default function MenuBebidas() {
                   {cat}
                 </h2>
 
-                <div className="flex gap-3 overflow-x-auto overflow-hidden pb-3 w-full">
+                <div
+                  className="flex gap-3 overflow-hidden pb-3 w-full"
+                  style={{ overflowX: "auto", overflowY: "hidden" }}
+                >
                   {bebidasPorCategoria[cat].map((b) => (
                     <div
                       key={b._id}
