@@ -60,8 +60,7 @@ export default function Pedido() {
   const COSTO_ENVIO = configEnvio.costoEnvio || 0;
 
   const costoEnvio =
-    modoEntrega === "envio" && configEnvio.envioHabilitado ? COSTO_ENVIO : 0;
-
+    modoEntrega === "envio" && configEnvio.activo ? COSTO_ENVIO : 0;
   // 💰 Total final
   const total = subtotal + costoEnvio;
 

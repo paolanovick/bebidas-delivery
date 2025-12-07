@@ -258,9 +258,27 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
         )}
 
         {/* TÍTULO */}
-        <h1 className="text-3xl md:text-4xl font-bold text-[#590707] mb-6">
-          Catálogo de Bebidas
-        </h1>
+        {/* TÍTULO CON HAMBURGUESA */}
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => setMenuAbierto(!menuAbierto)}
+            className="md:hidden text-2xl text-[#590707]"
+          >
+            ☰
+          </button>
+          {/* TÍTULO CON HAMBURGUESA */}
+          <div className="flex items-center gap-3 mb-6">
+            <button
+              onClick={() => setMenuAbierto(!menuAbierto)}
+              className="md:hidden text-2xl text-[#590707]"
+            >
+              ☰
+            </button>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
+              Catálogo de Bebidas
+            </h1>
+          </div>
+        </div>
 
         {/* SIN RESULTADOS */}
         {bebidasFiltradas.length === 0 ? (
@@ -279,6 +297,7 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
                 productos={bebidasPorCategoria[cat]}
                 handleAgregar={handleAgregar}
                 fmt={fmt}
+                setCategoria={setCategoria}
               />
             ))}
           </div>

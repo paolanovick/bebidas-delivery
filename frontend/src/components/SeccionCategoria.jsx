@@ -5,12 +5,16 @@ export default function SeccionCategoria({
   productos,
   handleAgregar,
   fmt,
+  setCategoria,
 }) {
   return (
     <section className="w-full overflow-hidden">
-      <h2 className="text-xl md:text-2xl font-bold mb-3 text-[#590707] cursor-pointer hover:text-[#A30404] transition">
+      <button
+        onClick={() => setCategoria(categoria)}
+        className="text-2xl font-bold text-[#590707] mb-4 hover:text-[#A30404] hover:underline transition cursor-pointer"
+      >
         {categoria}
-      </h2>
+      </button>
 
       <div
         className="flex gap-3 overflow-hidden pb-3 w-full"
