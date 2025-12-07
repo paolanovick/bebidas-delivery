@@ -61,8 +61,8 @@ export function getEstadoDelivery(config) {
     };
   }
 
-  return {
-    estado: "despues",
-    mensaje: `${mensajeBase} Ya finalizamos las entregas por hoy.`,
-  };
+  // return {
+  //   estado: "despues",
+  //   mensaje: `${mensajeBase} Ya finalizamos las entregas por hoy.`,
+  // };
 }
