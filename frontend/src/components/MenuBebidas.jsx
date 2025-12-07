@@ -98,11 +98,11 @@ export default function MenuBebidas() {
   // FILTROS Y DATOS
   // ============================
   const bebidasFiltradas = bebidas.filter((b) => {
-    const categoriasProducto = Array.isArray(b.categorias)
-      ? b.categorias
-      : b.categoria
-      ? [b.categoria]
-      : [];
+   const categoriasProducto = Array.isArray(b.categorias)
+     ? b.categorias.map((c) => c.trim())
+     : b.categoria
+     ? [b.categoria.trim()]
+     : [];
 
     const matchCategoria =
       categoria === "Todas" ||
@@ -131,20 +131,20 @@ export default function MenuBebidas() {
 
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
- const bebidasPorCategoria = bebidas.reduce((acc, b) => {
-   const cats = Array.isArray(b.categorias)
-     ? b.categorias
-     : b.categoria
-     ? [b.categoria]
-     : [];
+const bebidasPorCategoria = bebidas.reduce((acc, b) => {
+  const cats = Array.isArray(b.categorias)
+    ? b.categorias.map((c) => c.trim())
+    : b.categoria
+    ? [b.categoria.trim()]
+    : [];
 
-   cats.forEach((cat) => {
-     if (!acc[cat]) acc[cat] = [];
-     acc[cat].push(b);
-   });
+  cats.forEach((cat) => {
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(b);
+  });
 
-   return acc;
- }, {});
+  return acc;
+}, {});
 
   const ordenCategoriasCatalogo = categorias.filter(
     (c) => c !== "Todas" && bebidasPorCategoria[c]
