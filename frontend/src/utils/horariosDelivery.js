@@ -45,24 +45,24 @@ export function getEstadoDelivery(config) {
   const inicioMin = hiH * 60 + hiM;
   const finMin = hfH * 60 + hfM;
 
-  const mensajeBase = `Hoy realizamos entregas desde las ${horaInicio} hasta las ${horaFin}.`;
+ 
 
-  // if (ahoraMin < inicioMin) {
-  //   return {
-  //     estado: "antes",
-  //     mensaje: `${mensajeBase} Comenzamos a entregar a partir de las ${horaInicio}.`,
-  //   };
-  // }
+  if (ahoraMin < inicioMin) {
+    return {
+      estado: "antes",
+      mensaje: `Comenzamos a entregar a partir de las ${horaInicio}.`,
+    };
+  }
 
   if (ahoraMin >= inicioMin && ahoraMin <= finMin) {
     return {
       estado: "durante",
-      mensaje: `${mensajeBase} ¡Hacé tu pedido cuando quieras!`,
+      mensaje: `Realizamos entregas desde las ${horaInicio} hasta las ${horaFin}.`,
     };
   }
 
-  // return {
-  //   estado: "despues",
-  //   mensaje: `${mensajeBase} Ya finalizamos las entregas por hoy.`,
-  // };
+  return {
+    estado: "despues",
+    mensaje: `Realizamos entregas desde las ${horaInicio} hasta las ${horaFin}.`,
+  };
 }
