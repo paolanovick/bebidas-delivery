@@ -362,7 +362,7 @@ export default function MenuBebidas() {
           // ============================
           <div className="space-y-10">
             {ordenCategoriasCatalogo.map((cat) => (
-              <section key={cat}>
+              <section key={cat} className="w-full overflow-hidden">
                 <h2
                   className="text-xl md:text-2xl font-bold mb-3 text-[#590707] cursor-pointer"
                   onClick={() => setCategoria(cat)}
@@ -370,7 +370,7 @@ export default function MenuBebidas() {
                   {cat}
                 </h2>
 
-                <div className="flex gap-3 overflow-x-auto pb-3 max-w-full">
+                <div className="flex gap-3 overflow-x-auto pb-3 w-full">
                   {bebidasPorCategoria[cat].map((b) => (
                     <div
                       key={b._id}
