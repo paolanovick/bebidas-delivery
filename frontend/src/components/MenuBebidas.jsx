@@ -188,7 +188,7 @@ export default function MenuBebidas() {
   // ============================
   return (
     <div
-      className="flex min-h-screen relative w-screen overflow-hidden"
+      className="flex min-h-screen relative overflow-x-hidden"
       style={{
         backgroundImage: "url('/fondo.png')",
         backgroundSize: "200px 200px",
