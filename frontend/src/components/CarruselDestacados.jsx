@@ -15,7 +15,8 @@ export default function CarruselDestacados({
         Destacados El Danés
       </h2>
 
-      <div className="relative mt-8 md:mt-12 w-full max-w-full">
+      {/* CONTENEDOR CON OVERFLOW-HIDDEN PARA EVITAR QUE SE SALGA */}
+      <div className="relative mt-8 md:mt-12 w-full overflow-hidden">
         <div className="relative w-full">
           {/* BOTÓN IZQUIERDO */}
           <button

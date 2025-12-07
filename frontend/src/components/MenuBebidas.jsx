@@ -1,5 +1,5 @@
 // ===============================
-//  MenuBebidas.jsx - VERSIÓN FINAL SIN WARNINGS
+//  MenuBebidas.jsx - VERSIÓN CORREGIDA
 // ===============================
 
 import React, { useState, useRef, useEffect } from "react";
@@ -220,16 +220,20 @@ export default function MenuBebidas() {
           }`}
       >
         {/* BUSCADOR */}
-        <label className="text-sm text-[#736D66] block mb-2">Buscar</label>
+        <label className="text-sm text-[#736D66] block mb-2 font-semibold">
+          Buscar
+        </label>
         <input
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] mb-6"
+          className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] mb-6 bg-white text-[#04090C] placeholder-gray-400 font-medium"
           placeholder="Ej: Malbec, Gin..."
         />
 
         {/* CATEGORÍAS */}
-        <label className="text-sm text-[#736D66] block mb-2">Categorías</label>
+        <label className="text-sm text-[#736D66] block mb-2 font-semibold">
+          Categorías
+        </label>
         {categorias.map((cat) => (
           <button
             key={cat}
@@ -238,7 +242,7 @@ export default function MenuBebidas() {
               setSubcategoria("Todas");
               setTipo("Todas");
             }}
-            className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition ${
+            className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition text-[#04090C] ${
               categoria === cat
                 ? "bg-[#590707] text-white shadow"
                 : "hover:bg-[#CDC7BD]"
@@ -255,19 +259,23 @@ export default function MenuBebidas() {
               Subcategoría
             </label>
 
-            {subcategoriasMapa[categoria].map((sub) => (
-              <button
-                key={sub}
-                onClick={() => setSubcategoria(sub)}
-                className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition ${
-                  subcategoria === sub
-                    ? "bg-[#590707] text-white shadow"
-                    : "hover:bg-[#CDC7BD]"
-                }`}
-              >
-                {sub}
-              </button>
-            ))}
+            <select
+              value={subcategoria}
+              onChange={(e) => {
+                setSubcategoria(e.target.value);
+                setTipo("Todas");
+              }}
+              className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] bg-white text-[#04090C] mb-4 font-medium"
+            >
+              <option value="Todas">Todas</option>
+              {subcategoriasMapa[categoria]
+                .filter((s) => s !== "Todas")
+                .map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+            </select>
           </>
         )}
 
@@ -282,7 +290,7 @@ export default function MenuBebidas() {
               <button
                 key={t}
                 onClick={() => setTipo(t)}
-                className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition ${
+                className={`w-full text-left px-4 py-2 rounded-lg mb-2 transition text-[#04090C] ${
                   tipo === t
                     ? "bg-[#590707] text-white shadow"
                     : "hover:bg-[#CDC7BD]"
@@ -362,11 +370,11 @@ export default function MenuBebidas() {
                   {cat}
                 </h2>
 
-                <div className="flex gap-3 overflow-x-auto pb-3">
+                <div className="flex gap-3 overflow-x-auto pb-3 max-w-full">
                   {bebidasPorCategoria[cat].map((b) => (
                     <div
                       key={b._id}
-                      className="relative bg-white rounded-xl border p-3 shadow-sm hover:shadow-xl transition w-48 sm:w-56 flex-shrink-0"
+                      className="relative bg-white rounded-xl border p-3 shadow-sm hover:shadow-xl transition w-48 sm:w-56 flex-shrink-0 min-w-48"
                     >
                       {b.stock <= 0 && (
                         <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded">
@@ -384,9 +392,13 @@ export default function MenuBebidas() {
                         }
                       />
 
-                      <h3 className="text-sm font-semibold line-clamp-2">
+                      <h3 className="text-sm font-semibold line-clamp-2 text-[#04090C]">
                         {b.nombre}
                       </h3>
+
+                      <p className="text-[#736D66] text-xs line-clamp-2 mb-2">
+                        {b.descripcion}
+                      </p>
 
                       <p className="text-[#590707] font-bold text-lg mb-2">
                         ${fmt(b.precio)}
@@ -413,11 +425,11 @@ export default function MenuBebidas() {
           // ============================
           // VISTA FILTRADA
           // ============================
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-w-full">
             {bebidasFiltradas.map((b) => (
               <div
                 key={b._id}
-                className="relative bg-white rounded-xl border p-4 shadow-sm hover:shadow-xl transition"
+                className="relative bg-white rounded-xl border p-4 shadow-sm hover:shadow-xl transition w-full"
               >
                 {b.stock <= 0 && (
                   <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded">
@@ -435,9 +447,13 @@ export default function MenuBebidas() {
                   }
                 />
 
-                <h3 className="text-lg font-semibold line-clamp-2">
+                <h3 className="text-lg font-semibold line-clamp-2 text-[#04090C]">
                   {b.nombre}
                 </h3>
+
+                <p className="text-[#736D66] text-sm line-clamp-2 mb-2">
+                  {b.descripcion}
+                </p>
 
                 <p className="text-[#590707] font-bold text-xl mb-3">
                   ${fmt(b.precio)}
