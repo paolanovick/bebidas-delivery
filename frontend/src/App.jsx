@@ -69,17 +69,19 @@ function AppContent() {
     }
   };
 
-  const handleEdit = async (bebida) => {
-    try {
-      const actualizada = await editarBebida(editing._id, bebida);
-      setBebidas((prev) =>
-        prev.map((b) => (b._id === editing._id ? actualizada : b))
-      );
-      setEditing(null);
-    } catch (error) {
-      console.error("Error al editar bebida:", error);
-    }
-  };
+ const handleEdit = async (bebida) => {
+   try {
+     console.log("Editando ID:", editing._id); // ← AGREGAR
+     const actualizada = await editarBebida(editing._id, bebida);
+     console.log("Actualizada ID:", actualizada._id); // ← AGREGAR
+     setBebidas((prev) =>
+       prev.map((b) => (b._id === editing._id ? actualizada : b))
+     );
+     setEditing(null);
+   } catch (error) {
+     console.error("Error al editar bebida:", error);
+   }
+ };
 
   const handleDelete = async (id) => {
     try {

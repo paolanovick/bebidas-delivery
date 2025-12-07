@@ -113,7 +113,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       subcategoria: formData.subcategoria || "",
       tipoWhisky: formData.tipoWhisky || "",
     };
- console.log("📤 Enviando al backend:", dataEnviar); 
+
     onSubmit(dataEnviar);
 
     if (!bebidaEditar) {
