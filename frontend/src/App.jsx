@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,6 +8,7 @@ import {
   Link,
 } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { useBebidas } from "./context/BebidasContext";
 
 import Navbar from "./components/Navbar";
 import BebidasForm from "./components/BebidasForm";
@@ -24,83 +25,45 @@ import { BebidasProvider } from "./context/BebidasContext";
 import Inicio from "./pages/Inicio";
 import Footer from "./components/Footer";
 
-import {
-  getBebidas,
-  agregarBebida,
-  editarBebida,
-  eliminarBebida,
-} from "./services/api";
 import AgeGateModal from "./components/AgeGateModal";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
 import PublicidadModal from "./components/PublicidadModal";
 import PublicidadAdmin from "./pages/PublicidadAdmin";
 
-
-
 function AppContent() {
-  const { usuario, loading } = useAuth();
+  const { usuario } = useAuth();
   const location = useLocation();
   const ocultarFooter = location.pathname.startsWith("/admin");
 
-  const [bebidas, setBebidas] = useState([]);
+  const { bebidas, agregar, editar, eliminar } = useBebidas();
   const [editing, setEditing] = useState(null);
-
-  const cargarBebidas = async () => {
-    try {
-      const data = await getBebidas();
-      setBebidas(data);
-    } catch (error) {
-      console.error("Error al cargar bebidas:", error);
-    }
-  };
-
-  useEffect(() => {
-    cargarBebidas();
-  }, []);
 
   const handleAdd = async (bebida) => {
     try {
-      const nueva = await agregarBebida(bebida);
-      console.log("🔍 Bebida creada desde backend:", nueva);
-      setBebidas((prev) => [...prev, nueva]);
+      await agregar(bebida);
+      setEditing(null);
     } catch (error) {
       console.error("Error al agregar bebida:", error);
     }
   };
 
- const handleEdit = async (bebida) => {
-   try {
-     console.log("Editando ID:", editing._id); // ← AGREGAR
-     const actualizada = await editarBebida(editing._id, bebida);
-     console.log("Actualizada ID:", actualizada._id); // ← AGREGAR
-     setBebidas((prev) =>
-       prev.map((b) => (b._id === editing._id ? actualizada : b))
-     );
-     setEditing(null);
-   } catch (error) {
-     console.error("Error al editar bebida:", error);
-   }
- };
+  const handleEdit = async (bebida) => {
+    try {
+      await editar(editing._id, bebida);
+      setEditing(null);
+    } catch (error) {
+      console.error("Error al editar bebida:", error);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
-      await eliminarBebida(id);
-      setBebidas((prev) => prev.filter((b) => b._id !== id));
+      await eliminar(id);
     } catch (error) {
       console.error("Error al eliminar bebida:", error);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#04090C]">
-        <p className="text-2xl text-[#CDC7BD] font-semibold animate-pulse">
-          Cargando...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#04090C] text-white">
@@ -189,7 +152,6 @@ function AppContent() {
                       >
                         Publicidad
                       </Link>
-                     
                     </div>
                   </div>
 
@@ -237,7 +199,6 @@ function AppContent() {
                       >
                         Publicidad
                       </Link>
-                     
                     </div>
                   </div>
 
@@ -302,4 +263,3 @@ export default function App() {
     </Router>
   );
 }
-
