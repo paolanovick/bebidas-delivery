@@ -135,7 +135,10 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
   ========================================================= */
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 bg-[#F2ECE4] p-6 rounded-lg mx-auto max-w-2xl w-full md:max-w-3xl"
+    >
       {/* NOMBRE */}
       <div>
         <label className="font-semibold text-[#590707] block mb-2">
@@ -283,7 +286,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       )}
 
       {/* ESTRELLA */}
-      <div className="flex items-center gap-2 p-2 bg-[#F2ECE4] rounded border border-[#CDC7BD]">
+      <div className="flex items-center gap-2 p-2 bg-white rounded border border-[#CDC7BD]">
         <input
           type="checkbox"
           name="esEstrella"
