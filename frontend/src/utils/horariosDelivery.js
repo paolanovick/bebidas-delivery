@@ -47,12 +47,12 @@ export function getEstadoDelivery(config) {
 
   const mensajeBase = `Hoy realizamos entregas desde las ${horaInicio} hasta las ${horaFin}.`;
 
-  if (ahoraMin < inicioMin) {
-    return {
-      estado: "antes",
-      mensaje: `${mensajeBase} Comenzamos a entregar a partir de las ${horaInicio}.`,
-    };
-  }
+  // if (ahoraMin < inicioMin) {
+  //   return {
+  //     estado: "antes",
+  //     mensaje: `${mensajeBase} Comenzamos a entregar a partir de las ${horaInicio}.`,
+  //   };
+  // }
 
   if (ahoraMin >= inicioMin && ahoraMin <= finMin) {
     return {
