@@ -89,16 +89,17 @@ export default function Pedido() {
   // VALIDACIONES
   const telSoloDigitos = telefono.replace(/\D/g, "");
   const validoDireccion = direccion.trim().length >= 5;
-  const validoTelefono = telSoloDigitos.length >= 10;
-  const validoEmail = email.includes("@");
+  
 
   const requiereDireccion = modoEntrega === "envio";
+const validoTelefono = telefono === "" || telSoloDigitos.length >= 10;
+const validoEmail = email === "" || email.includes("@");
 
-  const puedeConfirmar =
-    carrito.length > 0 &&
-    validoTelefono &&
-    validoEmail &&
-    (!requiereDireccion || validoDireccion);
+const puedeConfirmar =
+  carrito.length > 0 &&
+  validoTelefono &&
+  validoEmail &&
+  (!requiereDireccion || validoDireccion);
 
   const confirmarYEnviar = async () => {
     if (!puedeConfirmar) return;
@@ -318,7 +319,7 @@ ${comentarios || "Sin notas"}
           </>
         )}
 
-        <label className="font-semibold text-[#04090C]">Teléfono *</label>
+        <label className="font-semibold text-[#04090C]">Teléfono (opcional)</label>
         <input
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
@@ -327,7 +328,7 @@ ${comentarios || "Sin notas"}
           placeholder="Con código de área"
         />
 
-        <label className="font-semibold text-[#04090C]">Email *</label>
+        <label className="font-semibold text-[#04090C]">Email (opcional)</label>
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
