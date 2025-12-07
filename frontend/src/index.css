@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './generated-tailwind.css';
 
 @import url('https://unpkg.com/leaflet/dist/leaflet.css');
 
@@ -24,7 +22,7 @@ code {
 /* ===== Fix para que el texto de los inputs de hora se vea bien ===== */
 
 input[type="time"] {
-  color-scheme: light; /* evita que use UI oscura del sistema */
+  color-scheme: light;
 }
 
 input[type="time"]::-webkit-datetime-edit,
@@ -32,5 +30,5 @@ input[type="time"]::-webkit-datetime-edit-fields-wrapper,
 input[type="time"]::-webkit-datetime-edit-hour-field,
 input[type="time"]::-webkit-datetime-edit-minute-field,
 input[type="time"]::-webkit-datetime-edit-text {
-  color: #04090C !important;  /* texto oscuro */
+  color: #04090C !important;
 }

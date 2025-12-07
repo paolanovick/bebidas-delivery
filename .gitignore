@@ -45,4 +45,5 @@ frontend/build.zip
 *.zip
 
  
- 
+ # Ignorar CSS generado por Tailwind
+frontend/src/generated-tailwind.css

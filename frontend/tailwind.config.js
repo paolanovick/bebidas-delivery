@@ -1,17 +1,8 @@
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {
-      keyframes: {
-        zoomIn: {
-          "0%": { transform: "scale(1)" },
-          "100%": { transform: "scale(1.08)" },
-        },
-      },
-      animation: {
-        zoomIn: "zoomIn 3s ease-out forwards",
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };
