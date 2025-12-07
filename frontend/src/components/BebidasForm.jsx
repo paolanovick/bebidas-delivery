@@ -65,6 +65,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
 
   // Selección/deselección de categoría
   const toggleCategoria = (cat) => {
+    console.log("✅ toggleCategoria llamado con:", cat); // ← AGREGAR ESTA LÍNEA
     setFormData((prev) => {
       const yaEsta = prev.categorias.includes(cat);
 
