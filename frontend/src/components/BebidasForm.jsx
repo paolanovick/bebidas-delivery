@@ -17,7 +17,7 @@ const CATEGORIAS_OFICIALES = [
 const SUBCATEGORIAS = {
   Vinos: ["Tinto", "Blanco", "Rosado"],
   Destilados: ["Vodka", "Gin", "Ron", "Tequila", "Whisky"],
-  Whisky: ["Bourbon", "Scotch", "Irish"], // SOLO si subcategoria = Whisky
+  Whisky: ["Bourbon", "Scotch", "Irish"],
 };
 
 export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
@@ -29,7 +29,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     imagen: "",
     categorias: [],
     subcategoria: "",
-    tipoWhisky: "", // 🟢 agregado
+    tipoWhisky: "",
     esEstrella: false,
   });
 
@@ -72,7 +72,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         ? prev.categorias.filter((c) => c !== cat)
         : [...prev.categorias, cat];
 
-      // 🟡 Si cambió la categoría principal → reset subcategorías
+      // Si cambió la categoría principal → reset subcategorías
       const categoriaPrincipalNueva = nuevasCats[0] || "";
 
       if (categoriaPrincipalNueva !== prev.categorias[0]) {
@@ -138,66 +138,71 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* NOMBRE */}
       <div>
-        <label className="font-semibold">Nombre</label>
+        <label className="font-semibold text-[#04090C]">Nombre</label>
         <input
           name="nombre"
           value={formData.nombre}
           onChange={handleChange}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
+          placeholder="Ej: Malbec Classico"
           required
         />
       </div>
 
       {/* DESCRIPCIÓN */}
       <div>
-        <label className="font-semibold">Descripción</label>
+        <label className="font-semibold text-[#04090C]">Descripción</label>
         <textarea
           name="descripcion"
           value={formData.descripcion}
           onChange={handleChange}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400 min-h-24"
+          placeholder="Describe el producto..."
         />
       </div>
 
       {/* PRECIO */}
       <div>
-        <label className="font-semibold">Precio</label>
+        <label className="font-semibold text-[#04090C]">Precio</label>
         <input
           name="precio"
           type="number"
           value={formData.precio}
           onChange={handleChange}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
+          placeholder="0.00"
           required
         />
       </div>
 
       {/* STOCK */}
       <div>
-        <label className="font-semibold">Stock</label>
+        <label className="font-semibold text-[#04090C]">Stock</label>
         <input
           name="stock"
           type="number"
           value={formData.stock}
           onChange={handleChange}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
+          placeholder="0"
         />
       </div>
 
       {/* IMAGEN */}
       <div>
-        <label className="font-semibold">Imagen (URL)</label>
+        <label className="font-semibold text-[#04090C]">Imagen (URL)</label>
         <input
           name="imagen"
           value={formData.imagen}
           onChange={handleChange}
-          className="w-full p-2 border rounded bg-white"
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
+          placeholder="https://ejemplo.com/imagen.jpg"
         />
       </div>
 
       {/* CATEGORÍAS */}
       <div>
-        <label className="font-semibold">Categorías</label>
+        <label className="font-semibold text-[#04090C]">Categorías</label>
 
         <div className="grid grid-cols-2 gap-2 mt-2">
           {CATEGORIAS_OFICIALES.map((cat) => (
@@ -205,10 +210,10 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
               type="button"
               key={cat}
               onClick={() => toggleCategoria(cat)}
-              className={`px-3 py-2 rounded border text-sm ${
+              className={`px-3 py-2 rounded border text-sm font-medium transition ${
                 formData.categorias.includes(cat)
-                  ? "bg-[#590707] text-white"
-                  : "bg-white border-gray-300"
+                  ? "bg-[#590707] text-white border-[#590707]"
+                  : "bg-white border-[#CDC7BD] text-[#04090C] hover:bg-[#F2ECE4]"
               }`}
             >
               {cat}
@@ -220,7 +225,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       {/* SUBCATEGORÍAS */}
       {subcategoriasDisponibles.length > 0 && (
         <div>
-          <label className="font-semibold">Subcategoría</label>
+          <label className="font-semibold text-[#04090C]">Subcategoría</label>
           <select
             name="subcategoria"
             value={formData.subcategoria}
@@ -228,10 +233,10 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
               setFormData({
                 ...formData,
                 subcategoria: e.target.value,
-                tipoWhisky: "", // Reset
+                tipoWhisky: "",
               })
             }
-            className="w-full p-2 border rounded bg-white mt-1"
+            className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] mt-1 font-medium"
           >
             <option value="">Seleccionar…</option>
             {subcategoriasDisponibles.map((sub) => (
@@ -246,12 +251,12 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       {/* TIPO DE WHISKY */}
       {tiposWhisky.length > 0 && (
         <div>
-          <label className="font-semibold">Tipo de Whisky</label>
+          <label className="font-semibold text-[#04090C]">Tipo de Whisky</label>
           <select
             name="tipoWhisky"
             value={formData.tipoWhisky}
             onChange={handleChange}
-            className="w-full p-2 border rounded bg-white mt-1"
+            className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] mt-1 font-medium"
           >
             <option value="">Seleccionar…</option>
             {tiposWhisky.map((t) => (
@@ -264,21 +269,24 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
       )}
 
       {/* ESTRELLA */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 p-2 bg-[#F2ECE4] rounded border border-[#CDC7BD]">
         <input
           type="checkbox"
           name="esEstrella"
           checked={formData.esEstrella}
           onChange={handleChange}
+          className="w-4 h-4 cursor-pointer"
         />
-        <span className="font-semibold">Producto destacado ⭐</span>
+        <span className="font-semibold text-[#04090C] cursor-pointer">
+          Producto destacado ⭐
+        </span>
       </div>
 
       {/* BOTONES */}
       <div className="flex gap-3 mt-4">
         <button
           type="submit"
-          className="bg-[#590707] text-white px-4 py-2 rounded"
+          className="bg-[#590707] text-white px-6 py-2 rounded font-semibold hover:bg-[#A30404] transition"
         >
           Guardar
         </button>
@@ -287,7 +295,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
           <button
             type="button"
             onClick={onCancel}
-            className="bg-gray-400 text-white px-4 py-2 rounded"
+            className="bg-[#CDC7BD] text-[#04090C] px-6 py-2 rounded font-semibold hover:bg-[#a89f95] transition"
           >
             Cancelar
           </button>
