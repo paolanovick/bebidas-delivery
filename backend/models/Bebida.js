@@ -27,9 +27,11 @@ const bebidaSchema = new mongoose.Schema({
   imagen: { type: String },
 
   // ✔ CATEGORÍA ÚNICA (NUNCA MÁS UN ARRAY)
-  categoria: {
-    type: String,
+  // ✔ CATEGORÍAS (ARRAY)
+  categorias: {
+    type: [String],
     required: true,
+    enum: CATEGORIAS_OFICIALES,
   },
 
   // ✔ SUBCATEGORÍA (solo cuando corresponde)
