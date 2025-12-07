@@ -3,9 +3,12 @@ import React, { useState, useEffect } from "react";
 import {
   obtenerConfiguracionHorarios,
   actualizarConfiguracionHorarios,
+  getEnvioConfig,
+  updateEnvioConfig,
 } from "../services/api";
 
 const ConfiguracionHorarios = () => {
+  // HORARIOS
   const [config, setConfig] = useState({
     diasDisponibles: [],
     horaInicio: "09:00",
@@ -15,10 +18,18 @@ const ConfiguracionHorarios = () => {
     pedidosSimultaneosPorSlot: 5,
     activo: true,
   });
+
+  // ENVÍO
+  const [configEnvio, setConfigEnvio] = useState({
+    activo: false,
+    costoEnvio: 0,
+    mensaje: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
-  // 👇 errores específicos de cada campo de hora
+  // Errores de horarios
   const [errores, setErrores] = useState({
     horaInicio: "",
     horaFin: "",
@@ -34,25 +45,29 @@ const ConfiguracionHorarios = () => {
     { value: "domingo", label: "Domingo" },
   ];
 
+  // CARGAR CONFIGURACIÓN (horarios + envío)
   useEffect(() => {
-    cargarConfiguracion();
+    const cargar = async () => {
+      try {
+        const dataHorarios = await obtenerConfiguracionHorarios();
+        setConfig((prev) => ({
+          ...prev,
+          ...dataHorarios,
+          diasDisponibles: Array.isArray(dataHorarios?.diasDisponibles)
+            ? dataHorarios.diasDisponibles
+            : prev.diasDisponibles,
+        }));
+
+        const dataEnvio = await getEnvioConfig();
+        setConfigEnvio(dataEnvio);
+      } catch (error) {
+        console.error("Error al cargar configuración:", error);
+      }
+    };
+    cargar();
   }, []);
 
-  const cargarConfiguracion = async () => {
-    try {
-      const data = await obtenerConfiguracionHorarios();
-
-      setConfig((prev) => ({
-        ...prev,
-        ...data,
-        diasDisponibles: Array.isArray(data?.diasDisponibles)
-          ? data.diasDisponibles
-          : prev.diasDisponibles,
-      }));
-    } catch (error) {
-      console.error("Error al cargar configuración:", error);
-    }
-  };
+  // ==================== HORARIOS ====================
 
   const handleDiaToggle = (dia) => {
     setConfig((prev) => ({
@@ -63,30 +78,20 @@ const ConfiguracionHorarios = () => {
     }));
   };
 
-  // 🕒 Función para normalizar y validar una hora
-  // Soporta:
-  //  - "8"      -> "08:00"
-  //  - "18"     -> "18:00"
-  //  - "8:30"   -> "08:30"
-  //  - "0830"   -> "08:30"
-  // Devuelve "HH:MM" o null si es inválida
   const formatearHora = (valorCrudo) => {
     if (!valorCrudo) return null;
 
     let v = String(valorCrudo).trim();
     if (!v) return null;
 
-    // reemplazo puntos/comas por :
     v = v.replace(/[.,]/g, ":");
 
-    // si es solo HH
     if (/^\d{1,2}$/.test(v)) {
       const h = parseInt(v, 10);
       if (isNaN(h) || h < 0 || h > 23) return null;
       return `${h.toString().padStart(2, "0")}:00`;
     }
 
-    // si viene HH:MM (permito H:MM también)
     if (/^\d{1,2}:[0-5]\d$/.test(v)) {
       const [hStr, mStr] = v.split(":");
       const h = parseInt(hStr, 10);
@@ -94,10 +99,9 @@ const ConfiguracionHorarios = () => {
       return `${h.toString().padStart(2, "0")}:${mStr}`;
     }
 
-    // si viene tipo 830 / 0830
     if (/^\d{3,4}$/.test(v)) {
       const soloNums = v;
-      const minsPart = soloNums.slice(-2); // últimos 2 dígitos
+      const minsPart = soloNums.slice(-2);
       const hourPart = soloNums.slice(0, soloNums.length - 2);
       const h = parseInt(hourPart, 10);
       const m = parseInt(minsPart, 10);
@@ -109,10 +113,9 @@ const ConfiguracionHorarios = () => {
       return `${h.toString().padStart(2, "0")}:${minsPart}`;
     }
 
-    return null; // formato no reconocido
+    return null;
   };
 
-  // cuando el usuario sale del campo (blur) normalizamos
   const handleHoraBlur = (campo) => (e) => {
     const valor = e.target.value;
 
@@ -135,12 +138,23 @@ const ConfiguracionHorarios = () => {
     }
   };
 
+  // ==================== ENVÍO ====================
+
+  const handleEnvioChange = (campo, valor) => {
+    setConfigEnvio((prev) => ({
+      ...prev,
+      [campo]: campo === "costoEnvio" ? parseFloat(valor) || 0 : valor,
+    }));
+  };
+
+  // ==================== GUARDAR TODO ====================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMensaje("");
 
-    // Normalizamos y validamos ambas horas antes de enviar
+    // Validar y normalizar horarios
     const nuevoErrores = { horaInicio: "", horaFin: "" };
     const configNormalizado = { ...config };
     let esValido = true;
@@ -165,12 +179,21 @@ const ConfiguracionHorarios = () => {
     }
 
     try {
+      // Guardar horarios
       await actualizarConfiguracionHorarios(configNormalizado);
+
+      // Guardar envío
+      await updateEnvioConfig({
+        activo: configEnvio.activo,
+        costoEnvio: configEnvio.costoEnvio,
+        mensaje: configEnvio.mensaje,
+      });
+
       setConfig(configNormalizado);
-      setMensaje("Configuración actualizada correctamente");
+      setMensaje("✅ Configuración actualizada correctamente");
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
-      setMensaje("Error al actualizar configuración");
+      setMensaje("❌ Error al actualizar configuración");
       console.error(error);
     } finally {
       setLoading(false);
@@ -183,7 +206,7 @@ const ConfiguracionHorarios = () => {
   return (
     <div className="bg-white shadow-xl rounded-xl p-6 max-w-4xl">
       <h2 className="text-2xl font-bold mb-6 text-[#04090C] border-b border-[#CDC7BD] pb-3">
-        Configuración de Horarios de Entrega
+        ⏰ Configuración de Horarios y Envíos
       </h2>
 
       {mensaje && (
@@ -199,141 +222,246 @@ const ConfiguracionHorarios = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Activo / inactivo */}
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="activo"
-            checked={config.activo}
-            onChange={(e) => setConfig({ ...config, activo: e.target.checked })}
-            className="w-5 h-5 text-[#590707] focus:ring-[#A30404]"
-          />
-          <label htmlFor="activo" className="text-[#04090C] font-semibold">
-            Sistema de horarios activo
-          </label>
-        </div>
+        {/* ========================= SECCIÓN HORARIOS ========================= */}
+        <div className="border-b-2 border-[#CDC7BD] pb-6">
+          <h3 className="text-lg font-bold text-[#590707] mb-4">
+            📅 Configuración de Horarios de Entrega
+          </h3>
 
-        {/* Días disponibles */}
-        <div>
-          <label className="block text-[#04090C] font-semibold mb-3">
-            Días con entregas:
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {diasSemana.map((dia) => (
-              <button
-                key={dia.value}
-                type="button"
-                onClick={() => handleDiaToggle(dia.value)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  config.diasDisponibles.includes(dia.value)
-                    ? "bg-[#590707] text-white shadow-md"
-                    : "bg-[#CDC7BD] text-[#04090C] hover:bg-[#736D66] hover:text-white"
+          {/* Activo / inactivo */}
+          <div className="flex items-center gap-3 mb-4">
+            <input
+              type="checkbox"
+              id="activo"
+              checked={config.activo}
+              onChange={(e) =>
+                setConfig({ ...config, activo: e.target.checked })
+              }
+              className="w-5 h-5 text-[#590707] focus:ring-[#A30404]"
+            />
+            <label htmlFor="activo" className="text-[#04090C] font-semibold">
+              Sistema de horarios activo
+            </label>
+          </div>
+
+          {/* Días disponibles */}
+          <div className="mb-4">
+            <label className="block text-[#04090C] font-semibold mb-3">
+              Días con entregas:
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {diasSemana.map((dia) => (
+                <button
+                  key={dia.value}
+                  type="button"
+                  onClick={() => handleDiaToggle(dia.value)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    config.diasDisponibles.includes(dia.value)
+                      ? "bg-[#590707] text-white shadow-md"
+                      : "bg-[#CDC7BD] text-[#04090C] hover:bg-[#736D66] hover:text-white"
+                  }`}
+                >
+                  {dia.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Rango de horario */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Hora inicio */}
+            <div>
+              <label className="block text-[#04090C] font-semibold mb-2">
+                Hora de inicio de entregas:
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="08:00"
+                value={config.horaInicio}
+                onChange={(e) => {
+                  setConfig({ ...config, horaInicio: e.target.value });
+                  if (errores.horaInicio) {
+                    setErrores((prev) => ({ ...prev, horaInicio: "" }));
+                  }
+                }}
+                onBlur={handleHoraBlur("horaInicio")}
+                className={`${baseInputClass} ${
+                  errores.horaInicio
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-[#590707] focus:ring-[#590707]"
                 }`}
-              >
-                {dia.label}
-              </button>
-            ))}
+              />
+              {errores.horaInicio ? (
+                <p className="mt-1 text-xs text-red-600">
+                  {errores.horaInicio}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-[#736D66]">
+                  Ejemplo: 08:00, 8, 0830, 8:30
+                </p>
+              )}
+            </div>
+
+            {/* Hora fin */}
+            <div>
+              <label className="block text-[#04090C] font-semibold mb-2">
+                Hora de fin de entregas:
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="20:00"
+                value={config.horaFin}
+                onChange={(e) => {
+                  setConfig({ ...config, horaFin: e.target.value });
+                  if (errores.horaFin) {
+                    setErrores((prev) => ({ ...prev, horaFin: "" }));
+                  }
+                }}
+                onBlur={handleHoraBlur("horaFin")}
+                className={`${baseInputClass} ${
+                  errores.horaFin
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-[#590707] focus:ring-[#590707]"
+                }`}
+              />
+              {errores.horaFin ? (
+                <p className="mt-1 text-xs text-red-600">{errores.horaFin}</p>
+              ) : (
+                <p className="mt-1 text-xs text-[#736D66]">
+                  Ejemplo: 20:00, 20, 2130, 21:30
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Rango de horario (texto, totalmente controlado) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Hora inicio */}
-          <div>
-            <label className="block text-[#04090C] font-semibold mb-2">
-              Hora de inicio de entregas:
+        {/* ========================= SECCIÓN ENVÍO ========================= */}
+        <div className="border-b-2 border-[#CDC7BD] pb-6">
+          <h3 className="text-lg font-bold text-[#590707] mb-4">
+            🚚 Configuración de Envíos / Delivery
+          </h3>
+
+          {/* Activar/Desactivar envíos */}
+          <div className="mb-4 p-4 bg-[#F2ECE4] rounded-lg border-2 border-[#CDC7BD]">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={configEnvio.activo}
+                onChange={(e) => handleEnvioChange("activo", e.target.checked)}
+                className="w-6 h-6 cursor-pointer accent-[#590707]"
+              />
+              <span className="font-bold text-lg text-[#590707]">
+                {configEnvio.activo
+                  ? "✅ ENVÍOS HABILITADOS"
+                  : "❌ ENVÍOS DESHABILITADOS"}
+              </span>
             </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="08:00"
-              value={config.horaInicio}
-              onChange={(e) => {
-                setConfig({ ...config, horaInicio: e.target.value });
-                if (errores.horaInicio) {
-                  setErrores((prev) => ({ ...prev, horaInicio: "" }));
-                }
-              }}
-              onBlur={handleHoraBlur("horaInicio")}
-              className={`${baseInputClass} ${
-                errores.horaInicio
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-[#590707] focus:ring-[#590707]"
-              }`}
-            />
-            {errores.horaInicio ? (
-              <p className="mt-1 text-xs text-red-600">{errores.horaInicio}</p>
-            ) : (
-              <p className="mt-1 text-xs text-[#736D66]">
-                Ejemplo: 08:00, 8, 0830, 8:30
-              </p>
-            )}
+            <p className="text-sm text-[#736D66] mt-2 ml-9">
+              Activa esto para permitir que los clientes realicen pedidos con
+              envío
+            </p>
           </div>
 
-          {/* Hora fin */}
-          <div>
-            <label className="block text-[#04090C] font-semibold mb-2">
-              Hora de fin de entregas:
+          {/* Costo del envío */}
+          <div className="mb-4">
+            <label className="font-bold text-[#590707] block mb-2 text-lg">
+              💵 Costo del Envío ($)
             </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="20:00"
-              value={config.horaFin}
-              onChange={(e) => {
-                setConfig({ ...config, horaFin: e.target.value });
-                if (errores.horaFin) {
-                  setErrores((prev) => ({ ...prev, horaFin: "" }));
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-semibold text-[#590707]">$</span>
+              <input
+                type="number"
+                value={configEnvio.costoEnvio}
+                onChange={(e) =>
+                  handleEnvioChange("costoEnvio", e.target.value)
                 }
-              }}
-              onBlur={handleHoraBlur("horaFin")}
-              className={`${baseInputClass} ${
-                errores.horaFin
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-[#590707] focus:ring-[#590707]"
-              }`}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                className="flex-1 p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 font-semibold text-lg"
+              />
+            </div>
+            <p className="text-sm text-[#736D66] mt-2">
+              Este monto se sumará al total del pedido si el cliente selecciona
+              envío
+            </p>
+          </div>
+
+          {/* Mensaje personalizado */}
+          <div className="mb-4">
+            <label className="font-bold text-[#590707] block mb-2 text-lg">
+              📝 Mensaje para el Cliente
+            </label>
+            <textarea
+              value={configEnvio.mensaje}
+              onChange={(e) => handleEnvioChange("mensaje", e.target.value)}
+              placeholder="Ej: HOY HASTA $40.000 SE ENVIA GRATIS O Enviamos de lunes a viernes entre las 19:00 y las 03:00"
+              className="w-full p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 min-h-20 font-medium"
             />
-            {errores.horaFin ? (
-              <p className="mt-1 text-xs text-red-600">{errores.horaFin}</p>
-            ) : (
-              <p className="mt-1 text-xs text-[#736D66]">
-                Ejemplo: 20:00, 20, 2130, 21:30
+            <p className="text-sm text-[#736D66] mt-2">
+              Este mensaje se mostrará en el carrito cuando el cliente
+              seleccione envío a domicilio
+            </p>
+          </div>
+
+          {/* Vista previa envío */}
+          <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+            <h4 className="font-bold text-[#590707] mb-2">📊 Vista previa:</h4>
+            <div className="space-y-2 text-sm text-[#736D66]">
+              <p>
+                • Estado:{" "}
+                <span className="font-bold text-[#590707]">
+                  {configEnvio.activo ? "ACTIVO" : "INACTIVO"}
+                </span>
               </p>
-            )}
+              <p>
+                • Costo:{" "}
+                <span className="font-bold text-[#590707]">
+                  ${parseFloat(configEnvio.costoEnvio || 0).toFixed(2)}
+                </span>
+              </p>
+              <p>
+                • Mensaje:{" "}
+                <span className="font-bold text-[#590707]">
+                  {configEnvio.mensaje || "Sin mensaje personalizado"}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Botón guardar */}
+        {/* ========================= BOTÓN GUARDAR ========================= */}
         <button
           type="submit"
           disabled={loading}
           className="w-full bg-[#590707] hover:bg-[#A30404] text-white py-3 rounded-lg font-semibold transition-colors disabled:bg-[#736D66] shadow-lg"
         >
-          {loading ? "Guardando..." : "💾 Guardar Configuración"}
+          {loading ? "Guardando..." : "💾 Guardar Toda la Configuración"}
         </button>
       </form>
 
-      {/* Vista previa */}
-      <div className="mt-6 p-4 bg-[#CDC7BD] rounded-lg">
-        <h3 className="font-semibold text-[#04090C] mb-2">📋 Vista previa:</h3>
-        <ul className="text-sm text-[#04090C] space-y-1">
+      {/* Información importante */}
+      <div className="mt-8 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+        <h3 className="font-bold text-[#590707] mb-2 text-lg">
+          ⚠️ Importante:
+        </h3>
+        <ul className="text-sm text-[#736D66] space-y-1">
           <li>
-            • Horario de hoy (si es día habilitado):{" "}
-            <strong>
-              {config.horaInicio} a {config.horaFin}
-            </strong>
+            ✓ Los cambios en horarios afectan solo los mensajes informativos
           </li>
           <li>
-            • Días con entregas:{" "}
-            {config.diasDisponibles.length > 0
-              ? config.diasDisponibles.join(", ")
-              : "Ninguno"}
+            ✓ Si desactivas los envíos, los clientes NO verán opción de entrega
           </li>
-          <li className="text-xs text-[#736D66] mt-2">
-            Esta configuración se usa solo para mostrar mensajes informativos en
-            el menú (ej: “Hoy entregamos a partir de las 20:00 hs”). <br />
-            La compra sigue habilitada siempre.
+          <li>
+            ✓ Si activas envíos, el costo se sumará automáticamente al total del
+            pedido
           </li>
+          <li>
+            ✓ El mensaje se muestra en tiempo real en el carrito del cliente
+          </li>
+          <li>✓ Los cambios se guardan en la base de datos inmediatamente</li>
         </ul>
       </div>
     </div>
