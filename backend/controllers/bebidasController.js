@@ -75,13 +75,16 @@ export const agregarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categoria,
+      categorias,
       subcategoria,
       tipoWhisky,
       esEstrella,
     } = req.body;
 
-    categoria = normalizarCategoria(categoria);
+    // Normalizar categorías
+    const categoriasNormalizadas = (categorias || []).map((cat) =>
+      normalizarCategoria(cat)
+    );
 
     const nueva = new Bebida({
       nombre,
@@ -89,7 +92,7 @@ export const agregarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categoria,
+      categorias: categoriasNormalizadas,
       subcategoria: subcategoria || "",
       tipoWhisky: tipoWhisky || "",
       esEstrella: !!esEstrella,
@@ -102,7 +105,6 @@ export const agregarBebida = async (req, res) => {
     res.status(500).json({ error: "Error al agregar bebida" });
   }
 };
-
 /* =====================================================
    PUT /api/bebidas/:id
 ===================================================== */
@@ -116,13 +118,16 @@ export const editarBebida = async (req, res) => {
       precio,
       stock,
       imagen,
-      categoria,
+      categorias,
       subcategoria,
       tipoWhisky,
       esEstrella,
     } = req.body;
 
-    categoria = normalizarCategoria(categoria);
+    // Normalizar categorías
+    const categoriasNormalizadas = (categorias || []).map((cat) =>
+      normalizarCategoria(cat)
+    );
 
     const bebidaActualizada = await Bebida.findByIdAndUpdate(
       id,
@@ -132,7 +137,7 @@ export const editarBebida = async (req, res) => {
         precio,
         stock,
         imagen,
-        categoria,
+        categorias: categoriasNormalizadas,
         subcategoria: subcategoria || "",
         tipoWhisky: tipoWhisky || "",
         esEstrella: !!esEstrella,
