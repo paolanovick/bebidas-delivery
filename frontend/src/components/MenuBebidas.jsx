@@ -266,18 +266,9 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
           >
             ☰
           </button>
-          {/* TÍTULO CON HAMBURGUESA */}
-          {/* <div className="flex items-center gap-3 mb-6">
-            <button
-              onClick={() => setMenuAbierto(!menuAbierto)}
-              className="md:hidden text-2xl text-[#590707]"
-            >
-              ☰
-            </button>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
-              Catálogo de Bebidas
-            </h1>
-          </div> */}
+          <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
+            Catálogo de Bebidas
+          </h1>
         </div>
 
         {/* SIN RESULTADOS */}
