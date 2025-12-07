@@ -32,3 +32,6 @@ input[type="time"]::-webkit-datetime-edit-minute-field,
 input[type="time"]::-webkit-datetime-edit-text {
   color: #04090C !important;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
