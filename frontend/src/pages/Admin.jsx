@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminPedidos from "../admin/AdminPedidos";
 import AdminUsuarios from "../admin/AdminUsuarios";
 import BebidasForm from "../components/BebidasForm";
-import BebidasList from "../components/BebidasList";
+import BebidasListCategorias from "../components/BebidasListCategorias";
 import ConfiguracionHorarios from "./ConfiguracionHorarios";
 import { Menu, X } from "lucide-react";
 import {
@@ -13,7 +13,7 @@ import {
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
 import AdminEnvio from "./AdminEnvio";
-import BebidasListCategorias from "../components/BebidasListCategorias";
+
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
@@ -246,7 +246,7 @@ const Admin = () => {
               </div>
 
               <div>
-                <BebidasList
+                <BebidasListCategorias
                   bebidas={bebidas}
                   onEdit={setEditing}
                   onDelete={handleDelete}
@@ -257,13 +257,6 @@ const Admin = () => {
           </div>
         )}
 
-        {seccion === "categorias" && (
-          <BebidasListCategorias
-            bebidas={bebidas}
-            onEdit={setEditing}
-            onDelete={handleDelete}
-          />
-        )}
 
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
