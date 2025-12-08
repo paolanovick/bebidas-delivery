@@ -85,14 +85,14 @@ const Navbar = () => {
           </Link>
 
           {/* Si NO hay usuario → solo Admin Login */}
-          {!usuario && (
+          {/* {!usuario && (
             <Link
               to="/login-admin"
               className="px-4 py-2 rounded-md bg-[#736D66] text-white font-semibold shadow-md hover:bg-[#CDC7BD] hover:text-[#04090C] transition duration-300"
             >
               Admin Login
             </Link>
-          )}
+          )} */}
 
           {/* ✅ Cerrar sesión (DESKTOP) — SOLO CAMBIO ESTO */}
           {usuario && (
@@ -193,7 +193,7 @@ const Navbar = () => {
                 </>
               )}
 
-              {!usuario && (
+              {/* {!usuario && (
                 <Link
                   to="/login-admin"
                   onClick={() => setMenuOpen(false)}
@@ -201,7 +201,7 @@ const Navbar = () => {
                 >
                   Admin Login
                 </Link>
-              )}
+              )} */}
 
               {usuario && (
                 <button
