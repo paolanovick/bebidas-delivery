@@ -5,8 +5,10 @@ import Sidebar from "./Sidebar";
 import CarruselDestacados from "./CarruselDestacados";
 import SeccionCategoria from "./SeccionCategoria";
 import ProductosGrid from "./ProductosGrid";
-import { obtenerConfiguracionHorarios, getEnvioConfig } from "../services/api";
+//mport { obtenerConfiguracionHorarios, getEnvioConfig } from "../services/api";
+import { obtenerConfiguracionHorarios } from "../services/api";
 import { getEstadoDelivery } from "../utils/horariosDelivery";
+import BannerTicker from "./BannerTicker";
 
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
@@ -22,7 +24,8 @@ export default function MenuBebidas() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [estadoDelivery, setEstadoDelivery] = useState(null);
   const [cargandoHorarios, setCargandoHorarios] = useState(true);
-  const [envioConfig, setEnvioConfig] = useState(null);
+  // const [envioConfig, setEnvioConfig] = useState(null);
+  
   const [mensajeAgregado, setMensajeAgregado] = useState("");
   const [paused, setPaused] = useState(false);
   const carouselRef = useRef(null);
@@ -54,9 +57,9 @@ export default function MenuBebidas() {
   // ============================
   // CARGAR CONFIGURACIONES
   // ============================
-  useEffect(() => {
-    getEnvioConfig().then(setEnvioConfig);
-  }, []);
+  // useEffect(() => {
+  //   getEnvioConfig().then(setEnvioConfig);
+  // }, []);
 
   useEffect(() => {
     const cargar = async () => {
@@ -216,6 +219,7 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
 
       {/* CONTENIDO */}
       <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
+        <BannerTicker />
         {/* MENSAJE HORARIOS */}
         {!cargandoHorarios && estadoDelivery && (
           <div
@@ -229,12 +233,12 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
           </div>
         )}
 
-        {/* MENSAJE ENVÍO */}
+        {/* MENSAJE ENVÍO
         {envioConfig?.activo && envioConfig?.mensaje && (
           <div className="mb-4 px-4 py-3 rounded-xl bg-[#A30404] text-white shadow-md flex items-center gap-3">
             📦 <p>{envioConfig.mensaje}</p>
           </div>
-        )}
+        )} */}
 
         {/* CARRUSEL DESTACADOS */}
         {productosEstrella.length > 0 && (

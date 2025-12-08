@@ -389,7 +389,7 @@ const ConfiguracionHorarios = () => {
             </p>
           </div>
 
-          {/* Mensaje personalizado */}
+          {/* Mensaje personalizado
           <div className="mb-4">
             <label className="font-bold text-[#590707] block mb-2 text-lg">
               📝 Mensaje para el Cliente
@@ -403,6 +403,25 @@ const ConfiguracionHorarios = () => {
             <p className="text-sm text-[#736D66] mt-2">
               Este mensaje se mostrará en el carrito cuando el cliente
               seleccione envío a domicilio
+            </p>
+          </div> */}
+
+          {/* Mensaje del ticker */}
+          <div className="mb-4">
+            <label className="font-bold text-[#590707] block mb-2 text-lg">
+              🎯 Mensaje del Banner Corredor
+            </label>
+            <input
+              type="text"
+              value={configEnvio.mensajeTicker}
+              onChange={(e) =>
+                handleEnvioChange("mensajeTicker", e.target.value)
+              }
+              placeholder="Ej: 📦 Envío gratis en compras mayores a $40.000"
+              className="w-full p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 font-medium"
+            />
+            <p className="text-sm text-[#736D66] mt-2">
+              Este mensaje aparecerá en el banner que corre debajo del navbar
             </p>
           </div>
 
