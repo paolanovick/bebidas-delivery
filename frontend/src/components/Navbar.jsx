@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -6,14 +5,12 @@ import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
 
 const Navbar = () => {
-  // ✅ HOOKS SIEMPRE ARRIBA
   const location = useLocation();
   const { usuario, logout } = useAuth();
   const { carrito, vaciarCarrito } = useCarrito();
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ✅ OCULTAR NAV EN LA PORTADA NEGRA
   if (location.pathname === "/" || location.pathname === "/inicio") return null;
 
   const handleShare = () => {
@@ -21,35 +18,58 @@ const Navbar = () => {
     if (navigator.share) {
       navigator.share({
         title: "EL DANES Bebidas & Delivery",
-        text: "Te comparto la web de EL DANES Bebidas & Delivery 🍷",
+        text: "Te comparto la web de EL DANES Bebidas & Delivery",
         url,
       });
     } else {
       navigator.clipboard.writeText(url);
-      alert("Enlace copiado ✅");
+      alert("Enlace copiado");
     }
   };
 
   return (
     <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
-        {/* LOGO */}
         <div className="flex items-center gap-4">
           <Link to="/tienda">
             <img
               src={`${process.env.PUBLIC_URL}/logoSF.png`}
-              alt="Logo Bebidas"
+              alt="Logo"
               className="h-32 md:h-40 lg:h-48 w-auto object-contain cursor-pointer"
             />
           </Link>
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
-            El DANÉS
+            El DANES
           </h1>
         </div>
 
-        {/* MENU DESKTOP */}
         <div className="hidden md:flex items-center gap-6">
-          {/* Siempre mostrar Tienda */}
+          <div className="flex gap-3">
+            <a
+              href="https://www.facebook.com/ivanito10?locale=es_LA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+            >
+              <Facebook size={20} />
+            </a>
+            <a
+              href="https://www.instagram.com/bebidaseldanes/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+            >
+              <Instagram size={20} />
+            </a>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+            >
+              <Share2 size={20} />
+            </button>
+          </div>
+
           <Link
             to="/tienda"
             className="px-4 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold shadow-md hover:bg-[#A30404] hover:text-white transition duration-300"
@@ -57,42 +77,6 @@ const Navbar = () => {
             Tienda
           </Link>
 
-          {/* Redes Sociales */}
-          <div className="flex gap-3">
-            {/* Facebook */}
-            <a
-              href="https://www.facebook.com/ivanito10?locale=es_LA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#CDC7BD] hover:text-[#A30404] transition"
-              title="Facebook"
-            >
-              <Facebook size={20} />
-            </a>
-
-            {/* Instagram */}
-            <a
-              href="https://www.instagram.com/bebidaseldanes/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#CDC7BD] hover:text-[#A30404] transition"
-              title="Instagram"
-            >
-              <Instagram size={20} />
-            </a>
-
-            {/* Compartir */}
-            <button
-              type="button"
-              onClick={handleShare}
-              className="text-[#CDC7BD] hover:text-[#A30404] transition"
-              title="Compartir"
-            >
-              <Share2 size={20} />
-            </button>
-          </div>
-
-          {/* Si NO es admin → Mis Pedidos */}
           {usuario && usuario.rol !== "admin" && (
             <Link
               to="/mis-pedidos"
@@ -102,7 +86,6 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Si es admin → Panel y Pedidos */}
           {usuario?.rol === "admin" && (
             <>
               <Link
@@ -120,8 +103,7 @@ const Navbar = () => {
             </>
           )}
 
-          {/* 🛒 Carrito SIEMPRE visible */}
-          <Link to="/pedido" id="icono-carrito" className="relative">
+          <Link to="/pedido" className="relative">
             <ShoppingCart
               size={28}
               className="text-[#CDC7BD] hover:text-white transition"
@@ -133,7 +115,6 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* ✅ Cerrar sesión (DESKTOP) */}
           {usuario && (
             <button
               onClick={() => {
@@ -142,15 +123,13 @@ const Navbar = () => {
               }}
               className="px-4 py-2 rounded-md bg-[#590707] text-white font-semibold shadow-md hover:bg-[#A30404] transition duration-300"
             >
-              Cerrar Sesión
+              Cerrar Sesion
             </button>
           )}
         </div>
 
-        {/* MENU MOBILE */}
         <div className="md:hidden flex items-center gap-4 relative">
-          {/* 🛒 CARRITO (visible siempre en móvil) */}
-          <Link to="/pedido" id="icono-carrito" className="relative">
+          <Link to="/pedido" className="relative">
             <ShoppingCart
               size={28}
               className="text-[#CDC7BD] hover:text-white transition"
@@ -162,7 +141,6 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* BOTÓN HAMBURGUESA */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="focus:outline-none text-[#CDC7BD]"
@@ -192,7 +170,6 @@ const Navbar = () => {
             </svg>
           </button>
 
-          {/* MENÚ DESPLEGABLE */}
           {menuOpen && (
             <div className="absolute right-0 top-12 w-52 bg-[#04090C] shadow-lg rounded-md flex flex-col gap-2 p-4 z-50">
               <Link
@@ -203,28 +180,23 @@ const Navbar = () => {
                 Tienda
               </Link>
 
-              {/* Redes Sociales Mobile */}
               <div className="flex gap-3 px-3 py-2">
                 <a
                   href="https://www.facebook.com/ivanito10?locale=es_LA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#CDC7BD] hover:text-[#A30404] transition"
-                  title="Facebook"
                 >
                   <Facebook size={20} />
                 </a>
-
                 <a
                   href="https://www.instagram.com/bebidaseldanes/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#CDC7BD] hover:text-[#A30404] transition"
-                  title="Instagram"
                 >
                   <Instagram size={20} />
                 </a>
-
                 <button
                   type="button"
                   onClick={() => {
@@ -232,7 +204,6 @@ const Navbar = () => {
                     setMenuOpen(false);
                   }}
                   className="text-[#CDC7BD] hover:text-[#A30404] transition"
-                  title="Compartir"
                 >
                   <Share2 size={20} />
                 </button>
@@ -276,7 +247,7 @@ const Navbar = () => {
                   }}
                   className="px-4 py-2 rounded-md bg-[#590707] text-white font-semibold shadow-md hover:bg-[#A30404] transition duration-300"
                 >
-                  Cerrar Sesión
+                  Cerrar Sesion
                 </button>
               )}
             </div>
