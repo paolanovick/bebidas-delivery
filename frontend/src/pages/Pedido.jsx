@@ -57,10 +57,16 @@ export default function Pedido() {
   );
 
   // 🚚 Costo envío dinámico
+  // 🚚 Costo envío dinámico
   const COSTO_ENVIO = configEnvio.costoEnvio || 0;
 
+  // Si subtotal >= 40000 o es takeaway → envío gratis
   const costoEnvio =
-    modoEntrega === "envio" && configEnvio.activo ? COSTO_ENVIO : 0;
+    modoEntrega === "takeaway" || subtotal >= 40000
+      ? 0
+      : modoEntrega === "envio" && configEnvio.activo
+      ? COSTO_ENVIO
+      : 0;
   // 💰 Total final
   const total = subtotal + costoEnvio;
 
@@ -89,17 +95,16 @@ export default function Pedido() {
   // VALIDACIONES
   const telSoloDigitos = telefono.replace(/\D/g, "");
   const validoDireccion = direccion.trim().length >= 5;
-  
 
   const requiereDireccion = modoEntrega === "envio";
-const validoTelefono = telefono === "" || telSoloDigitos.length >= 10;
-const validoEmail = email === "" || email.includes("@");
+  const validoTelefono = telefono === "" || telSoloDigitos.length >= 10;
+  const validoEmail = email === "" || email.includes("@");
 
-const puedeConfirmar =
-  carrito.length > 0 &&
-  validoTelefono &&
-  validoEmail &&
-  (!requiereDireccion || validoDireccion);
+  const puedeConfirmar =
+    carrito.length > 0 &&
+    validoTelefono &&
+    validoEmail &&
+    (!requiereDireccion || validoDireccion);
 
   const confirmarYEnviar = async () => {
     if (!puedeConfirmar) return;
@@ -145,7 +150,9 @@ ${textoProductos}
 Subtotal: $${subtotal.toLocaleString("es-AR")}
 ${
   modoEntrega === "envio"
-    ? `Envío: $${COSTO_ENVIO.toLocaleString("es-AR")}`
+    ? `Envío: $${costoEnvio.toLocaleString("es-AR")}${
+        subtotal >= 40000 ? " (GRATIS por compra mayor a $40.000)" : ""
+      }`
     : "Envío: $0 (take away)"
 }
 Total final: $${total.toLocaleString("es-AR")}
@@ -319,7 +326,9 @@ ${comentarios || "Sin notas"}
           </>
         )}
 
-        <label className="font-semibold text-[#04090C]">Teléfono (opcional)</label>
+        <label className="font-semibold text-[#04090C]">
+          Teléfono (opcional)
+        </label>
         <input
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
