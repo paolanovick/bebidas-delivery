@@ -29,5 +29,9 @@ router.delete(
   esAdmin,
   eliminarHistorialUsuario
 );
+// 🗑️ Eliminar un pedido individual
+router.delete("/:id", verificarToken, esAdmin, eliminarPedido);
 
+// 🧹 Eliminar todos los pedidos
+router.delete("/", verificarToken, esAdmin, eliminarTodosPedidos);
 export default router;
