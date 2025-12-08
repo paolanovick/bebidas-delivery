@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
 
 const Navbar = () => {
@@ -15,6 +15,20 @@ const Navbar = () => {
 
   // ✅ OCULTAR NAV EN LA PORTADA NEGRA
   if (location.pathname === "/" || location.pathname === "/inicio") return null;
+
+  const handleShare = () => {
+    const url = window.location.origin;
+    if (navigator.share) {
+      navigator.share({
+        title: "EL DANES Bebidas & Delivery",
+        text: "Te comparto la web de EL DANES Bebidas & Delivery 🍷",
+        url,
+      });
+    } else {
+      navigator.clipboard.writeText(url);
+      alert("Enlace copiado ✅");
+    }
+  };
 
   return (
     <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
@@ -42,6 +56,41 @@ const Navbar = () => {
           >
             Tienda
           </Link>
+
+          {/* Redes Sociales */}
+          <div className="flex gap-3">
+            {/* Facebook */}
+            <a
+              href="https://www.facebook.com/ivanito10?locale=es_LA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+              title="Facebook"
+            >
+              <Facebook size={20} />
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="https://www.instagram.com/bebidaseldanes/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+              title="Instagram"
+            >
+              <Instagram size={20} />
+            </a>
+
+            {/* Compartir */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className="text-[#CDC7BD] hover:text-[#A30404] transition"
+              title="Compartir"
+            >
+              <Share2 size={20} />
+            </button>
+          </div>
 
           {/* Si NO es admin → Mis Pedidos */}
           {usuario && usuario.rol !== "admin" && (
@@ -84,17 +133,7 @@ const Navbar = () => {
             )}
           </Link>
 
-          {/* Si NO hay usuario → solo Admin Login */}
-          {/* {!usuario && (
-            <Link
-              to="/login-admin"
-              className="px-4 py-2 rounded-md bg-[#736D66] text-white font-semibold shadow-md hover:bg-[#CDC7BD] hover:text-[#04090C] transition duration-300"
-            >
-              Admin Login
-            </Link>
-          )} */}
-
-          {/* ✅ Cerrar sesión (DESKTOP) — SOLO CAMBIO ESTO */}
+          {/* ✅ Cerrar sesión (DESKTOP) */}
           {usuario && (
             <button
               onClick={() => {
@@ -164,6 +203,41 @@ const Navbar = () => {
                 Tienda
               </Link>
 
+              {/* Redes Sociales Mobile */}
+              <div className="flex gap-3 px-3 py-2">
+                <a
+                  href="https://www.facebook.com/ivanito10?locale=es_LA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#CDC7BD] hover:text-[#A30404] transition"
+                  title="Facebook"
+                >
+                  <Facebook size={20} />
+                </a>
+
+                <a
+                  href="https://www.instagram.com/bebidaseldanes/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#CDC7BD] hover:text-[#A30404] transition"
+                  title="Instagram"
+                >
+                  <Instagram size={20} />
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleShare();
+                    setMenuOpen(false);
+                  }}
+                  className="text-[#CDC7BD] hover:text-[#A30404] transition"
+                  title="Compartir"
+                >
+                  <Share2 size={20} />
+                </button>
+              </div>
+
               {usuario && usuario.rol !== "admin" && (
                 <Link
                   to="/mis-pedidos"
@@ -193,21 +267,12 @@ const Navbar = () => {
                 </>
               )}
 
-              {/* {!usuario && (
-                <Link
-                  to="/login-admin"
-                  onClick={() => setMenuOpen(false)}
-                  className="px-3 py-2 rounded-md bg-[#736D66] text-white font-semibold"
-                >
-                  Admin Login
-                </Link>
-              )} */}
-
               {usuario && (
                 <button
                   onClick={() => {
                     vaciarCarrito();
                     logout();
+                    setMenuOpen(false);
                   }}
                   className="px-4 py-2 rounded-md bg-[#590707] text-white font-semibold shadow-md hover:bg-[#A30404] transition duration-300"
                 >
