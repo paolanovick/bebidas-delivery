@@ -114,12 +114,12 @@ export default function BebidasListCategorias({
       {/* STATS */}
       <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2 text-xs items-center">
-          <div className="bg-white shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
+          <div className="bg-[#CDC7BD] text-[#04090C] border border-[#04090C] rounded-lg px-3 py-2">
             Total:
             <span className="font-bold text-[#590707]"> {bebidas.length}</span>
           </div>
 
-          <div className="bg-white shadow-md border border-[#CDC7BD] rounded-lg px-3 py-2">
+          <div className="bg-[#CDC7BD] text-[#04090C] border border-[#04090C] rounded-lg px-3 py-2">
             Sin stock:
             <span className="font-bold text-[#A30404]"> {sinStockCount}</span>
           </div>
@@ -127,7 +127,7 @@ export default function BebidasListCategorias({
           <select
             value={orden}
             onChange={(e) => setOrden(e.target.value)}
-            className="border border-[#CDC7BD] rounded-lg px-2 py-1 bg-white text-[#04090C]"
+            className="bg-[#CDC7BD] text-[#04090C] border border-[#04090C] rounded-lg px-3 py-2 font-semibold"
           >
             <option value="recientes">Últimos cargados</option>
             <option value="alfabetico">Nombre (A-Z)</option>
