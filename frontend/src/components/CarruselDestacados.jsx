@@ -96,7 +96,7 @@ export default function CarruselDestacados({
                         alt={b.nombre}
                         className="
       w-full h-24 sm:h-32 md:h-40
-      object-cover rounded-lg mt-4
+       object-contain rounded-lg mt-4
     "
                       />
                     </div>

@@ -10,7 +10,7 @@ export default function ProductoCard({ producto, fmt, handleAgregar }) {
       <img
         src={producto.imagen}
         alt={producto.nombre}
-        className="w-full h-40 object-cover rounded-lg mb-2"
+        className="w-full h-40 object-contain rounded-lg mb-2"
         onError={(e) =>
           (e.target.src = "https://placehold.co/400x300?text=Sin+Imagen")
         }

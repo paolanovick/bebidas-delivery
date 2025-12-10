@@ -18,7 +18,7 @@ const BebidasCard = ({ bebida, onEdit, onDelete }) => {
           <img
             src={bebida.imagen}
             alt={bebida.nombre}
-            className="w-full h-48 object-cover rounded-lg"
+            className="w-full h-48 object-contain rounded-lg"
             onError={(e) => {
               e.target.src =
                 "https://placehold.co/400x300/CDC7BD/04090C?text=Sin+Imagen";
