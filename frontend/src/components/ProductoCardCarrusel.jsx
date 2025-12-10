@@ -24,7 +24,7 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
         <img
           src={producto.imagen}
           alt={producto.nombre}
-          className="w-full h-24 sm:h-32 md:h-40 object-cover rounded-lg mt-4"
+          className="w-full h-24 sm:h-32 md:h-40 object-contain rounded-lg mt-4" /* ✅ Cambiar object-cover por object-contain */
           onError={(e) =>
             (e.target.src = "https://placehold.co/400x300?text=Sin+Imagen")
           }

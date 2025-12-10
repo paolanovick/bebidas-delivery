@@ -195,7 +195,7 @@ export default function BebidasListCategorias({
                         <img
                           src={b.imagen}
                           alt={b.nombre}
-                          className="w-14 h-14 object-cover rounded-lg border border-[#CDC7BD]"
+                          className="w-14 h-14 object-contain rounded-lg border border-[#CDC7BD]" /* ✅ Cambiar object-cover por object-contain */
                         />
                       </td>
 
