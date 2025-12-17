@@ -5,7 +5,6 @@ import Sidebar from "./Sidebar";
 import CarruselDestacados from "./CarruselDestacados";
 import SeccionCategoria from "./SeccionCategoria";
 import ProductosGrid from "./ProductosGrid";
-//mport { obtenerConfiguracionHorarios, getEnvioConfig } from "../services/api";
 import { obtenerConfiguracionHorarios } from "../services/api";
 import { getEstadoDelivery } from "../utils/horariosDelivery";
 import BannerTicker from "./BannerTicker";
@@ -24,8 +23,6 @@ export default function MenuBebidas() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [estadoDelivery, setEstadoDelivery] = useState(null);
   const [cargandoHorarios, setCargandoHorarios] = useState(true);
-  // const [envioConfig, setEnvioConfig] = useState(null);
-  
   const [mensajeAgregado, setMensajeAgregado] = useState("");
   const [paused, setPaused] = useState(false);
   const carouselRef = useRef(null);
@@ -38,13 +35,13 @@ export default function MenuBebidas() {
     "Combos",
     "Cervezas",
     "Vinos",
-    "Espumantes", // ✅ NUEVA
+    "Espumantes",
     "Aperitivos y Licores",
     "Destilados",
     "Gaseosas y jugos",
     "Energizantes",
     "Snacks",
-    "Extras y hielo", // ✅ NUEVA
+    "Extras y hielo",
     "Ofertas",
     "Cigarrillos",
   ];
@@ -57,12 +54,29 @@ export default function MenuBebidas() {
   const tiposWhisky = ["Todas", "Bourbon", "Scotch", "Irish"];
 
   // ============================
+  // NORMALIZACIÓN DE CATEGORÍAS
+  // ============================
+  const NORMALIZAR = {
+    Gaseosas: "Gaseosas y jugos",
+    Jugos: "Gaseosas y jugos",
+    Licores: "Aperitivos y Licores",
+    Aperitivos: "Aperitivos y Licores",
+    Blancas: "Destilados",
+    Whisky: "Destilados",
+    Energéticas: "Energizantes",
+    Esperituosas: "Energizantes",
+    Mayoristas: "Ofertas",
+    Regalos: "Snacks",
+    Snack: "Snacks",
+    "Wine Club": "Vinos",
+    "Sin categoría": "Extras y hielo",
+  };
+
+  const normalizarCategoria = (cat) => NORMALIZAR[cat] || cat;
+
+  // ============================
   // CARGAR CONFIGURACIONES
   // ============================
-  // useEffect(() => {
-  //   getEnvioConfig().then(setEnvioConfig);
-  // }, []);
-
   useEffect(() => {
     const cargar = async () => {
       try {
@@ -103,11 +117,11 @@ export default function MenuBebidas() {
   // FILTROS Y DATOS
   // ============================
   const bebidasFiltradas = bebidas.filter((b) => {
-   const categoriasProducto = Array.isArray(b.categorias)
-     ? b.categorias.map((c) => c.trim())
-     : b.categoria
-     ? [b.categoria.trim()]
-     : [];
+    const categoriasProducto = Array.isArray(b.categorias)
+      ? b.categorias.map((c) => normalizarCategoria(c.trim()))
+      : b.categoria
+      ? [normalizarCategoria(b.categoria.trim())]
+      : [];
 
     const matchCategoria =
       categoria === "Todas" ||
@@ -136,20 +150,20 @@ export default function MenuBebidas() {
 
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
-const bebidasPorCategoria = bebidas.reduce((acc, b) => {
-  const cats = Array.isArray(b.categorias)
-    ? b.categorias.map((c) => c.trim())
-    : b.categoria
-    ? [b.categoria.trim()]
-    : [];
+  const bebidasPorCategoria = bebidas.reduce((acc, b) => {
+    const cats = Array.isArray(b.categorias)
+      ? b.categorias.map((c) => normalizarCategoria(c.trim()))
+      : b.categoria
+      ? [normalizarCategoria(b.categoria.trim())]
+      : [];
 
-  cats.forEach((cat) => {
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(b);
-  });
+    cats.forEach((cat) => {
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(b);
+    });
 
-  return acc;
-}, {});
+    return acc;
+  }, {});
 
   const ordenCategoriasCatalogo = categorias.filter(
     (c) => c !== "Todas" && bebidasPorCategoria[c]
@@ -222,6 +236,7 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
       {/* CONTENIDO */}
       <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
         <BannerTicker />
+
         {/* MENSAJE HORARIOS */}
         {!cargandoHorarios && estadoDelivery && (
           <div
@@ -234,13 +249,6 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
             🛵 <p>{estadoDelivery.mensaje}</p>
           </div>
         )}
-
-        {/* MENSAJE ENVÍO
-        {envioConfig?.activo && envioConfig?.mensaje && (
-          <div className="mb-4 px-4 py-3 rounded-xl bg-[#A30404] text-white shadow-md flex items-center gap-3">
-            📦 <p>{envioConfig.mensaje}</p>
-          </div>
-        )} */}
 
         {/* CARRUSEL DESTACADOS */}
         {productosEstrella.length > 0 && (
@@ -263,7 +271,6 @@ const bebidasPorCategoria = bebidas.reduce((acc, b) => {
           />
         )}
 
-        {/* TÍTULO */}
         {/* TÍTULO CON HAMBURGUESA */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
