@@ -187,6 +187,7 @@ export default function BebidasListCategorias({
                   <th className="py-3 px-4">Categorías</th>
                   <th className="py-3 px-4">Subcategoría</th>
                   <th className="py-3 px-4">Tipo Whisky</th>
+                  <th className="py-3 px-4">Orden</th>
                   <th className="py-3 px-4">Precio</th>
                   <th className="py-3 px-4">Stock</th>
                   <th className="py-3 px-4">Acciones</th>
@@ -228,6 +229,9 @@ export default function BebidasListCategorias({
                       <td className="py-3 px-4 text-xs">
                         {b.tipoWhisky || "-"}
                       </td>
+
+                      {/* ✅ AGREGAR ESTA CELDA */}
+                      <td className="py-3 px-4 text-xs">{b.orden || "-"}</td>
 
                       <td className="py-3 px-4">
                         ${Number(b.precio).toFixed(2)}

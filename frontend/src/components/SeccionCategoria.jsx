@@ -7,6 +7,13 @@ export default function SeccionCategoria({
   fmt,
   setCategoria,
 }) {
+  // ✅ ORDENAR PRODUCTOS: primero por orden (1-10), luego el resto
+  const productosOrdenados = [...productos].sort((a, b) => {
+    const ordenA = a.orden && a.orden >= 1 && a.orden <= 10 ? a.orden : 999;
+    const ordenB = b.orden && b.orden >= 1 && b.orden <= 10 ? b.orden : 999;
+    return ordenA - ordenB;
+  });
+
   return (
     <section className="w-full overflow-hidden">
       <button
@@ -20,7 +27,7 @@ export default function SeccionCategoria({
         className="flex gap-3 overflow-hidden pb-3 w-full"
         style={{ overflowX: "auto", overflowY: "hidden" }}
       >
-        {productos.map((producto) => (
+        {productosOrdenados.map((producto) => (
           <ProductoCardCarrusel
             key={producto._id}
             producto={producto}

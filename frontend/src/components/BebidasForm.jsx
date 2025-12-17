@@ -33,6 +33,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     subcategoria: "",
     tipoWhisky: "",
     esEstrella: false,
+    orden: "",
   });
 
   // Cargar datos cuando editan
@@ -48,6 +49,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         subcategoria: bebidaEditar.subcategoria || "",
         tipoWhisky: bebidaEditar.tipoWhisky || "",
         esEstrella: bebidaEditar.esEstrella || false,
+        orden: bebidaEditar.orden || "",
       });
     }
   }, [bebidaEditar]);
@@ -114,6 +116,7 @@ const handleSubmit = (e) => {
     categorias: formData.categorias,
     subcategoria: formData.subcategoria || "",
     tipoWhisky: formData.tipoWhisky || "",
+    orden: formData.orden ? Number(formData.orden) : null,
   };
 
   onSubmit(dataEnviar);
@@ -129,6 +132,7 @@ const handleSubmit = (e) => {
     subcategoria: "",
     tipoWhisky: "",
     esEstrella: false,
+    orden: "",
   });
 };
   
@@ -197,6 +201,27 @@ const handleSubmit = (e) => {
           onChange={handleChange}
           className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
           placeholder="0"
+        />
+      </div>
+
+      {/* ✅ ORDEN DE VISUALIZACIÓN */}
+      <div>
+        <label className="font-semibold text-[#590707] block mb-2">
+          Orden de Visualización
+          <span className="text-xs text-[#736D66] ml-2 block mt-1">
+            (Números del 1-10 se muestran primero. Dejar vacío para orden
+            normal)
+          </span>
+        </label>
+        <input
+          name="orden"
+          type="number"
+          min="1"
+          max="10"
+          value={formData.orden}
+          onChange={handleChange}
+          className="w-full p-2 border border-[#CDC7BD] rounded bg-white text-[#04090C] placeholder-gray-400"
+          placeholder="Ej: 1, 2, 3... (opcional)"
         />
       </div>
 

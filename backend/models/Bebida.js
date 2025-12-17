@@ -4,11 +4,13 @@ export const CATEGORIAS_OFICIALES = [
   "Combos",
   "Cervezas",
   "Vinos",
+  "Espumantes", // ✅ AGREGAR
   "Aperitivos y Licores",
   "Destilados",
   "Gaseosas y jugos",
   "Energizantes",
   "Snacks",
+  "Extras y hielo", // ✅ AGREGAR
   "Ofertas",
   "Cigarrillos",
 ];
@@ -26,21 +28,17 @@ const bebidaSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   imagen: { type: String },
 
-  // ✔ CATEGORÍA ÚNICA (NUNCA MÁS UN ARRAY)
-  // ✔ CATEGORÍAS (ARRAY)
   categorias: {
     type: [String],
     required: true,
     enum: CATEGORIAS_OFICIALES,
   },
 
-  // ✔ SUBCATEGORÍA (solo cuando corresponde)
   subcategoria: {
     type: String,
     default: "",
   },
 
-  // ✔ TIPO DE WHISKY (solo si subcategoria === "Whisky")
   tipoWhisky: {
     type: String,
     default: "",
@@ -49,6 +47,14 @@ const bebidaSchema = new mongoose.Schema({
   esEstrella: {
     type: Boolean,
     default: false,
+  },
+
+  // ✅ NUEVO CAMPO ORDEN
+  orden: {
+    type: Number,
+    default: null,
+    min: 1,
+    max: 10,
   },
 
   creadoEn: { type: Date, default: Date.now },
