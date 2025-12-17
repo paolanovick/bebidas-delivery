@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 6;
 
-// Categorías oficiales fijas del cliente
 const CATEGORIAS_OFICIALES = [
   "Combos",
   "Cervezas",
   "Vinos",
+  "Espumantes", // ✅ NUEVA
   "Aperitivos y Licores",
   "Destilados",
   "Gaseosas y jugos",
   "Energizantes",
   "Snacks",
+  "Extras y hielo", // ✅ NUEVA
   "Ofertas",
   "Cigarrillos",
 ];
@@ -25,11 +26,11 @@ const NORMALIZAR = {
   Aperitivos: "Aperitivos y Licores",
   Blancas: "Destilados",
   Whisky: "Destilados",
+  Energéticas: "Energizantes", // ✅ RECUPERA PRODUCTOS
   Mayoristas: "Ofertas",
   Regalos: "Snacks",
-  "Gift Cards": "Snacks",
+  Snack: "Snacks", // ✅ RECUPERA PRODUCTOS
   "Wine Club": "Vinos",
-  Experiencias: "Vinos",
 };
 
 const normalizarCategoria = (cat) => NORMALIZAR[cat] || cat;

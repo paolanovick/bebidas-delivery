@@ -38,11 +38,13 @@ export default function MenuBebidas() {
     "Combos",
     "Cervezas",
     "Vinos",
+    "Espumantes", // ✅ NUEVA
     "Aperitivos y Licores",
     "Destilados",
     "Gaseosas y jugos",
     "Energizantes",
     "Snacks",
+    "Extras y hielo", // ✅ NUEVA
     "Ofertas",
     "Cigarrillos",
   ];
