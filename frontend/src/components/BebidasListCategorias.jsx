@@ -19,6 +19,7 @@ const CATEGORIAS_OFICIALES = [
 ];
 
 // Mapeo categorías viejas → nuevas (solo compatibilidad)
+// Mapeo categorías viejas → nuevas (solo compatibilidad)
 const NORMALIZAR = {
   Gaseosas: "Gaseosas y jugos",
   Jugos: "Gaseosas y jugos",
@@ -26,11 +27,13 @@ const NORMALIZAR = {
   Aperitivos: "Aperitivos y Licores",
   Blancas: "Destilados",
   Whisky: "Destilados",
-  Energéticas: "Energizantes", // ✅ RECUPERA PRODUCTOS
+  Energéticas: "Energizantes",
+  Esperituosas: "Energizantes",
   Mayoristas: "Ofertas",
   Regalos: "Snacks",
-  Snack: "Snacks", // ✅ RECUPERA PRODUCTOS
+  Snack: "Snacks",
   "Wine Club": "Vinos",
+  "Sin categoría": "Extras y hielo",  // ✅ RECUPERA PRODUCTOS SIN CATEGORÍA
 };
 
 const normalizarCategoria = (cat) => NORMALIZAR[cat] || cat;
