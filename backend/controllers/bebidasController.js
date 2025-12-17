@@ -79,6 +79,7 @@ export const agregarBebida = async (req, res) => {
       subcategoria,
       tipoWhisky,
       esEstrella,
+      orden,  // ✅ AGREGAR
     } = req.body;
 
     // Normalizar categorías
@@ -96,6 +97,7 @@ export const agregarBebida = async (req, res) => {
       subcategoria: subcategoria || "",
       tipoWhisky: tipoWhisky || "",
       esEstrella: !!esEstrella,
+      orden: orden || null,  // ✅ AGREGAR
     });
 
     const guardada = await nueva.save();
@@ -122,6 +124,7 @@ export const editarBebida = async (req, res) => {
       subcategoria,
       tipoWhisky,
       esEstrella,
+      orden,  // ✅ AGREGAR
     } = req.body;
 
     // Normalizar categorías
@@ -141,6 +144,7 @@ export const editarBebida = async (req, res) => {
         subcategoria: subcategoria || "",
         tipoWhisky: tipoWhisky || "",
         esEstrella: !!esEstrella,
+        orden: orden || null,  // ✅ AGREGAR
       },
       { new: true }
     );
@@ -155,7 +159,6 @@ export const editarBebida = async (req, res) => {
     res.status(500).json({ mensaje: "Error al actualizar bebida" });
   }
 };
-
 /* =====================================================
    DELETE /api/bebidas/:id
 ===================================================== */
