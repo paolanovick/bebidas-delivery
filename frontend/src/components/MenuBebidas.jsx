@@ -74,6 +74,24 @@ export default function MenuBebidas() {
 
   const normalizarCategoria = (cat) => NORMALIZAR[cat] || cat;
 
+  // ✅ FUNCIÓN PARA OBTENER CATEGORÍAS NORMALIZADAS
+  const obtenerCategoriasNormalizadas = (b) => {
+    let cats = [];
+
+    if (Array.isArray(b.categorias)) {
+      cats = b.categorias;
+    } else if (b.categoria) {
+      cats = [b.categoria];
+    }
+
+    // Si no tiene categorías o están vacías, asignar "Sin categoría"
+    if (cats.length === 0 || cats.every((c) => !c || c.trim() === "")) {
+      cats = ["Sin categoría"];
+    }
+
+    return cats.map((c) => normalizarCategoria(c.trim()));
+  };
+
   // ============================
   // CARGAR CONFIGURACIONES
   // ============================
@@ -117,11 +135,7 @@ export default function MenuBebidas() {
   // FILTROS Y DATOS
   // ============================
   const bebidasFiltradas = bebidas.filter((b) => {
-    const categoriasProducto = Array.isArray(b.categorias)
-      ? b.categorias.map((c) => normalizarCategoria(c.trim()))
-      : b.categoria
-      ? [normalizarCategoria(b.categoria.trim())]
-      : [];
+    const categoriasProducto = obtenerCategoriasNormalizadas(b);
 
     const matchCategoria =
       categoria === "Todas" ||
@@ -151,11 +165,7 @@ export default function MenuBebidas() {
   const productosEstrella = bebidas.filter((b) => b.esEstrella);
 
   const bebidasPorCategoria = bebidas.reduce((acc, b) => {
-    const cats = Array.isArray(b.categorias)
-      ? b.categorias.map((c) => normalizarCategoria(c.trim()))
-      : b.categoria
-      ? [normalizarCategoria(b.categoria.trim())]
-      : [];
+    const cats = obtenerCategoriasNormalizadas(b);
 
     cats.forEach((cat) => {
       if (!acc[cat]) acc[cat] = [];

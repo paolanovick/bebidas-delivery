@@ -56,15 +56,24 @@ export default function BebidasListCategorias({
   useEffect(() => {
     setPagina(1);
   }, [categoriaActiva, orden]);
-
   /* =======================================================
-     NORMALIZAR Y OBTENER CATEGORÍAS CORRECTAS
-  ======================================================= */
+   NORMALIZAR Y OBTENER CATEGORÍAS CORRECTAS
+======================================================= */
   const obtenerCategoriasBebida = (b) => {
     let cats = [];
 
-    if (Array.isArray(b.categorias)) cats = b.categorias;
-    else if (typeof b.categorias === "string") cats = [b.categorias];
+    if (Array.isArray(b.categorias)) {
+      cats = b.categorias;
+    } else if (typeof b.categorias === "string") {
+      cats = [b.categorias];
+    } else if (b.categoria) {
+      cats = [b.categoria];
+    }
+
+    // ✅ SI NO TIENE CATEGORÍAS, ASIGNAR "Sin categoría"
+    if (cats.length === 0 || cats.every((c) => !c || c.trim() === "")) {
+      cats = ["Sin categoría"];
+    }
 
     // Normaliza categorías viejas
     return cats
