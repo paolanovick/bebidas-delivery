@@ -103,35 +103,35 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     formData.subcategoria === "Whisky" ? SUBCATEGORIAS.Whisky : [];
 
   /* =========================================================
-     SUBMIT
-  ========================================================= */
+   SUBMIT
+========================================================= */
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    const dataEnviar = {
-      ...formData,
-      categorias: formData.categorias,
-      subcategoria: formData.subcategoria || "",
-      tipoWhisky: formData.tipoWhisky || "",
-    };
-
-    onSubmit(dataEnviar);
-
-    if (!bebidaEditar) {
-      setFormData({
-        nombre: "",
-        descripcion: "",
-        precio: "",
-        stock: "",
-        imagen: "",
-        categorias: [],
-        subcategoria: "",
-        tipoWhisky: "",
-        esEstrella: false,
-      });
-    }
+  const dataEnviar = {
+    ...formData,
+    categorias: formData.categorias,
+    subcategoria: formData.subcategoria || "",
+    tipoWhisky: formData.tipoWhisky || "",
   };
+
+  onSubmit(dataEnviar);
+
+  // ✅ LIMPIAR FORMULARIO SIEMPRE (tanto al crear como al editar)
+  setFormData({
+    nombre: "",
+    descripcion: "",
+    precio: "",
+    stock: "",
+    imagen: "",
+    categorias: [],
+    subcategoria: "",
+    tipoWhisky: "",
+    esEstrella: false,
+  });
+};
+  
 
   /* =========================================================
      UI

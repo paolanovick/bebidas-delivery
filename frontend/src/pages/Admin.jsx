@@ -13,13 +13,12 @@ import {
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
 
-
-
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [bebidas, setBebidas] = useState([]);
   const [editing, setEditing] = useState(null);
+  const [mensajeExito, setMensajeExito] = useState(""); // ✅ MOVER AQUÍ ADENTRO
 
   const cargarBebidas = async () => {
     try {
@@ -35,7 +34,7 @@ const Admin = () => {
   }, []);
 
   // ================================================
-  //  ADD BEBIDA — AHORA ACEPTA categoria, subcategoria y tipoWhisky
+  //  ADD BEBIDA — AHORA MUESTRA MENSAJE DE CONFIRMACIÓN
   // ================================================
   const handleAdd = async (bebida) => {
     try {
@@ -52,13 +51,19 @@ const Admin = () => {
       });
 
       await cargarBebidas();
+
+      // ✅ MOSTRAR MENSAJE DE ÉXITO
+      setMensajeExito(`✅ "${bebida.nombre}" agregado correctamente`);
+      setTimeout(() => setMensajeExito(""), 3000);
     } catch (error) {
       console.error("Error al agregar bebida:", error);
+      setMensajeExito(`❌ Error al agregar producto`);
+      setTimeout(() => setMensajeExito(""), 3000);
     }
   };
 
   // ================================================
-  //  EDIT BEBIDA — AHORA TAMBIÉN ENVÍA tipoWhisky
+  //  EDIT BEBIDA — TAMBIÉN MUESTRA MENSAJE
   // ================================================
   const handleEdit = async (bebida) => {
     try {
@@ -76,8 +81,14 @@ const Admin = () => {
 
       await cargarBebidas();
       setEditing(null);
+
+      // ✅ MOSTRAR MENSAJE DE ÉXITO
+      setMensajeExito(`✅ "${bebida.nombre}" editado correctamente`);
+      setTimeout(() => setMensajeExito(""), 3000);
     } catch (error) {
       console.error("Error al editar bebida:", error);
+      setMensajeExito(`❌ Error al editar producto`);
+      setTimeout(() => setMensajeExito(""), 3000);
     }
   };
 
@@ -98,6 +109,13 @@ const Admin = () => {
 
   return (
     <div className="flex min-h-screen bg-[#CDC7BD]">
+      {/* ✅ MENSAJE DE CONFIRMACIÓN FLOTANTE */}
+      {mensajeExito && (
+        <div className="fixed top-6 right-6 z-50 bg-white border-2 border-[#590707] text-[#04090C] px-6 py-3 rounded-lg shadow-2xl animate-bounce">
+          {mensajeExito}
+        </div>
+      )}
+
       {/* SIDEBAR DESKTOP */}
       <aside className="hidden md:flex md:flex-col w-64 bg-[#590707] text-white py-6 px-4 shadow-xl">
         <h2 className="text-2xl font-bold mb-8 text-center border-b border-[#A30404] pb-4">
@@ -149,8 +167,6 @@ const Admin = () => {
           >
             Publicidad
           </button>
-
-          
         </nav>
       </aside>
 
@@ -195,7 +211,6 @@ const Admin = () => {
           >
             Publicidad
           </button>
-         
         </nav>
       </div>
 
@@ -245,11 +260,9 @@ const Admin = () => {
           </div>
         )}
 
-
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
         {seccion === "publicidad" && <PublicidadAdmin />}
-       
       </main>
     </div>
   );
