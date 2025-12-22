@@ -15,7 +15,7 @@ const WhatsAppButton = () => {
     "Hola! Estoy viendo el menú y tengo una consulta 😊🍾"
   );
 
-  const link = `https://wa.me/${numero}?text=${mensaje}`;
+  const link = `https://api.whatsapp.com/send?phone=${numero}&text=${mensaje}`;
 
   return (
     <a

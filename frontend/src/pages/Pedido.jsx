@@ -177,10 +177,10 @@ ${comentarios || "Sin notas"}
     try {
       await crearPedido(pedido);
 
-      window.open(
-        `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(mensaje)}`,
-        "_blank"
-      );
+     window.open(
+  `https://api.whatsapp.com/send?phone=${ADMIN_WHATSAPP}&text=${encodeURIComponent(mensaje)}`,
+  "_blank"
+);
 
       vaciarCarrito();
       navigate("/mis-pedidos");
