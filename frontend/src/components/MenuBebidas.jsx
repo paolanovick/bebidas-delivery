@@ -281,18 +281,19 @@ export default function MenuBebidas() {
           />
         )}
 
-        {/* TÍTULO CON HAMBURGUESA */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
-            Catálogo de Bebidas
-          </h1>
-          <button
-            onClick={() => setMenuAbierto(!menuAbierto)}
-            className="md:hidden text-2xl text-[#590707]"
-          >
-            ☰
-          </button>
-        </div>
+{/* TÍTULO CON HAMBURGUESA */}
+<div className="flex items-center justify-between mb-6">
+  <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
+    Catálogo de Bebidas
+  </h1>
+  <button
+    onClick={() => setMenuAbierto(!menuAbierto)}
+    className="md:hidden text-5xl text-[#590707] hover:text-[#A30404] transition-colors p-2 leading-none"
+    aria-label="Abrir menú de categorías"
+  >
+    ☰
+  </button>
+</div>
 
         {/* SIN RESULTADOS */}
         {bebidasFiltradas.length === 0 ? (

@@ -17,6 +17,12 @@ export default function Sidebar({
 }) {
   const [expandido, setExpandido] = useState({});
 
+  // ✅ FUNCIÓN PARA CERRAR MENÚ AL SELECCIONAR
+  const seleccionarYCerrar = (callback) => {
+    callback();
+    setMenuAbierto(false);
+  };
+
   return (
     <aside
       className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
@@ -31,7 +37,13 @@ export default function Sidebar({
       </label>
       <input
         value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
+        onChange={(e) => {
+          setBusqueda(e.target.value);
+          // Cierra el menú automáticamente después de buscar
+          if (e.target.value.length > 2) {
+            setTimeout(() => setMenuAbierto(false), 800);
+          }
+        }}
         className="w-full px-4 py-2 rounded-lg border border-[#CDC7BD] mb-6 bg-white text-[#04090C] placeholder-gray-400 font-medium"
         placeholder="Ej: Malbec, Gin..."
       />
@@ -44,11 +56,13 @@ export default function Sidebar({
         <div key={cat}>
           <div className="flex items-center justify-between gap-2">
             <button
-              onClick={() => {
-                setCategoria(cat);
-                setSubcategoria("Todas");
-                setTipo("Todas");
-              }}
+              onClick={() =>
+                seleccionarYCerrar(() => {
+                  setCategoria(cat);
+                  setSubcategoria("Todas");
+                  setTipo("Todas");
+                })
+              }
               className={`flex-1 text-left px-4 py-2 rounded-lg mb-2 transition text-[#04090C] ${
                 categoria === cat
                   ? "bg-[#590707] text-white shadow"
@@ -90,10 +104,13 @@ export default function Sidebar({
                 .map((sub) => (
                   <button
                     key={sub}
-                    onClick={() => {
-                      setSubcategoria(sub);
-                      setTipo("Todas");
-                    }}
+                    onClick={() =>
+                      seleccionarYCerrar(() => {
+                        setCategoria(cat);
+                        setSubcategoria(sub);
+                        setTipo("Todas");
+                      })
+                    }
                     className={`w-full text-left px-3 py-1 rounded text-sm transition ${
                       subcategoria === sub
                         ? "bg-[#590707] text-white"
@@ -118,7 +135,9 @@ export default function Sidebar({
                   .map((t) => (
                     <button
                       key={t}
-                      onClick={() => setTipo(t)}
+                      onClick={() =>
+                        seleccionarYCerrar(() => setTipo(t))
+                      }
                       className={`w-full text-left px-3 py-1 rounded text-sm transition ${
                         tipo === t
                           ? "bg-[#590707] text-white"
@@ -132,8 +151,6 @@ export default function Sidebar({
             )}
         </div>
       ))}
-
-      
     </aside>
   );
 }
