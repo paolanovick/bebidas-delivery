@@ -31,17 +31,22 @@ const Navbar = () => {
     <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         <div className="flex items-center gap-4">
-          <Link to="/tienda">
-            <img
-              src={`${process.env.PUBLIC_URL}/logoSF.png`}
-              alt="Logo"
-              className="h-32 md:h-40 lg:h-48 w-auto object-contain cursor-pointer"
-            />
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
-            El DANES
-          </h1>
-        </div>
+  <Link 
+    to="/tienda" 
+    className="block cursor-pointer hover:opacity-80 transition-opacity"
+  >
+    <img
+      src={`${process.env.PUBLIC_URL}/logoSF.png`}
+      alt="Logo El Danés"
+      className="h-32 md:h-40 lg:h-48 w-auto object-contain"
+    />
+  </Link>
+  <Link to="/tienda" className="cursor-pointer hover:opacity-80 transition-opacity">
+    <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
+      El DANES
+    </h1>
+  </Link>
+</div>
 
         <div className="hidden md:flex items-center gap-6">
           <div className="flex gap-3">
