@@ -117,6 +117,19 @@ export default function MenuBebidas() {
     }
   }, [bebidas]);
 
+  // ✅ RESETEAR FILTROS cuando viene desde el logo
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset') === 'true') {
+      setCategoria('Todas');
+      setSubcategoria('Todas');
+      setTipo('Todas');
+      setBusqueda('');
+      // Limpiar el parámetro de la URL
+      window.history.replaceState({}, '', '/tienda');
+    }
+  }, [window.location.search]);
+
   // ============================
   // AUTOSCROLL CARRUSEL
   // ============================

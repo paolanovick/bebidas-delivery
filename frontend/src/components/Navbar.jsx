@@ -11,7 +11,8 @@ const Navbar = () => {
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  if (location.pathname === "/" || location.pathname === "/inicio") return null;
+  // ✅ COMENTADO: Ahora el Navbar siempre está visible
+  // if (location.pathname === "/" || location.pathname === "/inicio") return null;
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -30,23 +31,24 @@ const Navbar = () => {
   return (
     <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
+        {/* ✅ LOGO Y TÍTULO - Van a /tienda reseteando filtros SIN perder carrito */}
         <div className="flex items-center gap-4">
-  <a 
-  href="/tienda" 
-  className="block cursor-pointer hover:opacity-80 transition-opacity"
->
-  <img
-    src={`${process.env.PUBLIC_URL}/logoSF.png`}
-    alt="Logo El Danés"
-    className="h-32 md:h-40 lg:h-48 w-auto object-contain"
-  />
-</a>
-<a href="/tienda" className="cursor-pointer hover:opacity-80 transition-opacity">
-  <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
-    El DANES
-  </h1>
-</a>
-</div>
+          <Link 
+            to="/tienda?reset=true" 
+            className="block cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <img
+              src={`${process.env.PUBLIC_URL}/logoSF.png`}
+              alt="Logo El Danés"
+              className="h-32 md:h-40 lg:h-48 w-auto object-contain"
+            />
+          </Link>
+          <Link to="/tienda?reset=true" className="cursor-pointer hover:opacity-80 transition-opacity">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
+              El DANES
+            </h1>
+          </Link>
+        </div>
 
         <div className="hidden md:flex items-center gap-6">
           <div className="flex gap-3">
