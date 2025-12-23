@@ -25,6 +25,7 @@ export default function MenuBebidas() {
   const [cargandoHorarios, setCargandoHorarios] = useState(true);
   const [mensajeAgregado, setMensajeAgregado] = useState("");
   const [paused, setPaused] = useState(false);
+  const [cargando, setCargando] = useState(true);
   const carouselRef = useRef(null);
 
   // ============================
@@ -108,6 +109,13 @@ export default function MenuBebidas() {
     };
     cargar();
   }, []);
+
+  // ✅ DETECTAR CUANDO LAS BEBIDAS ESTÁN LISTAS
+  useEffect(() => {
+    if (bebidas.length > 0) {
+      setCargando(false);
+    }
+  }, [bebidas]);
 
   // ============================
   // AUTOSCROLL CARRUSEL
@@ -261,7 +269,7 @@ export default function MenuBebidas() {
         )}
 
         {/* CARRUSEL DESTACADOS */}
-        {productosEstrella.length > 0 && (
+        {productosEstrella.length > 0 && !cargando && (
           <CarruselDestacados
             productos={productosEstrella}
             handleAgregar={handleAgregar}
@@ -281,22 +289,27 @@ export default function MenuBebidas() {
           />
         )}
 
-{/* TÍTULO CON HAMBURGUESA */}
-<div className="flex items-center justify-between mb-6">
-  <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
-    Catálogo de Bebidas
-  </h1>
-  <button
-    onClick={() => setMenuAbierto(!menuAbierto)}
-    className="md:hidden text-5xl text-[#590707] hover:text-[#A30404] transition-colors p-2 leading-none"
-    aria-label="Abrir menú de categorías"
-  >
-    ☰
-  </button>
-</div>
+        {/* TÍTULO CON HAMBURGUESA */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#590707]">
+            Catálogo de Bebidas
+          </h1>
+          <button
+            onClick={() => setMenuAbierto(!menuAbierto)}
+            className="md:hidden text-5xl text-[#590707] hover:text-[#A30404] transition-colors p-2 leading-none"
+            aria-label="Abrir menú de categorías"
+          >
+            ☰
+          </button>
+        </div>
 
-        {/* SIN RESULTADOS */}
-        {bebidasFiltradas.length === 0 ? (
+        {/* LOADING, SIN RESULTADOS O PRODUCTOS */}
+        {cargando ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="animate-bounce text-6xl mb-4">🍺</div>
+            <p className="text-2xl font-bold text-[#590707]">Cargando bebidas...</p>
+          </div>
+        ) : bebidasFiltradas.length === 0 ? (
           <ProductosGrid
             productos={[]}
             fmt={fmt}
