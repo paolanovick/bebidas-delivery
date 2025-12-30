@@ -74,8 +74,8 @@ const productosSugeridos = useMemo(() => {
   }
 
   return candidatos.slice(0, 3);
-}, [bebidas, carrito, falta, yaLogroEnvioGratis]);
-  // No mostrar nada si el carrito está vacío
+}, [bebidas, carrito, falta, ]);
+ 
   if (carrito.length === 0) return null;
 
   return (
@@ -159,7 +159,7 @@ const productosSugeridos = useMemo(() => {
                   <img
                     src={producto.imagen}
                     alt={producto.nombre}
-                    className="w-full h-24 object-cover rounded-lg mb-3"
+                    className="w-full h-40 object-contain rounded-lg mb-3"
                   />
                 )}
                 <h5 className="font-semibold text-[#04090C] text-sm mb-2 line-clamp-2">
