@@ -187,7 +187,8 @@ export default function BebidasListCategorias({
                   <th className="py-3 px-4">Categorías</th>
                   <th className="py-3 px-4">Subcategoría</th>
                   <th className="py-3 px-4">Tipo Whisky</th>
-                  <th className="py-3 px-4">Orden</th>
+                    <th className="py-3 px-4">Orden</th>
+                    <th className="py-3 px-4">Incentivo</th> 
                   <th className="py-3 px-4">Precio</th>
                   <th className="py-3 px-4">Stock</th>
                   <th className="py-3 px-4">Acciones</th>
@@ -231,26 +232,25 @@ export default function BebidasListCategorias({
                       </td>
 
                       {/* ✅ AGREGAR ESTA CELDA */}
-                      <td className="py-3 px-4 text-xs">{b.orden || "-"}</td>
+                     <td className="py-3 px-4 text-xs">{b.orden || "-"}</td>
 
-                      <td className="py-3 px-4">
-                        ${Number(b.precio).toFixed(2)}
-                      </td>
+<td className="py-3 px-4 text-center">
+  {b.esIncentivo ? "🎯" : "-"}
+</td>
 
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            sinStock
-                              ? "bg-red-100 text-red-700"
-                              : stockBajo
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {b.stock}
-                        </span>
-                      </td>
+<td className="py-3 px-4">
+  ${Number(b.precio).toFixed(2)}
+</td>
 
+<td className="py-3 px-4">
+  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+    sinStock ? "bg-red-100 text-red-700" : stockBajo ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
+  }`}>
+    {b.stock}
+  </span>
+</td>
+                      
+                      
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button
