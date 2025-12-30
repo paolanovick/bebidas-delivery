@@ -33,6 +33,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
     subcategoria: "",
     tipoWhisky: "",
     esEstrella: false,
+     esIncentivo: false,
     orden: "",
   });
 
@@ -49,6 +50,7 @@ export default function BebidasForm({ onSubmit, bebidaEditar, onCancel }) {
         subcategoria: bebidaEditar.subcategoria || "",
         tipoWhisky: bebidaEditar.tipoWhisky || "",
         esEstrella: bebidaEditar.esEstrella || false,
+        esIncentivo: bebidaEditar.esIncentivo || false,  // ✅ AGREGADO
         orden: bebidaEditar.orden || "",
       });
     }
@@ -132,6 +134,7 @@ const handleSubmit = (e) => {
     subcategoria: "",
     tipoWhisky: "",
     esEstrella: false,
+    esIncentivo: false,
     orden: "",
   });
 };
@@ -326,6 +329,20 @@ const handleSubmit = (e) => {
           Producto destacado ⭐
         </span>
       </div>
+
+      {/* ✅ INCENTIVO DE COMPRA (NUEVO) */}
+<div className="flex items-center gap-2 p-2 bg-white rounded border border-[#CDC7BD]">
+  <input
+    type="checkbox"
+    name="esIncentivo"
+    checked={formData.esIncentivo}
+    onChange={handleChange}
+    className="w-4 h-4 cursor-pointer"
+  />
+  <span className="font-semibold text-[#590707] cursor-pointer">
+    Sugerir como incentivo de compra 🎯
+  </span>
+</div>
 
       {/* BOTONES */}
       <div className="flex gap-3 mt-4">

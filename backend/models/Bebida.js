@@ -49,8 +49,14 @@ const bebidaSchema = new mongoose.Schema({
     default: false,
   },
 
+
+esIncentivo: {
+  type: Boolean,
+  default: false,
+},
+
   // ✅ NUEVO CAMPO ORDEN
-  orden: {
+  orden: {  
     type: Number,
     default: null,
     min: 1,

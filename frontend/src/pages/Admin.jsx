@@ -46,6 +46,7 @@ const Admin = () => {
         subcategoria: bebida.subcategoria,
         tipoWhisky: bebida.tipoWhisky || "",
         esEstrella: bebida.esEstrella,
+        esIncentivo: bebida.esIncentivo,
         orden: bebida.orden || null,
       });
 
@@ -71,6 +72,7 @@ const Admin = () => {
         subcategoria: bebida.subcategoria,
         tipoWhisky: bebida.tipoWhisky || "",
         esEstrella: bebida.esEstrella,
+        esIncentivo: bebida.esIncentivo,
         orden: bebida.orden || null,
       });
 

@@ -40,49 +40,39 @@ export default function IncentivoPedido() {
   const yaLogroEnvioGratis = subtotal >= config.montoMinimoEnvioGratis;
 
   // ✅ Productos sugeridos usando CONFIGURACIÓN
-  const productosSugeridos = useMemo(() => {
-    if (yaLogroEnvioGratis) return [];
+  // ✅ Productos sugeridos usando BEBIDAS MARCADAS COMO INCENTIVO
+const productosSugeridos = useMemo(() => {
+  if (yaLogroEnvioGratis) return [];
 
-    // IDs de productos ya en el carrito
-    const idsEnCarrito = carrito.map((item) => item._id || item.id);
+  // IDs de productos ya en el carrito
+  const idsEnCarrito = carrito.map((item) => item._id || item.id);
 
-    // Filtrar productos disponibles (con stock y no en carrito)
-    const disponibles = bebidas.filter(
-      (b) => b.stock > 0 && !idsEnCarrito.includes(b._id || b.id)
-    );
+  // ✅ FILTRAR SOLO BEBIDAS CON esIncentivo: true
+  const disponibles = bebidas.filter(
+    (b) => b.esIncentivo && b.stock > 0 && !idsEnCarrito.includes(b._id || b.id)
+  );
 
-    // Productos que completan el monto (entre 30% y 70% de lo que falta)
-    const rangoMin = falta * 0.3;
-    const rangoMax = falta * 0.7;
+  // Productos que completan el monto (entre 30% y 70% de lo que falta)
+  const rangoMin = falta * 0.3;
+  const rangoMax = falta * 0.7;
 
-    let candidatos = disponibles.filter(
-      (b) => Number(b.precio) >= rangoMin && Number(b.precio) <= rangoMax
-    );
+  let candidatos = disponibles.filter(
+    (b) => Number(b.precio) >= rangoMin && Number(b.precio) <= rangoMax
+  );
 
-    // Si no hay en ese rango, buscar los más cercanos
-    if (candidatos.length === 0) {
-      candidatos = disponibles
-        .sort(
-          (a, b) =>
-            Math.abs(Number(a.precio) - falta / 2) -
-            Math.abs(Number(b.precio) - falta / 2)
-        )
-        .slice(0, 3);
-    }
+  // Si no hay en ese rango, buscar los más cercanos
+  if (candidatos.length === 0) {
+    candidatos = disponibles
+      .sort(
+        (a, b) =>
+          Math.abs(Number(a.precio) - falta / 2) -
+          Math.abs(Number(b.precio) - falta / 2)
+      )
+      .slice(0, 3);
+  }
 
-    // ✅ PRIORIZAR CATEGORÍAS CONFIGURADAS
-    const complementarios = candidatos.filter((b) => {
-      const cats = Array.isArray(b.categorias) ? b.categorias : [b.categoria];
-      return cats.some((cat) =>
-        config.categoriasProductosSugeridos.includes(cat)
-      );
-    });
-
-    const resultado = complementarios.length > 0 ? complementarios : candidatos;
-
-    return resultado.slice(0, 3);
-  }, [bebidas, carrito, falta, yaLogroEnvioGratis, config.categoriasProductosSugeridos]);
-
+  return candidatos.slice(0, 3);
+}, [bebidas, carrito, falta, yaLogroEnvioGratis]);
   // No mostrar nada si el carrito está vacío
   if (carrito.length === 0) return null;
 
