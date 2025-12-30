@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import Sidebar from "./Sidebar";
@@ -12,6 +13,7 @@ import BannerTicker from "./BannerTicker";
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar } = useCarrito();
+  const location = useLocation();
 
   // ============================
   // ESTADOS
@@ -119,7 +121,7 @@ export default function MenuBebidas() {
 
   // ✅ RESETEAR FILTROS cuando viene desde el logo
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     if (params.get('reset') === 'true') {
       setCategoria('Todas');
       setSubcategoria('Todas');
@@ -128,7 +130,7 @@ export default function MenuBebidas() {
       // Limpiar el parámetro de la URL
       window.history.replaceState({}, '', '/tienda');
     }
-  }, [window.location.search]);
+  }, [location.search]);
 
   // ============================
   // AUTOSCROLL CARRUSEL

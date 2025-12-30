@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { useCarrito } from "../context/CarritoContext";
 import { crearPedido, getEnvioConfig } from "../services/api";
-
-import MapaEntrega from "../components/MapaEntrega";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
-
+import IncentivoPedido from "../components/IncentivoPedido";
+// ✅ AGREGAR ESTA LÍNEA
 const ADMIN_WHATSAPP = "5492494252530";
 
 export default function Pedido() {
@@ -313,22 +312,18 @@ setTimeout(function() {
           </label>
         </div>
 
-        {modoEntrega === "envio" && (
-          <>
-            <label className="font-semibold text-[#04090C]">Dirección *</label>
-            <input
-              value={direccion}
-              onChange={(e) => setDireccion(e.target.value)}
-              className="w-full p-2 border rounded mb-4 text-[#04090C] bg-white"
-              placeholder="Ej.: Pasaje Vázquez 123, Tandil"
-            />
-
-            <MapaEntrega
-              onLocationSelect={setCoordenadas}
-              direccion={direccion}
-            />
-          </>
-        )}
+      {modoEntrega === "envio" && (
+  <>
+    <label className="font-semibold text-[#04090C]">Dirección *</label>
+    <input
+      value={direccion}
+      onChange={(e) => setDireccion(e.target.value)}
+      className="w-full p-2 border rounded mb-4 text-[#04090C] bg-white"
+      placeholder="Ej.: Pasaje Vázquez 123, Tandil"
+    />
+    {/* MapaEntrega removido */}
+  </>
+)}
 
         <label className="font-semibold text-[#04090C]">
           Teléfono (opcional)
@@ -357,6 +352,9 @@ setTimeout(function() {
           placeholder="Indicaciones, timbre, etc."
         />
       </div>
+
+      {/* ✅ NUEVO: INCENTIVO ENVÍO GRATIS */}
+      <IncentivoPedido />
 
       <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
