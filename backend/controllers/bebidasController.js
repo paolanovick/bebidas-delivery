@@ -55,7 +55,7 @@ export const getBebidas = async (req, res) => {
       categoria: normalizarCategoria(b.categoria) || "Sin categoría",
       subcategoria: b.subcategoria || "",
       tipoWhisky: b.tipoWhisky || "",
-       esIncentivo: !!b.esIncentivo,
+      esIncentivo: !!b.esIncentivo,
       esEstrella: !!b.esEstrella,
     }));
 
@@ -81,7 +81,7 @@ export const agregarBebida = async (req, res) => {
       subcategoria,
       tipoWhisky,
       esEstrella,
-       esIncentivo,
+      esIncentivo,
       orden,  // ✅ AGREGAR
     } = req.body;
 
@@ -149,6 +149,7 @@ export const editarBebida = async (req, res) => {
         subcategoria: subcategoria || "",
         tipoWhisky: tipoWhisky || "",
         esEstrella: !!esEstrella,
+        esIncentivo: !!esIncentivo,  
         orden: orden || null,  // ✅ AGREGAR
       },
       { new: true }
