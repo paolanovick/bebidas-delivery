@@ -2,19 +2,17 @@ import mongoose from "mongoose";
 
 const configIncentivoSchema = new mongoose.Schema(
   {
-    activo: { type: Boolean, default: true },
-    montoMinimo: { type: Number, default: 40000 },
-    textoTitulo: {
+    textoIncentivo: {
       type: String,
       default: "¡Estás cerca del envío gratis!",
     },
-    textoSugerencia: {
-      type: String,
-      default: "Agregá estos productos:",
+    montoMinimoEnvioGratis: {
+      type: Number,
+      default: 40000,
     },
-    categoriasPermitidas: {
+    categoriasProductosSugeridos: {
       type: [String],
-      default: ["Snacks", "Gaseosas y jugos", "Extras y hielo", "Energizantes"],
+      default: ["Snacks", "Gaseosas y jugos", "Extras y hielo"],
     },
   },
   { timestamps: true }
