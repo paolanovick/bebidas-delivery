@@ -42,7 +42,7 @@ export default function IncentivoPedido() {
   // ✅ Productos sugeridos usando CONFIGURACIÓN
   // ✅ Productos sugeridos usando BEBIDAS MARCADAS COMO INCENTIVO
 const productosSugeridos = useMemo(() => {
-  if (yaLogroEnvioGratis) return [];
+ // if (yaLogroEnvioGratis) return [];
 
   // IDs de productos ya en el carrito
   const idsEnCarrito = carrito.map((item) => item._id || item.id);
