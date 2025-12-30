@@ -48,6 +48,8 @@ const productosSugeridos = useMemo(() => {
   const idsEnCarrito = carrito.map((item) => item._id || item.id);
 
   // ✅ FILTRAR SOLO BEBIDAS CON esIncentivo: true
+  console.log("INCENTIVOS:", bebidas.filter(b => b.esIncentivo));
+
   const disponibles = bebidas.filter(
     (b) => b.esIncentivo && b.stock > 0 && !idsEnCarrito.includes(b._id || b.id)
   );
