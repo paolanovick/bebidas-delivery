@@ -125,7 +125,6 @@ const handleSubmit = (e) => {
 
   onSubmit(dataEnviar);
 
-  onSubmit(dataEnviar);
 
   // ✅ LIMPIAR FORMULARIO SIEMPRE (tanto al crear como al editar)
   setFormData({
