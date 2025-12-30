@@ -240,3 +240,23 @@ export const updateEnvioConfig = async (data) => {
   });
   return res.json();
 };
+// ==================== CONFIGURACIÓN INCENTIVO ====================
+export const getConfigIncentivo = async () => {
+  const res = await fetch(`${BASE}/configuracion/incentivo`);
+  if (!res.ok) throw new Error("Error al obtener config de incentivo");
+  return res.json();
+};
+
+export const updateConfigIncentivo = async (data) => {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${BASE}/configuracion/incentivo`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Error al actualizar config de incentivo");
+  return res.json();
+};

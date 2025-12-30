@@ -12,13 +12,14 @@ import {
   eliminarBebida,
 } from "../services/api";
 import PublicidadAdmin from "../admin/PublicidadAdmin";
+import AdminIncentivo from "./AdminIncentivo";
 
 const Admin = () => {
   const [seccion, setSeccion] = useState("pedidos");
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [bebidas, setBebidas] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [mensajeExito, setMensajeExito] = useState(""); // ✅ MOVER AQUÍ ADENTRO
+  const [mensajeExito, setMensajeExito] = useState("");
 
   const cargarBebidas = async () => {
     try {
@@ -33,9 +34,6 @@ const Admin = () => {
     cargarBebidas();
   }, []);
 
-  // ================================================
-  //  ADD BEBIDA — AHORA MUESTRA MENSAJE DE CONFIRMACIÓN
-  // ================================================
   const handleAdd = async (bebida) => {
     try {
       await agregarBebida({
@@ -52,8 +50,6 @@ const Admin = () => {
       });
 
       await cargarBebidas();
-
-      // ✅ MOSTRAR MENSAJE DE ÉXITO
       setMensajeExito(`✅ "${bebida.nombre}" agregado correctamente`);
       setTimeout(() => setMensajeExito(""), 3000);
     } catch (error) {
@@ -63,9 +59,6 @@ const Admin = () => {
     }
   };
 
-  // ================================================
-  //  EDIT BEBIDA — TAMBIÉN MUESTRA MENSAJE
-  // ================================================
   const handleEdit = async (bebida) => {
     try {
       await editarBebida(editing._id, {
@@ -83,8 +76,6 @@ const Admin = () => {
 
       await cargarBebidas();
       setEditing(null);
-
-      // ✅ MOSTRAR MENSAJE DE ÉXITO
       setMensajeExito(`✅ "${bebida.nombre}" editado correctamente`);
       setTimeout(() => setMensajeExito(""), 3000);
     } catch (error) {
@@ -94,7 +85,6 @@ const Admin = () => {
     }
   };
 
-  // ================================================
   const handleDelete = async (id) => {
     try {
       await eliminarBebida(id);
@@ -111,7 +101,7 @@ const Admin = () => {
 
   return (
     <div className="flex min-h-screen bg-[#CDC7BD]">
-      {/* ✅ MENSAJE DE CONFIRMACIÓN FLOTANTE */}
+      {/* MENSAJE DE CONFIRMACIÓN FLOTANTE */}
       {mensajeExito && (
         <div className="fixed top-6 right-6 z-50 bg-white border-2 border-[#590707] text-[#04090C] px-6 py-3 rounded-lg shadow-2xl animate-bounce">
           {mensajeExito}
@@ -169,6 +159,16 @@ const Admin = () => {
           >
             Publicidad
           </button>
+
+          {/* ✅ BOTÓN INCENTIVO EN DESKTOP */}
+          <button
+            onClick={() => cambiarSeccion("incentivo")}
+            className={`text-left px-4 py-3 rounded-lg transition-all ${
+              seccion === "incentivo" ? "bg-[#A30404]" : "hover:bg-[#A30404]"
+            }`}
+          >
+            Incentivo Pedido
+          </button>
         </nav>
       </aside>
 
@@ -212,6 +212,12 @@ const Admin = () => {
             className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
           >
             Publicidad
+          </button>
+          <button
+            onClick={() => cambiarSeccion("incentivo")}
+            className="px-4 py-3 hover:bg-[#A30404] rounded-lg"
+          >
+            Incentivo Pedido
           </button>
         </nav>
       </div>
@@ -265,6 +271,9 @@ const Admin = () => {
         {seccion === "usuarios" && <AdminUsuarios />}
         {seccion === "horarios" && <ConfiguracionHorarios />}
         {seccion === "publicidad" && <PublicidadAdmin />}
+        
+        {/* ✅ RENDERIZAR COMPONENTE INCENTIVO */}
+        {seccion === "incentivo" && <AdminIncentivo />}
       </main>
     </div>
   );

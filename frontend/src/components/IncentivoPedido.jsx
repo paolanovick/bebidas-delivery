@@ -1,12 +1,32 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
-
-const ENVIO_GRATIS_MINIMO = 40000;
+import { getConfigIncentivo } from "../services/api";
 
 export default function IncentivoPedido() {
   const { bebidas } = useBebidas();
   const { carrito, agregar } = useCarrito();
+
+  // ✅ ESTADO PARA CONFIG DESDE BACKEND
+  const [config, setConfig] = useState({
+    textoIncentivo: "¡Estás cerca del envío gratis!",
+    montoMinimoEnvioGratis: 40000,
+    categoriasProductosSugeridos: ["Snacks", "Gaseosas y jugos", "Extras y hielo"],
+  });
+
+  // ✅ CARGAR CONFIG AL MONTAR
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const data = await getConfigIncentivo();
+        setConfig(data);
+      } catch (error) {
+        console.error("Error al cargar config incentivo:", error);
+        // Si falla, usa valores por defecto (ya están en el estado inicial)
+      }
+    };
+    cargar();
+  }, []);
 
   // Calcular subtotal
   const subtotal = carrito.reduce(
@@ -15,20 +35,20 @@ export default function IncentivoPedido() {
   );
 
   // Cuánto falta para envío gratis
-  const falta = ENVIO_GRATIS_MINIMO - subtotal;
-  const porcentaje = Math.min((subtotal / ENVIO_GRATIS_MINIMO) * 100, 100);
-  const yaLogroEnvioGratis = subtotal >= ENVIO_GRATIS_MINIMO;
+  const falta = config.montoMinimoEnvioGratis - subtotal;
+  const porcentaje = Math.min((subtotal / config.montoMinimoEnvioGratis) * 100, 100);
+  const yaLogroEnvioGratis = subtotal >= config.montoMinimoEnvioGratis;
 
-  // Productos sugeridos inteligentes
+  // ✅ Productos sugeridos usando CONFIGURACIÓN
   const productosSugeridos = useMemo(() => {
     if (yaLogroEnvioGratis) return [];
 
     // IDs de productos ya en el carrito
-    const idsEnCarrito = carrito.map(item => item._id || item.id);
+    const idsEnCarrito = carrito.map((item) => item._id || item.id);
 
     // Filtrar productos disponibles (con stock y no en carrito)
     const disponibles = bebidas.filter(
-      b => b.stock > 0 && !idsEnCarrito.includes(b._id || b.id)
+      (b) => b.stock > 0 && !idsEnCarrito.includes(b._id || b.id)
     );
 
     // Productos que completan el monto (entre 30% y 70% de lo que falta)
@@ -36,28 +56,32 @@ export default function IncentivoPedido() {
     const rangoMax = falta * 0.7;
 
     let candidatos = disponibles.filter(
-      b => Number(b.precio) >= rangoMin && Number(b.precio) <= rangoMax
+      (b) => Number(b.precio) >= rangoMin && Number(b.precio) <= rangoMax
     );
 
     // Si no hay en ese rango, buscar los más cercanos
     if (candidatos.length === 0) {
       candidatos = disponibles
-        .sort((a, b) => Math.abs(Number(a.precio) - falta / 2) - Math.abs(Number(b.precio) - falta / 2))
+        .sort(
+          (a, b) =>
+            Math.abs(Number(a.precio) - falta / 2) -
+            Math.abs(Number(b.precio) - falta / 2)
+        )
         .slice(0, 3);
     }
 
-    // Priorizar snacks, gaseosas, hielo (productos complementarios)
-    const complementarios = candidatos.filter(b => {
+    // ✅ PRIORIZAR CATEGORÍAS CONFIGURADAS
+    const complementarios = candidatos.filter((b) => {
       const cats = Array.isArray(b.categorias) ? b.categorias : [b.categoria];
-      return cats.some(cat => 
-        ['Snacks', 'Gaseosas y jugos', 'Extras y hielo', 'Energizantes'].includes(cat)
+      return cats.some((cat) =>
+        config.categoriasProductosSugeridos.includes(cat)
       );
     });
 
     const resultado = complementarios.length > 0 ? complementarios : candidatos;
-    
+
     return resultado.slice(0, 3);
-  }, [bebidas, carrito, falta, yaLogroEnvioGratis]);
+  }, [bebidas, carrito, falta, yaLogroEnvioGratis, config.categoriasProductosSugeridos]);
 
   // No mostrar nada si el carrito está vacío
   if (carrito.length === 0) return null;
@@ -76,15 +100,16 @@ export default function IncentivoPedido() {
             </div>
             {/* Barra completa */}
             <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-              <div 
+              <div
                 className="bg-green-500 h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2"
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
               >
                 <span className="text-xs text-white font-bold">100%</span>
               </div>
             </div>
             <p className="text-sm text-gray-600 mt-2 text-center">
-              ${subtotal.toLocaleString('es-AR')} / ${ENVIO_GRATIS_MINIMO.toLocaleString('es-AR')}
+              ${subtotal.toLocaleString("es-AR")} / $
+              {config.montoMinimoEnvioGratis.toLocaleString("es-AR")}
             </p>
           </>
         ) : (
@@ -92,25 +117,31 @@ export default function IncentivoPedido() {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-2xl">🚚</span>
               <h3 className="text-xl font-bold text-[#590707]">
-                ¡Estás cerca del envío gratis!
+                {config.textoIncentivo}
               </h3>
             </div>
             <p className="text-lg text-[#04090C] mb-3">
-              Te faltan <span className="font-bold text-[#590707]">${falta.toLocaleString('es-AR')}</span>
+              Te faltan{" "}
+              <span className="font-bold text-[#590707]">
+                ${falta.toLocaleString("es-AR")}
+              </span>
             </p>
             {/* Barra de progreso */}
             <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-              <div 
+              <div
                 className="bg-gradient-to-r from-[#A30404] to-[#590707] h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2"
                 style={{ width: `${porcentaje}%` }}
               >
                 {porcentaje > 15 && (
-                  <span className="text-xs text-white font-bold">{Math.round(porcentaje)}%</span>
+                  <span className="text-xs text-white font-bold">
+                    {Math.round(porcentaje)}%
+                  </span>
                 )}
               </div>
             </div>
             <p className="text-sm text-gray-600 mt-2 text-center">
-              ${subtotal.toLocaleString('es-AR')} / ${ENVIO_GRATIS_MINIMO.toLocaleString('es-AR')}
+              ${subtotal.toLocaleString("es-AR")} / $
+              {config.montoMinimoEnvioGratis.toLocaleString("es-AR")}
             </p>
           </>
         )}
@@ -125,16 +156,16 @@ export default function IncentivoPedido() {
               Agregá estos productos:
             </h4>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {productosSugeridos.map((producto) => (
-              <div 
+              <div
                 key={producto._id || producto.id}
                 className="bg-[#F2ECE4] rounded-xl p-4 border border-[#CDC7BD] hover:shadow-md transition-shadow"
               >
                 {producto.imagen && (
-                  <img 
-                    src={producto.imagen} 
+                  <img
+                    src={producto.imagen}
                     alt={producto.nombre}
                     className="w-full h-24 object-cover rounded-lg mb-3"
                   />
@@ -143,7 +174,7 @@ export default function IncentivoPedido() {
                   {producto.nombre}
                 </h5>
                 <p className="text-lg font-bold text-[#590707] mb-3">
-                  ${Number(producto.precio).toLocaleString('es-AR')}
+                  ${Number(producto.precio).toLocaleString("es-AR")}
                 </p>
                 <button
                   onClick={() => agregar(producto)}

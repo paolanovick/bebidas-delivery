@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link,  } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
 
 const Navbar = () => {
-  const location = useLocation();
+  
   const { usuario, logout } = useAuth();
   const { carrito, vaciarCarrito } = useCarrito();
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
@@ -45,7 +45,7 @@ const Navbar = () => {
           </Link>
           <Link to="/tienda?reset=true" className="cursor-pointer hover:opacity-80 transition-opacity">
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
-              El DANES
+              EL DANES
             </h1>
           </Link>
         </div>
