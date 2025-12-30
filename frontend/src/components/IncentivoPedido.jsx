@@ -145,7 +145,7 @@ const productosSugeridos = useMemo(() => {
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl">💡</span>
             <h4 className="text-lg font-semibold text-[#04090C]">
-              Agregá estos productos:
+              Agregá estos productos para que tu envío se GRATIS:
             </h4>
           </div>
 

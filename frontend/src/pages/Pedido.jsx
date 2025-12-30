@@ -283,7 +283,9 @@ setTimeout(function() {
       <div className="text-right text-2xl font-bold text-[#590707] mb-6">
         Total: ${total.toLocaleString("es-AR")}
       </div>
-
+  {/* ✅ NUEVO: INCENTIVO ENVÍO GRATIS */}
+      <IncentivoPedido />
+      
       {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
@@ -353,8 +355,7 @@ setTimeout(function() {
         />
       </div>
 
-      {/* ✅ NUEVO: INCENTIVO ENVÍO GRATIS */}
-      <IncentivoPedido />
+    
 
       <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
