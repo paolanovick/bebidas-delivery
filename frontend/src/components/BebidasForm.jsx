@@ -120,6 +120,10 @@ const handleSubmit = (e) => {
     tipoWhisky: formData.tipoWhisky || "",
     orden: formData.orden ? Number(formData.orden) : null,
   };
+   console.log('📤 DATOS A ENVIAR:', dataEnviar); // ✅ AGREGAR ESTA LÍNEA
+  console.log('esIncentivo:', dataEnviar.esIncentivo); // ✅ Y ESTA
+
+  onSubmit(dataEnviar);
 
   onSubmit(dataEnviar);
 
