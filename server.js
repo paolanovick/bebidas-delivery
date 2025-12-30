@@ -45,6 +45,7 @@ app.use("/api/horarios", horariosRoutes);
 app.use("/api/geo", geoRouter);
 app.use("/api/migracion", migracionRoutes);
 app.use("/api/configuracion-envio", configuracionRoutes);
+app.use("/api/configuracion", configuracionRoutes);
 
 // 🔥 PUBLICIDAD — ANTES DEL FRONTEND
 app.use("/api/publicidad", publicidadRoutes);
