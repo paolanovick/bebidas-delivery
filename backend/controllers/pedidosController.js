@@ -22,8 +22,8 @@ export const crearPedido = async (req, res) => {
         .status(400)
         .json({ mensaje: "Debes agregar bebidas al pedido" });
 
-    if (!emailCliente)
-      return res.status(400).json({ mensaje: "El email es obligatorio" });
+    //if (!emailCliente)
+     // return res.status(400).json({ mensaje: "El email es obligatorio" });
 
     let total = 0;
     const itemsValidados = [];
