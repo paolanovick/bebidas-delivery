@@ -17,6 +17,7 @@ export default function AdminPedidos() {
     try {
       setCargando(true);
       const data = await getPedidos();
+      console.log("📦 Pedidos recibidos:", data); // ✅ PARA DEBUG
       setPedidos(data);
     } catch (err) {
       console.error("Error al cargar pedidos:", err);
@@ -146,10 +147,10 @@ export default function AdminPedidos() {
             <thead className="bg-[#590707] text-white">
               <tr>
                 <th className="py-3 px-4 border border-[#CDC7BD]">ID</th>
-                <th className="py-3 px-4 border border-[#CDC7BD]">Cliente</th>
-                <th className="py-3 px-4 border border-[#CDC7BD]">Email</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Teléfono</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Dirección</th>
+                <th className="py-3 px-4 border border-[#CDC7BD]">Productos</th>
+                <th className="py-3 px-4 border border-[#CDC7BD]">Notas</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Total</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Fecha</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Estado</th>
@@ -165,21 +166,31 @@ export default function AdminPedidos() {
                   <td className="py-3 px-4 border border-[#CDC7BD] text-[#736D66] text-xs">
                     #{pedido._id.slice(-6)}
                   </td>
-                  <td className="py-3 px-4 border border-[#CDC7BD] text-[#04090C] font-semibold">
-                    {pedido.usuario?.nombre || "N/A"}
-                  </td>
-                  <td className="py-3 px-4 border border-[#CDC7BD] text-[#590707]">
-                    {pedido.usuario?.email || "Sin email"}
-                  </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD] text-[#04090C]">
-                    {pedido.telefono || "N/A"}
+                    {pedido.telefono || "Sin teléfono"}
                   </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD] text-[#736D66] text-sm">
                     {pedido.direccionEntrega || "N/A"}
                   </td>
+                  
+                  <td className="py-3 px-4 border border-[#CDC7BD] text-[#04090C] text-sm">
+                    {pedido.items?.map((item, i) => (
+                      <div key={i} className="mb-1">
+                        {item.nombre} x{item.cantidad}
+                      </div>
+                    )) || "Sin items"}
+                  </td>
+                  
+                  <td className="py-3 px-4 border border-[#CDC7BD] text-[#736D66] text-xs max-w-xs truncate">
+                    {pedido.notas || "-"}
+                  </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD] font-bold text-[#590707]">
                     ${pedido.total?.toFixed(2) || "0.00"}
                   </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD] text-[#736D66] text-sm">
                     {new Date(pedido.fecha).toLocaleDateString("es-AR")}
                     <br />
@@ -188,6 +199,7 @@ export default function AdminPedidos() {
                       minute: "2-digit",
                     })}
                   </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD]">
                     <select
                       value={pedido.estado || "pendiente"}
@@ -205,6 +217,7 @@ export default function AdminPedidos() {
                       <option value="cancelado">❌ Cancelado</option>
                     </select>
                   </td>
+                  
                   <td className="py-3 px-4 border border-[#CDC7BD] text-center">
                     <button
                       onClick={() => handleEliminar(pedido._id)}
