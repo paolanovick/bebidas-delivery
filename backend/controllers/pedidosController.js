@@ -22,6 +22,9 @@ export const crearPedido = async (req, res) => {
         .status(400)
         .json({ mensaje: "Debes agregar bebidas al pedido" });
 
+   // if (!emailCliente)
+      //return res.status(400).json({ mensaje: "El email es obligatorio" });
+
     let total = 0;
     const itemsValidados = [];
 
@@ -99,4 +102,83 @@ export const crearPedido = async (req, res) => {
   }
 };
 
-// ... resto del código igual
+// 🟢 Ver pedidos de un cliente por email
+export const obtenerMisPedidos = async (req, res) => {
+  try {
+    const { emailCliente } = req.params;
+    const pedidos = await Pedido.find({ emailCliente }).sort({ createdAt: -1 });
+    res.json(pedidos);
+  } catch (error) {
+    console.error("Error al obtener pedidos:", error);
+    res.status(500).json({ mensaje: "Error al obtener pedidos" });
+  }
+};
+
+// 🟣 Listar todos los pedidos (admin)
+export const listarTodosPedidos = async (req, res) => {
+  try {
+    const pedidos = await Pedido.find().populate(
+      "items.bebida",
+      "nombre imagen"
+    );
+    res.json(pedidos);
+  } catch (error) {
+    console.error("Error al listar pedidos:", error);
+    res.status(500).json({ mensaje: "Error al listar pedidos" });
+  }
+};
+
+// 🟡 Actualizar estado del pedido (admin)
+export const actualizarEstadoPedido = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const pedido = await Pedido.findById(id);
+    if (!pedido)
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+
+    pedido.estado = estado;
+    await pedido.save();
+
+    res.json({ mensaje: "Estado actualizado", pedido });
+  } catch (error) {
+    console.error("Error al actualizar estado:", error);
+    res.status(500).json({ mensaje: "Error al actualizar estado" });
+  }
+};
+
+// 🗑️ Eliminar pedido individual (admin)
+export const eliminarPedido = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Pedido.findByIdAndDelete(id);
+    res.json({ mensaje: "Pedido eliminado" });
+  } catch (error) {
+    console.error("Error al eliminar pedido:", error);
+    res.status(500).json({ mensaje: "Error al eliminar pedido" });
+  }
+};
+
+// 🧹 Eliminar todos los pedidos (admin)
+export const eliminarTodosPedidos = async (req, res) => {
+  try {
+    await Pedido.deleteMany();
+    res.json({ mensaje: "Todos los pedidos eliminados" });
+  } catch (error) {
+    console.error("Error al eliminar todos los pedidos:", error);
+    res.status(500).json({ mensaje: "Error al eliminar todos los pedidos" });
+  }
+};
+
+// 🧾 Eliminar historial de un usuario específico
+export const eliminarHistorialUsuario = async (req, res) => {
+  try {
+    const { usuarioId } = req.params;
+    await Pedido.deleteMany({ usuario: usuarioId });
+    res.json({ mensaje: "Historial del usuario eliminado" });
+  } catch (error) {
+    console.error("Error al eliminar historial:", error);
+    res.status(500).json({ mensaje: "Error al eliminar historial" });
+  }
+};
