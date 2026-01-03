@@ -8,14 +8,14 @@ const PedidoSchema = new mongoose.Schema({
   },
 
   // ✅ CAMPO CORRECTO PARA CLIENTE NO REGISTRADO
-  emailCliente: { type: String, required: true },
+  emailCliente: { type: String, required: false },
 
   items: [
     {
       bebida: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Bebida",
-        required: true,
+        required: false,
       },
       nombre: String,
       precio: Number,
