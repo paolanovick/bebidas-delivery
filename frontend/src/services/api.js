@@ -142,7 +142,7 @@ export const eliminarPedido = async (pedidoId) => {
 };
 
 export const eliminarTodosPedidos = async () => {
-  const res = await fetch(`${API_URL_PEDIDOS}/todos`, {
+  const res = await fetch(`${API_URL_PEDIDOS}/todos`, {  // ✅ Cambié de "/" a "/todos"
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${getToken()}`,
