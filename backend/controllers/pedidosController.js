@@ -29,28 +29,52 @@ export const crearPedido = async (req, res) => {
     const itemsValidados = [];
 
     // 🟢 Validar items y calcular subtotal
-    for (const item of items) {
-      const bebida = await Bebida.findById(item.bebida);
-      if (!bebida)
-        return res.status(404).json({ mensaje: "Bebida no encontrada" });
-
-      if (bebida.stock < item.cantidad)
-        return res.status(400).json({
-          mensaje: `Stock insuficiente para ${bebida.nombre}`,
-        });
-
-      bebida.stock -= item.cantidad;
-      await bebida.save();
-
-      total += bebida.precio * item.cantidad;
-
-      itemsValidados.push({
-        bebida: bebida._id,
-        nombre: bebida.nombre,
-        precio: bebida.precio,
-        cantidad: item.cantidad,
+    // 🟢 Validar items y calcular subtotal
+for (const item of items) {
+  let bebida;
+  
+  // Si viene con ID de bebida, buscar por ID
+  if (item.bebida) {
+    bebida = await Bebida.findById(item.bebida);
+  }
+  
+  // Si no hay bebida encontrada y viene nombre/precio directos, aceptarlo
+  if (!bebida && item.nombre && item.precio) {
+    // Usar precio y nombre directos (para pedidos del carrito)
+    itemsValidados.push({
+      bebida: null,
+      nombre: item.nombre,
+      precio: item.precio,
+      cantidad: item.cantidad,
+    });
+    
+    total += item.precio * item.cantidad;
+    continue;
+  }
+  
+  // Si se encontró bebida por ID, validar stock
+  if (bebida) {
+    if (bebida.stock < item.cantidad) {
+      return res.status(400).json({
+        mensaje: `Stock insuficiente para ${bebida.nombre}`,
       });
     }
+
+    bebida.stock -= item.cantidad;
+    await bebida.save();
+
+    total += bebida.precio * item.cantidad;
+
+    itemsValidados.push({
+      bebida: bebida._id,
+      nombre: bebida.nombre,
+      precio: bebida.precio,
+      cantidad: item.cantidad,
+    });
+  } else {
+    return res.status(404).json({ mensaje: "Bebida no encontrada o faltan datos" });
+  }
+}
 
     // 🟢 Cargar configuración actual de envío desde MongoDB
     const config = (await Configuracion.findOne()) || {
