@@ -19,8 +19,7 @@ router.post("/", crearPedido);
 // 🟢 Ver pedidos por email (público - no requiere login)
 router.get("/mis-pedidos/:emailCliente", obtenerMisPedidos);
 
-// 🔐 ADMIN - Listar todos los pedidos
-router.get("/", verificarToken, esAdmin, listarTodosPedidos);
+
 
 // 🔐 ADMIN - Actualizar estado de un pedido
 router.put("/:id/estado", verificarToken, esAdmin, actualizarEstadoPedido);
@@ -33,5 +32,7 @@ router.delete("/:id", verificarToken, esAdmin, eliminarPedido);
 
 // 🗑️ ADMIN - Eliminar historial de un usuario
 router.delete("/historial/:usuarioId", verificarToken, esAdmin, eliminarHistorialUsuario);
+// 🔐 ADMIN - Listar todos los pedidos
+router.get("/", verificarToken, esAdmin, listarTodosPedidos);
 
 export default router;
