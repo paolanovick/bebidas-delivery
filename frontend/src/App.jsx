@@ -30,6 +30,7 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
 import PublicidadModal from "./components/PublicidadModal";
 import PublicidadAdmin from "./pages/PublicidadAdmin";
+import CookieBanner from "./components/CookieBanner";
 
 function AppContent() {
   const { usuario } = useAuth();
@@ -255,6 +256,7 @@ export default function App() {
           {/* MODALES GLOBALES */}
           <AgeGateModal />
           <PublicidadModal />
+          <CookieBanner />
 
           {/* CONTENIDO GENERAL */}
           <AppContent />
