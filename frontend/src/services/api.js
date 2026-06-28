@@ -89,7 +89,14 @@ export const crearPedido = async (data) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  return res.json();
+
+  const payload = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(payload.mensaje || "Error al crear el pedido");
+  }
+
+  return payload;
 };
 
 export const obtenerMisPedidos = async () => {
@@ -225,8 +232,14 @@ export const actualizarPublicidad = async (data) => {
 //  envios
 // ============================
 export const getEnvioConfig = async () => {
-  const res = await fetch("/api/horarios/configuracion");
-  return res.json();
+  const res = await fetch(`${BASE}/configuracion`);
+  const payload = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(payload.mensaje || "Error al obtener configuración de envío");
+  }
+
+  return payload;
 };
 
 export const updateEnvioConfig = async (data) => {

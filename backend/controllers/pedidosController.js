@@ -13,6 +13,7 @@ export const crearPedido = async (req, res) => {
       fechaEntrega,
       horaEntrega,
       emailCliente,
+      modoEntrega,
     } = req.body;
 
     const usuarioId = req.usuario?.id || null;
@@ -59,14 +60,18 @@ export const crearPedido = async (req, res) => {
     };
 
     // 🟢 Determinar costo de envío dinámico
+    const MONTO_ENVIO_GRATIS = 40000;
+    const direccionNormalizada =
+      typeof direccionEntrega === "string" ? direccionEntrega.trim() : "";
+    const esEnvio =
+      modoEntrega === "envio" ||
+      (!modoEntrega &&
+        direccionNormalizada !== "" &&
+        !/retira|take away/i.test(direccionNormalizada));
     let costoEnvio = 0;
 
-    // Tiene dirección (es envío) + envío habilitado → se cobra
-    if (
-      direccionEntrega &&
-      direccionEntrega.trim() !== "" &&
-      config.envioHabilitado
-    ) {
+    // Es envío + envío habilitado + no supera el mínimo gratis → se cobra
+    if (esEnvio && config.envioHabilitado && total < MONTO_ENVIO_GRATIS) {
       costoEnvio = config.costoEnvio ?? 0;
     }
 
@@ -78,8 +83,9 @@ export const crearPedido = async (req, res) => {
       emailCliente,
       items: itemsValidados,
       total: totalFinal,
+      modoEntrega: esEnvio ? "envio" : "takeaway",
       costoEnvio,
-      direccionEntrega,
+      direccionEntrega: direccionNormalizada,
       telefono,
       notas,
     };

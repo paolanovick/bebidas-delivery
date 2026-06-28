@@ -100,6 +100,10 @@ export default function CarruselDestacados({
       w-full h-24 sm:h-32 md:h-40
        object-contain rounded-lg mt-4
     "
+                        onError={(e) =>
+                          (e.target.src =
+                            "https://placehold.co/400x300?text=Sin+Imagen")
+                        }
                       />
                     </div>
 

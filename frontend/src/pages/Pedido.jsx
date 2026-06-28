@@ -46,6 +46,14 @@ export default function Pedido() {
 
   const cambiarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return eliminarItem(id);
+    const itemActual = carrito.find((item) => (item._id || item.id) === id);
+    const stockDisponible = Number(itemActual?.stock) || 0;
+
+    if (stockDisponible > 0 && nuevaCantidad > stockDisponible) {
+      alert(`No hay más stock disponible. Stock: ${stockDisponible}`);
+      return;
+    }
+
     const actualizado = carrito.map((item) =>
       (item._id || item.id) === id ? { ...item, cantidad: nuevaCantidad } : item
     );
@@ -64,14 +72,16 @@ export default function Pedido() {
   );
 
   // 🚚 Costo envío dinámico
-  // 🚚 Costo envío dinámico
   const COSTO_ENVIO = configEnvio.costoEnvio || 0;
+  const MONTO_ENVIO_GRATIS = 40000;
+  const envioHabilitado =
+    configEnvio.envioHabilitado ?? configEnvio.activo ?? true;
 
   // Si subtotal >= 40000 o es takeaway → envío gratis
   const costoEnvio =
-    modoEntrega === "takeaway" || subtotal >= 40000
+    modoEntrega === "takeaway" || subtotal >= MONTO_ENVIO_GRATIS
       ? 0
-      : modoEntrega === "envio" && configEnvio.activo
+      : modoEntrega === "envio" && envioHabilitado
       ? COSTO_ENVIO
       : 0;
   // 💰 Total final
@@ -82,6 +92,7 @@ export default function Pedido() {
   const [email, setEmail] = useState("");
   const [coordenadas, setCoordenadas] = useState(null);
   const [comentarios, setComentarios] = useState("");
+  const [procesando, setProcesando] = useState(false);
 
   // ubicacion GPS
   useEffect(() => {
@@ -111,10 +122,12 @@ export default function Pedido() {
     carrito.length > 0 &&
     validoTelefono &&
     validoEmail &&
-    (!requiereDireccion || validoDireccion);
+    (!requiereDireccion || validoDireccion) &&
+    !procesando;
 
   const confirmarYEnviar = async () => {
     if (!puedeConfirmar) return;
+    setProcesando(true);
 
     const pedido = {
       emailCliente: email,
@@ -124,6 +137,7 @@ export default function Pedido() {
         precio: Number(i.precio) || 0,
         cantidad: Number(i.cantidad) || 0,
       })),
+      modoEntrega,
       direccionEntrega:
         modoEntrega === "envio" ? direccion : "Retira en el local (take away)",
       telefono,
@@ -131,6 +145,7 @@ export default function Pedido() {
       notas: `[${modoEntrega === "envio" ? "ENVÍO" : "TAKE AWAY"}] ${
         comentarios || ""
       }`.trim(),
+      costoEnvio,
       total,
     };
 
@@ -158,7 +173,9 @@ Subtotal: $${subtotal.toLocaleString("es-AR")}
 ${
   modoEntrega === "envio"
     ? `Envío: $${costoEnvio.toLocaleString("es-AR")}${
-        subtotal >= 40000 ? " (GRATIS por compra mayor a $40.000)" : ""
+        subtotal >= MONTO_ENVIO_GRATIS
+          ? " (GRATIS por compra mayor a $40.000)"
+          : ""
       }`
     : "Envío: $0 (take away)"
 }
@@ -181,23 +198,27 @@ Notas:
 ${comentarios || "Sin notas"}
 `;
 
+    const webUrl =
+      "https://wa.me/" + ADMIN_WHATSAPP + "?text=" + encodeURIComponent(mensaje);
+    const whatsappTab = window.open("", "_blank");
+
     try {
       await crearPedido(pedido);
 
-   const appUrl = "whatsapp://send?phone=" + ADMIN_WHATSAPP + "&text=" + encodeURIComponent(mensaje);
-const webUrl = "https://wa.me/" + ADMIN_WHATSAPP + "?text=" + encodeURIComponent(mensaje);
-
-window.location.href = appUrl;
-
-setTimeout(function() {
-  window.open(webUrl, "_blank");
-}, 1500);
+      if (whatsappTab) {
+        whatsappTab.location.href = webUrl;
+      } else {
+        window.location.href = webUrl;
+      }
 
       vaciarCarrito();
-      navigate("/mis-pedidos");
+      navigate("/tienda");
     } catch (err) {
-      alert("Error al confirmar el pedido");
+      if (whatsappTab) whatsappTab.close();
+      alert(err.message || "Error al confirmar el pedido");
       console.error(err);
+    } finally {
+      setProcesando(false);
     }
   };
 
@@ -253,7 +274,11 @@ setTimeout(function() {
 
                 <button
                   onClick={() => cambiarCantidad(id, (item.cantidad || 0) + 1)}
-                  className="w-8 h-8 flex items-center justify-center bg-[#590707] text-white rounded-full hover:bg-[#A30404] transition"
+                  disabled={
+                    Number(item.stock) > 0 &&
+                    Number(item.cantidad || 0) >= Number(item.stock)
+                  }
+                  className="w-8 h-8 flex items-center justify-center bg-[#590707] text-white rounded-full hover:bg-[#A30404] transition disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   +
                 </button>
@@ -293,7 +318,7 @@ setTimeout(function() {
       </div>
   {/* ✅ NUEVO: INCENTIVO ENVÍO GRATIS */}
       <IncentivoPedido />
-      
+
       {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
@@ -363,7 +388,7 @@ setTimeout(function() {
         />
       </div>
 
-    
+
 
       <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
@@ -371,7 +396,7 @@ setTimeout(function() {
           className="bg-[#590707] text-white py-3 px-4 rounded-xl flex gap-2 justify-center items-center disabled:opacity-60"
           disabled={!puedeConfirmar}
         >
-          <Send /> Confirmar y enviar por WhatsApp
+          <Send /> {procesando ? "Confirmando..." : "Confirmar y enviar por WhatsApp"}
         </button>
       </div>
     </div>

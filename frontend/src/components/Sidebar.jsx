@@ -26,8 +26,8 @@ export default function Sidebar({
   return (
     <aside
      className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
-  p-6 z-40 shadow transform transition-transform duration-300
-  pt-16 md:pt-6 overflow-y-auto ${
+  p-6 z-[60] md:z-40 shadow transform transition-transform duration-300
+  pt-36 md:pt-6 overflow-y-auto ${
     menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
   }`}
     >

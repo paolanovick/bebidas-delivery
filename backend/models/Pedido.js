@@ -31,7 +31,13 @@ const PedidoSchema = new mongoose.Schema({
     default: "pendiente",
   },
 
+  modoEntrega: {
+    type: String,
+    enum: ["envio", "takeaway"],
+    default: "envio",
+  },
   direccionEntrega: { type: String, required: true },
+  costoEnvio: { type: Number, default: 0 },
   telefono: String,
   notas: String,
   fecha: { type: Date, default: Date.now },
