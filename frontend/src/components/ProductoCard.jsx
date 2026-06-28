@@ -1,6 +1,9 @@
 export default function ProductoCard({ producto, fmt, handleAgregar }) {
   return (
-    <div className="relative bg-white rounded-xl border p-4 shadow-sm hover:shadow-xl transition w-full flex flex-col">
+    <div
+      className="relative bg-white rounded-xl border p-4 shadow-sm hover:shadow-xl transition w-full flex flex-col"
+      data-product-card
+    >
       {producto.stock <= 0 && (
         <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded">
           SIN STOCK
@@ -10,6 +13,7 @@ export default function ProductoCard({ producto, fmt, handleAgregar }) {
       <img
         src={producto.imagen}
         alt={producto.nombre}
+        data-product-image
         className="w-full h-40 object-contain rounded-lg mb-2"
         onError={(e) =>
           (e.target.src = "https://placehold.co/400x300?text=Sin+Imagen")
@@ -30,7 +34,12 @@ export default function ProductoCard({ producto, fmt, handleAgregar }) {
 
       <button
         disabled={producto.stock <= 0}
-        onClick={() => handleAgregar(producto)}
+        onClick={(event) =>
+          handleAgregar(
+            producto,
+            event.currentTarget.closest("[data-product-card]")
+          )
+        }
         className={`w-full py-2 rounded-lg font-semibold mt-auto ${
           producto.stock <= 0
             ? "bg-gray-400 cursor-not-allowed"

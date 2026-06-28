@@ -1,40 +1,88 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" type="image/png" href="%PUBLIC_URL%/logoSF.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <title>El Danés | Bebidas y Delivery en Tandil</title>
-  <meta name="description" content="El Danés: bebidas premium y delivery en Tandil. Cervezas, vinos, espirituosas, combos y promos. Pedí online y recibí en tu casa." />
-  <meta name="keywords" content="bebidas delivery Tandil, cerveza Tandil, vinos delivery, El Danes, bebidas online, spirits Tandil" />
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="El Danés" />
-  <meta name="google" content="notranslate" />
-  <link rel="canonical" href="https://www.eldanes.online" />
-  <meta property="og:title" content="El Danés | Bebidas y Delivery en Tandil" />
-  <meta property="og:description" content="Bebidas premium y delivery en Tandil. Promos, novedades y pedidos online." />
-  <meta property="og:image" content="https://www.eldanes.online/logo1.jpg" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:url" content="https://www.eldanes.online/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="El Danés" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="El Danés | Bebidas y Delivery en Tandil" />
-  <meta name="twitter:description" content="Bebidas premium y delivery en Tandil." />
-  <meta name="twitter:image" content="https://www.eldanes.online/logo1.jpg" />
-  <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "ukgtmxdoze");
-  </script>
-</head>
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- SEO -->
+    <title>El Danés — Bebidas & Delivery en Tandil</title>
+    <meta name="description" content="El Danés: bebidas & delivery en Tandil. Pedí online tus bebidas favoritas, chequeá promos y novedades. Entrega rápida a domicilio." />
+    <meta name="keywords" content="bebidas delivery Tandil, delivery de bebidas, El Danés Tandil, pedido online bebidas, delivery Tandil" />
+    <meta name="author" content="El Danés" />
+    <meta name="robots" content="index, follow" />
+    <meta name="google" content="notranslate" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <link rel="canonical" href="https://www.eldanes.online/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.eldanes.online/" />
+    <meta property="og:title" content="El Danés — Bebidas & Delivery en Tandil" />
+    <meta property="og:description" content="Bebidas & delivery en Tandil. Pedí online tus bebidas favoritas, chequeá promos y novedades." />
+    <meta property="og:image" content="https://www.eldanes.online/logo1.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="El Danés — Bebidas & Delivery en Tandil" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="El Danés" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="El Danés — Bebidas & Delivery en Tandil" />
+    <meta name="twitter:description" content="Bebidas & delivery en Tandil. Pedí online tus bebidas favoritas." />
+    <meta name="twitter:image" content="https://www.eldanes.online/logo1.jpg" />
+    <meta name="twitter:image:alt" content="El Danés — Bebidas & Delivery en Tandil" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="%PUBLIC_URL%/logoSF.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logoSF.png" />
+
+    <!-- JSON-LD: FoodEstablishment / Delivery -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FoodEstablishment",
+      "name": "El Danés",
+      "url": "https://www.eldanes.online/",
+      "image": "https://www.eldanes.online/logo1.jpg",
+      "description": "Bebidas & delivery en Tandil. Pedí online tus bebidas favoritas.",
+      "servesCuisine": "Bebidas",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Bebidas & delivery"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Tandil",
+        "addressRegion": "Buenos Aires",
+        "addressCountry": "AR"
+      },
+      "areaServed": {
+        "@type": "City",
+        "name": "Tandil"
+      },
+      "potentialAction": {
+        "@type": "OrderAction",
+        "target": "https://www.eldanes.online/"
+      }
+    }
+    </script>
+
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "ukgtmxdoze");
+    </script>
+
+    <!-- Fuente premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+    <noscript>Necesitás habilitar JavaScript para usar esta aplicación.</noscript>
+    <div id="root"></div>
+  </body>
 </html>

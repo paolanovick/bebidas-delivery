@@ -1,7 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSEO } from "../hooks/useSEO";
 
 const Inicio = () => {
+  useSEO({
+    title: "Bebidas & Delivery en Tandil",
+    description:
+      "El Danés: bebidas & delivery en Tandil. Pedí online tus bebidas favoritas, chequeá promos y novedades. Entrega rápida a domicilio.",
+    url: "/",
+  });
+
   return (
     <div className="h-screen w-full bg-[#04090C] flex flex-col items-center justify-center text-center">
       <img

@@ -6,7 +6,10 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
     : [];
 
   return (
-    <div className="relative bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-56 sm:w-64 md:w-72 flex-shrink-0">
+    <div
+      className="relative bg-white rounded-xl border border-[#CDC7BD] p-3 md:p-4 lg:p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1 flex flex-col justify-between w-56 sm:w-64 md:w-72 flex-shrink-0"
+      data-product-card
+    >
       <div className="relative mb-3 md:mb-4">
         {/* CINTA DESTACADO - Solo si esEstrella es true */}
         {producto.esEstrella && (
@@ -24,6 +27,7 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
         <img
           src={producto.imagen}
           alt={producto.nombre}
+          data-product-image
           className="w-full h-24 sm:h-32 md:h-40 object-contain rounded-lg mt-4" /* ✅ Cambiar object-cover por object-contain */
           onError={(e) =>
             (e.target.src = "https://placehold.co/400x300?text=Sin+Imagen")
@@ -67,7 +71,12 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
         </p>
 
         <button
-          onClick={() => handleAgregar(producto)}
+          onClick={(event) =>
+            handleAgregar(
+              producto,
+              event.currentTarget.closest("[data-product-card]")
+            )
+          }
           disabled={producto.stock <= 0}
           className={`w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition text-xs sm:text-sm md:text-base ${
             producto.stock <= 0

@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import conectarDB from "./backend/config/db.js";
 
 // === RUTAS BACKEND ===
@@ -13,7 +15,10 @@ import migracionRoutes from "./backend/routes/migrar.js";
 import publicidadRoutes from "./backend/routes/publicidadRoutes.js";
 import configuracionRoutes from "./backend/routes/configuracion.js";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, "backend", ".env") });
 conectarDB();
 
 const app = express();
@@ -56,11 +61,6 @@ app.get("/api", (req, res) => {
 });
 
 // ================= SERVIR FRONTEND ==================
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // 🟢 SERVIR ARCHIVOS ESTÁTICOS (IMPORTANTE PARA OG IMAGE)
 app.use(
@@ -79,8 +79,8 @@ app.use(
   })
 );
 
-// 🟢 ESTE "*" ES EL CORRECTO PARA EXPRESS 5
-app.get("*", (req, res) => {
+// 🟢 Express 5 requiere un comodín con nombre para el fallback SPA
+app.get("/{*path}", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
 });
 

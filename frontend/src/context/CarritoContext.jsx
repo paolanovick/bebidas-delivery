@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { pulseCartTarget } from "../utils/flyToCart";
 
 const CarritoContext = createContext();
 
@@ -6,48 +7,64 @@ export function CarritoProvider({ children }) {
   const [carrito, setCarrito] = useState(
     JSON.parse(sessionStorage.getItem("carrito")) || []
   );
+  const carritoRef = useRef(carrito);
 
   // ✅ Vaciar carrito automáticamente al recargar la página
   useEffect(() => {
     sessionStorage.removeItem("carrito");
+    carritoRef.current = [];
     setCarrito([]);
   }, []);
 
+  const obtenerId = (item) => item?._id || item?.id;
+
   const guardarCarrito = (nuevoCarrito) => {
+    carritoRef.current = nuevoCarrito;
     setCarrito(nuevoCarrito);
     sessionStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
     window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 
-  const agregar = (bebida) => {
+  const puedeAgregar = (bebida, mostrarAlerta = true) => {
     if (bebida.stock <= 0) {
-      alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
-      return;
+      if (mostrarAlerta) {
+        alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
+      }
+      return false;
     }
 
-    const existe = carrito.find((i) => i._id === bebida._id);
+    const idBebida = obtenerId(bebida);
+    const existe = carritoRef.current.find((i) => obtenerId(i) === idBebida);
+
+    if (existe && existe.cantidad + 1 > bebida.stock) {
+      if (mostrarAlerta) {
+        alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  const agregar = (bebida) => {
+    if (!puedeAgregar(bebida)) return false;
+
+    const idBebida = obtenerId(bebida);
+    const existe = carritoRef.current.find((i) => obtenerId(i) === idBebida);
     let nuevo;
 
     if (existe) {
-      if (existe.cantidad + 1 > bebida.stock) {
-        alert(`❗ No puedes agregar más. Stock disponible: ${bebida.stock}`);
-        return;
-      }
-      nuevo = carrito.map((i) =>
-        i._id === bebida._id ? { ...i, cantidad: i.cantidad + 1 } : i
+      nuevo = carritoRef.current.map((i) =>
+        obtenerId(i) === idBebida ? { ...i, cantidad: i.cantidad + 1 } : i
       );
     } else {
-      nuevo = [...carrito, { ...bebida, cantidad: 1 }];
+      nuevo = [...carritoRef.current, { ...bebida, cantidad: 1 }];
     }
 
     guardarCarrito(nuevo);
+    pulseCartTarget();
 
-    // 🔔 Animación del icono del carrito (rebote al agregar)
-    const icono = document.getElementById("icono-carrito");
-    if (icono) {
-      icono.classList.add("animate-bounce");
-      setTimeout(() => icono.classList.remove("animate-bounce"), 800);
-    }
+    return true;
   };
 
   const modificarCantidad = (id, cantidad) => {
@@ -73,6 +90,7 @@ export function CarritoProvider({ children }) {
       value={{
         carrito,
         agregar,
+        puedeAgregar,
         modificarCantidad,
         eliminar,
         guardarCarrito,

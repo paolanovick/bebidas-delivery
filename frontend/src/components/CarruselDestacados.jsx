@@ -49,6 +49,7 @@ export default function CarruselDestacados({
                 return (
                   <div
                     key={`carousel-${b._id}-${i}`}
+                    data-product-card
                     className="
         relative
         bg-white rounded-xl border border-[#CDC7BD]
@@ -94,6 +95,7 @@ export default function CarruselDestacados({
                       <img
                         src={b.imagen}
                         alt={b.nombre}
+                        data-product-image
                         className="
       w-full h-24 sm:h-32 md:h-40
        object-contain rounded-lg mt-4
@@ -137,15 +139,20 @@ export default function CarruselDestacados({
                       </p>
 
                       <button
-                        onClick={() => handleAgregar(b)}
-                        className="
-            bg-[#590707] hover:bg-[#A30404]
-            text-white w-full py-1.5 md:py-2
-            rounded-lg md:rounded-xl font-semibold
-            transition text-xs sm:text-sm md:text-base
-          "
+                        onClick={(event) =>
+                          handleAgregar(
+                            b,
+                            event.currentTarget.closest("[data-product-card]")
+                          )
+                        }
+                        disabled={b.stock <= 0}
+                        className={`text-white w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition text-xs sm:text-sm md:text-base ${
+                          b.stock <= 0
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#590707] hover:bg-[#A30404]"
+                        }`}
                       >
-                        Agregar 🛒
+                        {b.stock <= 0 ? "Sin stock" : "Agregar 🛒"}
                       </button>
                     </div>
                   </div>

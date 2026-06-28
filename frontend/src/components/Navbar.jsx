@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link,  } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
@@ -10,9 +10,8 @@ const Navbar = () => {
   const { carrito, vaciarCarrito } = useCarrito();
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // ✅ COMENTADO: Ahora el Navbar siempre está visible
-  // if (location.pathname === "/" || location.pathname === "/inicio") return null;
+  const location = useLocation();
+  const mostrarCarrito = ["/tienda", "/pedido"].includes(location.pathname);
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -29,7 +28,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:static">
+    <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:sticky md:left-auto md:right-auto">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         {/* ✅ LOGO Y TÍTULO - Van a /tienda reseteando filtros SIN perder carrito */}
         <div className="flex items-center gap-4">
@@ -110,17 +109,23 @@ const Navbar = () => {
             </>
           )}
 
-          <Link to="/pedido" className="relative">
-            <ShoppingCart
-              size={28}
-              className="text-[#CDC7BD] hover:text-white transition"
-            />
-            {total > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {total}
-              </span>
-            )}
-          </Link>
+          {mostrarCarrito && (
+            <Link
+              to="/pedido"
+              className="relative inline-flex items-center justify-center"
+              data-cart-target
+            >
+              <ShoppingCart
+                size={28}
+                className="text-[#CDC7BD] hover:text-white transition"
+              />
+              {total > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {total}
+                </span>
+              )}
+            </Link>
+          )}
 
           {usuario && (
             <button
@@ -136,17 +141,23 @@ const Navbar = () => {
         </div>
 
         <div className="md:hidden flex items-center gap-4 relative">
-          <Link to="/pedido" className="relative">
-            <ShoppingCart
-              size={28}
-              className="text-[#CDC7BD] hover:text-white transition"
-            />
-            {total > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {total}
-              </span>
-            )}
-          </Link>
+          {mostrarCarrito && (
+            <Link
+              to="/pedido"
+              className="relative inline-flex items-center justify-center"
+              data-cart-target
+            >
+              <ShoppingCart
+                size={28}
+                className="text-[#CDC7BD] hover:text-white transition"
+              />
+              {total > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#A30404] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {total}
+                </span>
+              )}
+            </Link>
+          )}
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}

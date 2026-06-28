@@ -9,10 +9,11 @@ import ProductosGrid from "./ProductosGrid";
 import { obtenerConfiguracionHorarios } from "../services/api";
 import { getEstadoDelivery } from "../utils/horariosDelivery";
 import BannerTicker from "./BannerTicker";
+import { flyProductToCart } from "../utils/flyToCart";
 
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
-  const { agregar } = useCarrito();
+  const { agregar, puedeAgregar } = useCarrito();
   const location = useLocation();
 
   // ============================
@@ -211,9 +212,15 @@ export default function MenuBebidas() {
   // ============================
   // FUNCIONES
   // ============================
-  const handleAgregar = (b) => {
+  const handleAgregar = async (b, sourceElement) => {
     if (!b.stock || b.stock <= 0) return;
-    agregar(b);
+
+    if (!puedeAgregar(b)) return;
+
+    await flyProductToCart(sourceElement);
+
+    if (!agregar(b)) return;
+
     setMensajeAgregado(`"${b.nombre}" agregado 🛒`);
     setTimeout(() => setMensajeAgregado(""), 2500);
   };

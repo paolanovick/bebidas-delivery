@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarrito } from "../context/CarritoContext";
+import { useSEO } from "../hooks/useSEO";
 import { crearPedido, getEnvioConfig } from "../services/api";
 import { ShoppingCart, Trash2, Send } from "lucide-react";
 import IncentivoPedido from "../components/IncentivoPedido";
@@ -10,6 +11,13 @@ const ADMIN_WHATSAPP = "5492494252530";
 
 export default function Pedido() {
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Tu Pedido",
+    description:
+      "Revisá tu pedido y completá la entrega. El Danés — Bebidas & Delivery en Tandil.",
+    url: "/pedido",
+  });
 
   // carrito
   const { carrito, guardarCarrito, vaciarCarrito } = useCarrito();
