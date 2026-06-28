@@ -47,3 +47,4 @@ frontend/build.zip
  
  # Ignorar CSS generado por Tailwind
 frontend/src/generated-tailwind.css
+.vercel
