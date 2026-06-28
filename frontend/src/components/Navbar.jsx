@@ -3,6 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
+import {
+  esRutaEcommerce,
+  esRutaIngreso,
+  habilitarIngresoTienda,
+  tieneIngresoTienda,
+} from "../utils/ingresoTienda";
 
 const Navbar = () => {
   
@@ -11,7 +17,11 @@ const Navbar = () => {
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const mostrarCarrito = ["/tienda", "/pedido"].includes(location.pathname);
+  const ingresoHabilitado = tieneIngresoTienda();
+  const enIngreso = esRutaIngreso(location.pathname);
+  const mostrarNavegacionTienda = ingresoHabilitado && !enIngreso;
+  const mostrarCarrito =
+    mostrarNavegacionTienda && esRutaEcommerce(location.pathname);
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -32,21 +42,41 @@ const Navbar = () => {
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         {/* ✅ LOGO Y TÍTULO - Van a /tienda reseteando filtros SIN perder carrito */}
         <div className="flex items-center gap-4">
-          <Link 
-            to="/tienda?reset=true" 
-            className="block cursor-pointer hover:opacity-80 transition-opacity"
-          >
+          {mostrarNavegacionTienda ? (
+            <Link
+              to="/tienda?reset=true"
+              onClick={habilitarIngresoTienda}
+              className="block cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <img
+                src={`${process.env.PUBLIC_URL}/logoSF.png`}
+                alt="Logo El Danés"
+                className="h-32 md:h-40 lg:h-48 w-auto object-contain"
+              />
+            </Link>
+          ) : (
             <img
               src={`${process.env.PUBLIC_URL}/logoSF.png`}
               alt="Logo El Danés"
               className="h-32 md:h-40 lg:h-48 w-auto object-contain"
             />
-          </Link>
-          <Link to="/tienda?reset=true" className="cursor-pointer hover:opacity-80 transition-opacity">
+          )}
+
+          {mostrarNavegacionTienda ? (
+            <Link
+              to="/tienda?reset=true"
+              onClick={habilitarIngresoTienda}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
+                EL DANES
+              </h1>
+            </Link>
+          ) : (
             <h1 className="text-3xl md:text-4xl font-extrabold text-[#CDC7BD] tracking-wide">
               EL DANES
             </h1>
-          </Link>
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-6">
@@ -76,12 +106,15 @@ const Navbar = () => {
             </button>
           </div>
 
-          <Link
-            to="/tienda"
-            className="px-4 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold shadow-md hover:bg-[#A30404] hover:text-white transition duration-300"
-          >
-            Tienda
-          </Link>
+          {mostrarNavegacionTienda && (
+            <Link
+              to="/tienda"
+              onClick={habilitarIngresoTienda}
+              className="px-4 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold shadow-md hover:bg-[#A30404] hover:text-white transition duration-300"
+            >
+              Tienda
+            </Link>
+          )}
 
           {usuario && usuario.rol !== "admin" && (
             <Link
@@ -190,13 +223,18 @@ const Navbar = () => {
 
           {menuOpen && (
             <div className="absolute right-0 top-12 w-52 bg-[#04090C] shadow-lg rounded-md flex flex-col gap-2 p-4 z-50">
-              <Link
-                to="/tienda"
-                onClick={() => setMenuOpen(false)}
-                className="px-3 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold"
-              >
-                Tienda
-              </Link>
+              {mostrarNavegacionTienda && (
+                <Link
+                  to="/tienda"
+                  onClick={() => {
+                    habilitarIngresoTienda();
+                    setMenuOpen(false);
+                  }}
+                  className="px-3 py-2 rounded-md bg-[#CDC7BD] text-[#04090C] font-semibold"
+                >
+                  Tienda
+                </Link>
+              )}
 
               <div className="flex gap-3 px-3 py-2">
                 <a

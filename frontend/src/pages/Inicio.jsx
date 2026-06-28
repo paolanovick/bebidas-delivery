@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSEO } from "../hooks/useSEO";
+import { habilitarIngresoTienda } from "../utils/ingresoTienda";
 
 const Inicio = () => {
   useSEO({
@@ -19,6 +20,7 @@ const Inicio = () => {
       />
       <Link
         to="/tienda"
+        onClick={habilitarIngresoTienda}
         className="text-2xl font-bold bg-[#CDC7BD] text-[#04090C] px-8 py-3 rounded-lg hover:bg-[#A30404] hover:text-white transition"
       >
         INGRESAR

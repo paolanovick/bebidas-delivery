@@ -31,6 +31,11 @@ import ConfiguracionHorarios from "./pages/ConfiguracionHorarios";
 import PublicidadModal from "./components/PublicidadModal";
 import PublicidadAdmin from "./pages/PublicidadAdmin";
 import CookieBanner from "./components/CookieBanner";
+import { tieneIngresoTienda } from "./utils/ingresoTienda";
+
+function RutaEcommerce({ children }) {
+  return tieneIngresoTienda() ? children : <Navigate to="/" replace />;
+}
 
 function AppContent() {
   const { usuario } = useAuth();
@@ -107,7 +112,14 @@ function AppContent() {
           />
 
           {/* TIENDA (front) */}
-          <Route path="/tienda" element={<MenuBebidas />} />
+          <Route
+            path="/tienda"
+            element={
+              <RutaEcommerce>
+                <MenuBebidas />
+              </RutaEcommerce>
+            }
+          />
 
           {/* CONFIG HORARIOS (admin) */}
           <Route
@@ -238,7 +250,14 @@ function AppContent() {
             }
           />
 
-          <Route path="/pedido" element={<Pedido />} />
+          <Route
+            path="/pedido"
+            element={
+              <RutaEcommerce>
+                <Pedido />
+              </RutaEcommerce>
+            }
+          />
         </Routes>
       </div>
 
