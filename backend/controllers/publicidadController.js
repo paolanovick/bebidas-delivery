@@ -16,15 +16,36 @@ export const obtenerPublicidad = async (req, res) => {
 // Actualizar o crear publicidad
 export const actualizarPublicidad = async (req, res) => {
   try {
-    const { imagenUrl, activo } = req.body;
+    const {
+      imagenUrl,
+      activo,
+      tipo,
+      titulo,
+      subtitulo,
+      botonTexto,
+      whatsappNumero,
+    } = req.body;
+
+    const datosPublicidad = {
+      imagenUrl: imagenUrl || "",
+      activo: Boolean(activo),
+      tipo:
+        tipo === "formulario_envio_gratis" || tipo === "imagen"
+          ? tipo
+          : "imagen",
+      titulo:
+        titulo || "GANASTE UN ENVIO GRATIS POR EL GOL DE ARGENTINA",
+      subtitulo: subtitulo || "Completa tus datos para reclamar tu beneficio.",
+      botonTexto: botonTexto || "Enviar datos por WhatsApp",
+      whatsappNumero: whatsappNumero || "5492494252530",
+    };
 
     let publicidad = await Publicidad.findOne();
 
     if (!publicidad) {
-      publicidad = new Publicidad({ imagenUrl, activo });
+      publicidad = new Publicidad(datosPublicidad);
     } else {
-      publicidad.imagenUrl = imagenUrl;
-      publicidad.activo = activo;
+      Object.assign(publicidad, datosPublicidad);
     }
 
     await publicidad.save();
