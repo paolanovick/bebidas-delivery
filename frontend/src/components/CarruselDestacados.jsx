@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCarrito } from "../context/CarritoContext";
 
 export default function CarruselDestacados({
   productos,
@@ -10,6 +11,9 @@ export default function CarruselDestacados({
   fmt,
   respetarStock = true,
 }) {
+  const { carrito } = useCarrito();
+  const obtenerId = (item) => item?._id || item?.id;
+
   return (
     <section className="mt-6 mb-8 md:mb-12 w-full">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
@@ -41,8 +45,21 @@ export default function CarruselDestacados({
             {productos
               .filter((p) => p.esEstrella)
               .map((b, i) => {
-                const sinStock = Number(b.stock) <= 0;
-                const bloquearPorStock = respetarStock && sinStock;
+                const itemEnCarrito = carrito.find(
+                  (item) => obtenerId(item) === obtenerId(b)
+                );
+                const stock = Number(b.stock) || 0;
+                const cantidadEnCarrito = Number(itemEnCarrito?.cantidad) || 0;
+                const sinStock = stock <= 0;
+                const stockCompleto =
+                  respetarStock && stock > 0 && cantidadEnCarrito >= stock;
+                const bloquearPorStock =
+                  respetarStock && (sinStock || stockCompleto);
+                const textoBoton = sinStock
+                  ? "Sin stock"
+                  : stockCompleto
+                  ? "Stock completo"
+                  : "Agregar 🛒";
                 const cats = Array.isArray(b.categorias)
                   ? b.categorias
                   : b.categoria
@@ -159,7 +176,7 @@ export default function CarruselDestacados({
                             : "bg-[#590707] hover:bg-[#A30404]"
                         }`}
                       >
-                        {bloquearPorStock ? "Sin stock" : "Agregar 🛒"}
+                        {textoBoton}
                       </button>
                     </div>
                   </div>

@@ -73,8 +73,8 @@ export const crearPedido = async (req, res) => {
         });
 
       if (ventaSinControlStock) {
-        if (!esDryRunMonitor && bebida.stock > 0) {
-          bebida.stock = Math.max(0, bebida.stock - cantidad);
+        if (!esDryRunMonitor) {
+          bebida.stock -= cantidad;
           await bebida.save();
         }
       } else if (!esDryRunMonitor) {

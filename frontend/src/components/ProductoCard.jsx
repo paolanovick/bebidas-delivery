@@ -1,11 +1,27 @@
+import { useCarrito } from "../context/CarritoContext";
+
 export default function ProductoCard({
   producto,
   fmt,
   handleAgregar,
   respetarStock = true,
 }) {
-  const sinStock = Number(producto.stock) <= 0;
-  const bloquearPorStock = respetarStock && sinStock;
+  const { carrito } = useCarrito();
+  const obtenerId = (item) => item?._id || item?.id;
+  const itemEnCarrito = carrito.find(
+    (item) => obtenerId(item) === obtenerId(producto)
+  );
+  const stock = Number(producto.stock) || 0;
+  const cantidadEnCarrito = Number(itemEnCarrito?.cantidad) || 0;
+  const sinStock = stock <= 0;
+  const stockCompleto =
+    respetarStock && stock > 0 && cantidadEnCarrito >= stock;
+  const bloquearPorStock = respetarStock && (sinStock || stockCompleto);
+  const textoBoton = sinStock
+    ? "Sin stock"
+    : stockCompleto
+    ? "Stock completo"
+    : "Agregar 🛒";
 
   return (
     <div
@@ -54,7 +70,7 @@ export default function ProductoCard({
             : "bg-[#590707] hover:bg-[#A30404] text-white"
         }`}
       >
-        {bloquearPorStock ? "Sin stock" : "Agregar 🛒"}
+        {textoBoton}
       </button>
     </div>
   );

@@ -48,7 +48,8 @@ export default function Pedido() {
   const cambiarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return eliminarItem(id);
     const itemActual = carrito.find((item) => (item._id || item.id) === id);
-    const controlaStock = !itemActual?.ventaSinControlStock;
+    const controlaStock =
+      itemActual?.origenCarrito !== "tienda" && !itemActual?.ventaSinControlStock;
     const stockDisponible = Number(itemActual?.stock) || 0;
 
     if (controlaStock && stockDisponible > 0 && nuevaCantidad > stockDisponible) {
@@ -288,6 +289,7 @@ ${comentarios || "Sin notas"}
                 <button
                   onClick={() => cambiarCantidad(id, (item.cantidad || 0) + 1)}
                   disabled={
+                    item.origenCarrito !== "tienda" &&
                     !item.ventaSinControlStock &&
                     Number(item.stock) > 0 &&
                     Number(item.cantidad || 0) >= Number(item.stock)

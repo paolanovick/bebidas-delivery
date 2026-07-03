@@ -65,7 +65,8 @@ export function CarritoProvider({ children }) {
 
     const idBebida = obtenerId(bebida);
     const existe = carritoRef.current.find((i) => obtenerId(i) === idBebida);
-    const ventaSinControlStock = !debeRespetarStock(bebida, opts);
+    const ventaSinControlStock =
+      opts.ventaSinControlStock ?? !debeRespetarStock(bebida, opts);
     const origenCarrito = opts.origenCarrito || bebida.origenCarrito;
     let nuevo;
 
