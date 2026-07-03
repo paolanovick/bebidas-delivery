@@ -13,7 +13,7 @@ import esAdmin from "../middleware/esAdmin.js";
 
 const router = express.Router();
 
-// 🟢 Crear pedido (público - no requiere login)
+// 🟢 Crear pedido (público - no requiere login; monitor usa dryRun con token)
 router.post("/", crearPedido);
 
 // 🟢 Ver pedidos por email (público - no requiere login)

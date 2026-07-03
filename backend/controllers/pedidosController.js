@@ -1,6 +1,20 @@
 import Pedido from "../models/Pedido.js";
 import Bebida from "../models/Bebida.js";
 import Configuracion from "../models/Configuracion.js";
+import crypto from "crypto";
+
+const esTokenMonitorValido = (token) => {
+  const esperado = process.env.MONITOR_TOKEN;
+  if (!esperado || !token) return false;
+
+  const recibidoBuffer = Buffer.from(String(token));
+  const esperadoBuffer = Buffer.from(String(esperado));
+
+  return (
+    recibidoBuffer.length === esperadoBuffer.length &&
+    crypto.timingSafeEqual(recibidoBuffer, esperadoBuffer)
+  );
+};
 
 // 🟢 Crear pedido (sin login)
 export const crearPedido = async (req, res) => {
@@ -14,7 +28,15 @@ export const crearPedido = async (req, res) => {
       horaEntrega,
       emailCliente,
       modoEntrega,
+      dryRun,
+      monitorToken,
     } = req.body;
+
+    const esDryRunMonitor = dryRun === true;
+
+    if (esDryRunMonitor && !esTokenMonitorValido(monitorToken)) {
+      return res.status(403).json({ mensaje: "Monitor no autorizado" });
+    }
 
     const usuarioId = req.usuario?.id || null;
 
@@ -51,11 +73,11 @@ export const crearPedido = async (req, res) => {
         });
 
       if (ventaSinControlStock) {
-        if (bebida.stock > 0) {
+        if (!esDryRunMonitor && bebida.stock > 0) {
           bebida.stock = Math.max(0, bebida.stock - cantidad);
           await bebida.save();
         }
-      } else {
+      } else if (!esDryRunMonitor) {
         bebida.stock -= cantidad;
         await bebida.save();
       }
@@ -116,6 +138,14 @@ export const crearPedido = async (req, res) => {
 
     if (fechaEntrega) pedidoData.fechaEntrega = new Date(fechaEntrega);
     if (horaEntrega) pedidoData.horaEntrega = horaEntrega;
+
+    if (esDryRunMonitor) {
+      return res.status(200).json({
+        mensaje: "Pedido validado correctamente",
+        dryRun: true,
+        pedido: pedidoData,
+      });
+    }
 
     const nuevoPedido = new Pedido(pedidoData);
 
