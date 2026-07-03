@@ -1,4 +1,11 @@
-export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
+export default function ProductoCardCarrusel({
+  producto,
+  fmt,
+  handleAgregar,
+  respetarStock = true,
+}) {
+  const sinStock = Number(producto.stock) <= 0;
+  const bloquearPorStock = respetarStock && sinStock;
   const cats = Array.isArray(producto.categorias)
     ? producto.categorias
     : producto.categoria
@@ -18,7 +25,7 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
           </div>
         )}
         {/* CINTA SIN STOCK */}
-        {producto.stock <= 0 && (
+        {sinStock && (
           <div className="absolute right-0 top-2 px-3 py-1 bg-gray-800 text-white text-[10px] md:text-xs font-bold uppercase shadow-md rotate-6 origin-right pointer-events-none">
             Sin Stock
           </div>
@@ -77,14 +84,14 @@ export default function ProductoCardCarrusel({ producto, fmt, handleAgregar }) {
               event.currentTarget.closest("[data-product-card]")
             )
           }
-          disabled={producto.stock <= 0}
+          disabled={bloquearPorStock}
           className={`w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition text-xs sm:text-sm md:text-base ${
-            producto.stock <= 0
+            bloquearPorStock
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-[#590707] hover:bg-[#A30404] text-white"
           }`}
         >
-          {producto.stock <= 0 ? "Sin stock" : "Agregar 🛒"}
+          {bloquearPorStock ? "Sin stock" : "Agregar 🛒"}
         </button>
       </div>
     </div>

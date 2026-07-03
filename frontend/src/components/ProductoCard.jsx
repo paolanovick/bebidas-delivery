@@ -1,10 +1,18 @@
-export default function ProductoCard({ producto, fmt, handleAgregar }) {
+export default function ProductoCard({
+  producto,
+  fmt,
+  handleAgregar,
+  respetarStock = true,
+}) {
+  const sinStock = Number(producto.stock) <= 0;
+  const bloquearPorStock = respetarStock && sinStock;
+
   return (
     <div
       className="relative bg-white rounded-xl border p-4 shadow-sm hover:shadow-xl transition w-full flex flex-col"
       data-product-card
     >
-      {producto.stock <= 0 && (
+      {sinStock && (
         <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 text-xs font-bold rounded">
           SIN STOCK
         </div>
@@ -33,7 +41,7 @@ export default function ProductoCard({ producto, fmt, handleAgregar }) {
       </p>
 
       <button
-        disabled={producto.stock <= 0}
+        disabled={bloquearPorStock}
         onClick={(event) =>
           handleAgregar(
             producto,
@@ -41,12 +49,12 @@ export default function ProductoCard({ producto, fmt, handleAgregar }) {
           )
         }
         className={`w-full py-2 rounded-lg font-semibold mt-auto ${
-          producto.stock <= 0
+          bloquearPorStock
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-[#590707] hover:bg-[#A30404] text-white"
         }`}
       >
-        {producto.stock <= 0 ? "Sin stock" : "Agregar 🛒"}
+        {bloquearPorStock ? "Sin stock" : "Agregar 🛒"}
       </button>
     </div>
   );

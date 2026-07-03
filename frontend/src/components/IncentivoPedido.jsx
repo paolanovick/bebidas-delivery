@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
-import { getConfigIncentivo } from "../services/api";
+import { getConfigIncentivo, getEnvioConfig } from "../services/api";
 
 export default function IncentivoPedido() {
   const { bebidas } = useBebidas();
@@ -18,8 +18,16 @@ export default function IncentivoPedido() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const data = await getConfigIncentivo();
-        setConfig(data);
+        const [data, dataEnvio] = await Promise.all([
+          getConfigIncentivo(),
+          getEnvioConfig(),
+        ]);
+        setConfig({
+          ...data,
+          montoMinimoEnvioGratis:
+            dataEnvio?.montoMinimoEnvioGratis ??
+            data.montoMinimoEnvioGratis,
+        });
       } catch (error) {
         console.error("Error al cargar config incentivo:", error);
         // Si falla, usa valores por defecto (ya están en el estado inicial)

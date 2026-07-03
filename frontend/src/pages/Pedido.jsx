@@ -28,6 +28,7 @@ export default function Pedido() {
   // 🔹 configuración dinámica del envío (desde backend)
   const [configEnvio, setConfigEnvio] = useState({
     costoEnvio: 0,
+    montoMinimoEnvioGratis: 40000,
     envioHabilitado: true,
   });
 
@@ -47,9 +48,10 @@ export default function Pedido() {
   const cambiarCantidad = (id, nuevaCantidad) => {
     if (nuevaCantidad < 1) return eliminarItem(id);
     const itemActual = carrito.find((item) => (item._id || item.id) === id);
+    const controlaStock = !itemActual?.ventaSinControlStock;
     const stockDisponible = Number(itemActual?.stock) || 0;
 
-    if (stockDisponible > 0 && nuevaCantidad > stockDisponible) {
+    if (controlaStock && stockDisponible > 0 && nuevaCantidad > stockDisponible) {
       alert(`No hay más stock disponible. Stock: ${stockDisponible}`);
       return;
     }
@@ -72,12 +74,19 @@ export default function Pedido() {
   );
 
   // 🚚 Costo envío dinámico
-  const COSTO_ENVIO = configEnvio.costoEnvio || 0;
-  const MONTO_ENVIO_GRATIS = 40000;
+  const COSTO_ENVIO = Number(configEnvio.costoEnvio) || 0;
+  const montoConfiguradoEnvioGratis = Number(
+    configEnvio.montoMinimoEnvioGratis
+  );
+  const MONTO_ENVIO_GRATIS =
+    Number.isFinite(montoConfiguradoEnvioGratis) &&
+    montoConfiguradoEnvioGratis > 0
+      ? montoConfiguradoEnvioGratis
+      : 40000;
   const envioHabilitado =
     configEnvio.envioHabilitado ?? configEnvio.activo ?? true;
 
-  // Si subtotal >= 40000 o es takeaway → envío gratis
+  // Si subtotal alcanza el mínimo configurado o es takeaway, no se cobra envío.
   const costoEnvio =
     modoEntrega === "takeaway" || subtotal >= MONTO_ENVIO_GRATIS
       ? 0
@@ -136,6 +145,8 @@ export default function Pedido() {
         nombre: i.nombre || i.titulo,
         precio: Number(i.precio) || 0,
         cantidad: Number(i.cantidad) || 0,
+        origenCarrito: i.origenCarrito || "catalogo",
+        ventaSinControlStock: Boolean(i.ventaSinControlStock),
       })),
       modoEntrega,
       direccionEntrega:
@@ -174,7 +185,9 @@ ${
   modoEntrega === "envio"
     ? `Envío: $${costoEnvio.toLocaleString("es-AR")}${
         subtotal >= MONTO_ENVIO_GRATIS
-          ? " (GRATIS por compra mayor a $40.000)"
+          ? ` (GRATIS por compra mayor a $${MONTO_ENVIO_GRATIS.toLocaleString(
+              "es-AR"
+            )})`
           : ""
       }`
     : "Envío: $0 (take away)"
@@ -275,6 +288,7 @@ ${comentarios || "Sin notas"}
                 <button
                   onClick={() => cambiarCantidad(id, (item.cantidad || 0) + 1)}
                   disabled={
+                    !item.ventaSinControlStock &&
                     Number(item.stock) > 0 &&
                     Number(item.cantidad || 0) >= Number(item.stock)
                   }

@@ -20,6 +20,12 @@ const PedidoSchema = new mongoose.Schema({
       nombre: String,
       precio: Number,
       cantidad: { type: Number, required: true, min: 1 },
+      origenCarrito: {
+        type: String,
+        enum: ["catalogo", "tienda"],
+        default: "catalogo",
+      },
+      ventaSinControlStock: { type: Boolean, default: false },
     },
   ],
 

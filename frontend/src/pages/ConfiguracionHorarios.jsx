@@ -21,9 +21,11 @@ const ConfiguracionHorarios = () => {
 
   // ENVÍO
   const [configEnvio, setConfigEnvio] = useState({
-    activo: false,
+    activo: true,
     costoEnvio: 0,
+    montoMinimoEnvioGratis: 40000,
     mensaje: "",
+    mensajeTicker: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -52,14 +54,35 @@ const ConfiguracionHorarios = () => {
         const dataHorarios = await obtenerConfiguracionHorarios();
         setConfig((prev) => ({
           ...prev,
-          ...dataHorarios,
           diasDisponibles: Array.isArray(dataHorarios?.diasDisponibles)
             ? dataHorarios.diasDisponibles
             : prev.diasDisponibles,
+          horaInicio: dataHorarios?.horaInicio ?? prev.horaInicio,
+          horaFin: dataHorarios?.horaFin ?? prev.horaFin,
+          duracionSlot: dataHorarios?.duracionSlot ?? prev.duracionSlot,
+          diasAnticipacion:
+            dataHorarios?.diasAnticipacion ?? prev.diasAnticipacion,
+          pedidosSimultaneosPorSlot:
+            dataHorarios?.pedidosSimultaneosPorSlot ??
+            prev.pedidosSimultaneosPorSlot,
+          activo: dataHorarios?.activo ?? prev.activo,
         }));
-
         const dataEnvio = await getEnvioConfig();
-        setConfigEnvio(dataEnvio);
+        setConfigEnvio({
+          activo:
+            dataEnvio.envioHabilitado ??
+            dataEnvio.activo ??
+            dataHorarios?.envioHabilitado ??
+            true,
+          costoEnvio: dataEnvio.costoEnvio ?? dataHorarios?.costoEnvio ?? 0,
+          montoMinimoEnvioGratis:
+            dataEnvio.montoMinimoEnvioGratis ??
+            dataHorarios?.montoMinimoEnvioGratis ??
+            40000,
+          mensaje: dataEnvio.mensaje || dataHorarios?.mensaje || "",
+          mensajeTicker:
+            dataEnvio.mensajeTicker || dataHorarios?.mensajeTicker || "",
+        });
       } catch (error) {
         console.error("Error al cargar configuración:", error);
       }
@@ -141,9 +164,11 @@ const ConfiguracionHorarios = () => {
   // ==================== ENVÍO ====================
 
   const handleEnvioChange = (campo, valor) => {
+    const camposNumericos = ["costoEnvio", "montoMinimoEnvioGratis"];
+
     setConfigEnvio((prev) => ({
       ...prev,
-      [campo]: campo === "costoEnvio" ? parseFloat(valor) || 0 : valor,
+      [campo]: camposNumericos.includes(campo) ? parseFloat(valor) || 0 : valor,
     }));
   };
 
@@ -183,14 +208,32 @@ const ConfiguracionHorarios = () => {
       await actualizarConfiguracionHorarios(configNormalizado);
 
       // Guardar envío
-      await updateEnvioConfig({
+      const dataEnvioGuardado = await updateEnvioConfig({
         activo: configEnvio.activo,
+        envioHabilitado: configEnvio.activo,
         costoEnvio: configEnvio.costoEnvio,
+        montoMinimoEnvioGratis: configEnvio.montoMinimoEnvioGratis,
         mensaje: configEnvio.mensaje,
+        mensajeTicker: configEnvio.mensajeTicker,
       });
 
+      const envioGuardado = dataEnvioGuardado?.config || dataEnvioGuardado;
+      setConfigEnvio((prev) => ({
+        ...prev,
+        activo:
+          envioGuardado?.envioHabilitado ??
+          envioGuardado?.activo ??
+          configEnvio.activo,
+        costoEnvio: envioGuardado?.costoEnvio ?? configEnvio.costoEnvio,
+        montoMinimoEnvioGratis:
+          envioGuardado?.montoMinimoEnvioGratis ??
+          configEnvio.montoMinimoEnvioGratis,
+        mensaje: envioGuardado?.mensaje ?? configEnvio.mensaje,
+        mensajeTicker:
+          envioGuardado?.mensajeTicker ?? configEnvio.mensajeTicker,
+      }));
       setConfig(configNormalizado);
-      setMensaje("✅ Configuración actualizada correctamente");
+      setMensaje("✅ Sus cambios fueron guardados con éxito");
       setTimeout(() => setMensaje(""), 3000);
     } catch (error) {
       setMensaje("❌ Error al actualizar configuración");
@@ -389,6 +432,31 @@ const ConfiguracionHorarios = () => {
             </p>
           </div>
 
+          {/* Monto envío gratis */}
+          <div className="mb-4">
+            <label className="font-bold text-[#590707] block mb-2 text-lg">
+              🎁 Envío Gratis desde ($)
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-semibold text-[#590707]">$</span>
+              <input
+                type="number"
+                value={configEnvio.montoMinimoEnvioGratis}
+                onChange={(e) =>
+                  handleEnvioChange("montoMinimoEnvioGratis", e.target.value)
+                }
+                placeholder="59000"
+                step="100"
+                min="0"
+                className="flex-1 p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 font-semibold text-lg"
+              />
+            </div>
+            <p className="text-sm text-[#736D66] mt-2">
+              Si el subtotal llega a este monto, el envío se calcula en $0
+              automáticamente
+            </p>
+          </div>
+
           {/* Mensaje personalizado
           <div className="mb-4">
             <label className="font-bold text-[#590707] block mb-2 text-lg">
@@ -397,7 +465,7 @@ const ConfiguracionHorarios = () => {
             <textarea
               value={configEnvio.mensaje}
               onChange={(e) => handleEnvioChange("mensaje", e.target.value)}
-              placeholder="Ej: HOY HASTA $40.000 SE ENVIA GRATIS O Enviamos de lunes a viernes entre las 19:00 y las 03:00"
+              placeholder="Ej: Enviamos de lunes a viernes entre las 19:00 y las 03:00"
               className="w-full p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 min-h-20 font-medium"
             />
             <p className="text-sm text-[#736D66] mt-2">
@@ -417,7 +485,7 @@ const ConfiguracionHorarios = () => {
               onChange={(e) =>
                 handleEnvioChange("mensajeTicker", e.target.value)
               }
-              placeholder="Ej: 📦 Envío gratis en compras mayores a $40.000"
+              placeholder="Ej: 📦 Envío gratis en compras mayores al monto configurado"
               className="w-full p-3 border-2 border-[#CDC7BD] rounded-lg bg-white text-[#04090C] placeholder-gray-400 font-medium"
             />
             <p className="text-sm text-[#736D66] mt-2">
@@ -442,9 +510,18 @@ const ConfiguracionHorarios = () => {
                 </span>
               </p>
               <p>
-                • Mensaje:{" "}
+                • Gratis desde:{" "}
                 <span className="font-bold text-[#590707]">
-                  {configEnvio.mensaje || "Sin mensaje personalizado"}
+                  $
+                  {parseFloat(
+                    configEnvio.montoMinimoEnvioGratis || 0
+                  ).toFixed(2)}
+                </span>
+              </p>
+              <p>
+                • Banner:{" "}
+                <span className="font-bold text-[#590707]">
+                  {configEnvio.mensajeTicker || "Sin mensaje personalizado"}
                 </span>
               </p>
             </div>

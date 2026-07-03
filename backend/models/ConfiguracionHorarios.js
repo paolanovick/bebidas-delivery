@@ -23,7 +23,9 @@ const ConfiguracionHorariosSchema = new mongoose.Schema({
 
   // ENVÍO
   costoEnvio: { type: Number, default: 0 },
+  montoMinimoEnvioGratis: { type: Number, default: 40000 },
   mensaje: { type: String, default: "" },
+  mensajeTicker: { type: String, default: "" },
 
   creadoEn: { type: Date, default: Date.now },
   actualizadoEn: { type: Date, default: Date.now },

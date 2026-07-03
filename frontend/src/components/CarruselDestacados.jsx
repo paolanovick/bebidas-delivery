@@ -8,6 +8,7 @@ export default function CarruselDestacados({
   paused,
   setPaused,
   fmt,
+  respetarStock = true,
 }) {
   return (
     <section className="mt-6 mb-8 md:mb-12 w-full">
@@ -40,6 +41,8 @@ export default function CarruselDestacados({
             {productos
               .filter((p) => p.esEstrella)
               .map((b, i) => {
+                const sinStock = Number(b.stock) <= 0;
+                const bloquearPorStock = respetarStock && sinStock;
                 const cats = Array.isArray(b.categorias)
                   ? b.categorias
                   : b.categoria
@@ -78,7 +81,7 @@ export default function CarruselDestacados({
                       </div>
 
                       {/* CINTA SIN STOCK */}
-                      {b.stock <= 0 && (
+                      {sinStock && (
                         <div
                           className="
         absolute right-0 top-2
@@ -149,14 +152,14 @@ export default function CarruselDestacados({
                             event.currentTarget.closest("[data-product-card]")
                           )
                         }
-                        disabled={b.stock <= 0}
+                        disabled={bloquearPorStock}
                         className={`text-white w-full py-1.5 md:py-2 rounded-lg md:rounded-xl font-semibold transition text-xs sm:text-sm md:text-base ${
-                          b.stock <= 0
+                          bloquearPorStock
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-[#590707] hover:bg-[#A30404]"
                         }`}
                       >
-                        {b.stock <= 0 ? "Sin stock" : "Agregar 🛒"}
+                        {bloquearPorStock ? "Sin stock" : "Agregar 🛒"}
                       </button>
                     </div>
                   </div>

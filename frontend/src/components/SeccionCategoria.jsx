@@ -6,6 +6,7 @@ export default function SeccionCategoria({
   handleAgregar,
   fmt,
   setCategoria,
+  respetarStock = true,
 }) {
   // ✅ ORDENAR PRODUCTOS: primero por orden (1-10), luego el resto
   const productosOrdenados = [...productos].sort((a, b) => {
@@ -33,6 +34,7 @@ export default function SeccionCategoria({
             producto={producto}
             fmt={fmt}
             handleAgregar={handleAgregar}
+            respetarStock={respetarStock}
           />
         ))}
       </div>

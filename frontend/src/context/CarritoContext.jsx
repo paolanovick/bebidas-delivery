@@ -25,7 +25,20 @@ export function CarritoProvider({ children }) {
     window.dispatchEvent(new CustomEvent("carrito:updated"));
   };
 
-  const puedeAgregar = (bebida, mostrarAlerta = true) => {
+  const normalizarOpciones = (opciones = {}) =>
+    typeof opciones === "boolean" ? { mostrarAlerta: opciones } : opciones;
+
+  const debeRespetarStock = (bebida, opciones = {}) =>
+    opciones.respetarStock ?? !bebida.ventaSinControlStock;
+
+  const puedeAgregar = (bebida, opciones = {}) => {
+    const opts = normalizarOpciones(opciones);
+    const mostrarAlerta = opts.mostrarAlerta ?? true;
+
+    if (!debeRespetarStock(bebida, opts)) {
+      return true;
+    }
+
     if (bebida.stock <= 0) {
       if (mostrarAlerta) {
         alert(`❗ La bebida "${bebida.nombre}" no tiene stock disponible.`);
@@ -46,19 +59,38 @@ export function CarritoProvider({ children }) {
     return true;
   };
 
-  const agregar = (bebida) => {
-    if (!puedeAgregar(bebida)) return false;
+  const agregar = (bebida, opciones = {}) => {
+    const opts = normalizarOpciones(opciones);
+    if (!puedeAgregar(bebida, opts)) return false;
 
     const idBebida = obtenerId(bebida);
     const existe = carritoRef.current.find((i) => obtenerId(i) === idBebida);
+    const ventaSinControlStock = !debeRespetarStock(bebida, opts);
+    const origenCarrito = opts.origenCarrito || bebida.origenCarrito;
     let nuevo;
 
     if (existe) {
       nuevo = carritoRef.current.map((i) =>
-        obtenerId(i) === idBebida ? { ...i, cantidad: i.cantidad + 1 } : i
+        obtenerId(i) === idBebida
+          ? {
+              ...i,
+              cantidad: i.cantidad + 1,
+              origenCarrito: i.origenCarrito || origenCarrito,
+              ventaSinControlStock:
+                i.ventaSinControlStock || ventaSinControlStock,
+            }
+          : i
       );
     } else {
-      nuevo = [...carritoRef.current, { ...bebida, cantidad: 1 }];
+      nuevo = [
+        ...carritoRef.current,
+        {
+          ...bebida,
+          cantidad: 1,
+          origenCarrito,
+          ventaSinControlStock,
+        },
+      ];
     }
 
     guardarCarrito(nuevo);
@@ -80,6 +112,7 @@ export function CarritoProvider({ children }) {
 
   // ✅ Vaciar completamente el carrito (para logout, etc.)
   const vaciarCarrito = () => {
+    carritoRef.current = [];
     setCarrito([]);
     sessionStorage.removeItem("carrito");
     window.dispatchEvent(new CustomEvent("carrito:updated"));

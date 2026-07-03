@@ -213,13 +213,16 @@ export default function MenuBebidas() {
   // FUNCIONES
   // ============================
   const handleAgregar = async (b, sourceElement) => {
-    if (!b.stock || b.stock <= 0) return;
+    const opcionesTienda = {
+      respetarStock: false,
+      origenCarrito: "tienda",
+    };
 
-    if (!puedeAgregar(b)) return;
+    if (!puedeAgregar(b, opcionesTienda)) return;
 
     await flyProductToCart(sourceElement);
 
-    if (!agregar(b)) return;
+    if (!agregar(b, opcionesTienda)) return;
 
     setMensajeAgregado(`"${b.nombre}" agregado 🛒`);
     setTimeout(() => setMensajeAgregado(""), 2500);
@@ -295,6 +298,7 @@ export default function MenuBebidas() {
           <CarruselDestacados
             productos={productosEstrella}
             handleAgregar={handleAgregar}
+            respetarStock={false}
             scrollCarousel={(dir) => {
               const c = carouselRef.current;
               if (c) {
@@ -336,6 +340,7 @@ export default function MenuBebidas() {
             productos={[]}
             fmt={fmt}
             handleAgregar={handleAgregar}
+            respetarStock={false}
           />
         ) : sinFiltros ? (
           // VISTA NETFLIX
@@ -348,6 +353,7 @@ export default function MenuBebidas() {
                 handleAgregar={handleAgregar}
                 fmt={fmt}
                 setCategoria={setCategoria}
+                respetarStock={false}
               />
             ))}
           </div>
@@ -357,6 +363,7 @@ export default function MenuBebidas() {
             productos={bebidasFiltradas}
             fmt={fmt}
             handleAgregar={handleAgregar}
+            respetarStock={false}
           />
         )}
       </main>

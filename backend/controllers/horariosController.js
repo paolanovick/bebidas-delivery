@@ -1,5 +1,6 @@
 // controllers/horariosController.js
 import ConfiguracionHorarios from "../models/ConfiguracionHorarios.js";
+import Configuracion from "../models/Configuracion.js";
 // import Pedido from "../models/Pedido.js";  // ❌ Ya no lo usamos por ahora
 
 // ❌ Ya no usamos normalize ni slots, los dejamos comentados por si en el futuro volvemos a turnos
@@ -32,6 +33,45 @@ export const actualizarConfiguracion = async (req, res) => {
       new: true,
       upsert: true,
     });
+
+    const tieneConfigEnvio =
+      req.body.costoEnvio !== undefined ||
+      req.body.envioHabilitado !== undefined ||
+      req.body.montoMinimoEnvioGratis !== undefined ||
+      req.body.mensaje !== undefined ||
+      req.body.mensajeTicker !== undefined;
+
+    if (tieneConfigEnvio) {
+      const configEnvio = (await Configuracion.findOne()) || new Configuracion();
+
+      if (req.body.costoEnvio !== undefined) {
+        configEnvio.costoEnvio = Number(req.body.costoEnvio) || 0;
+      }
+
+      if (
+        req.body.envioHabilitado !== undefined ||
+        (tieneConfigEnvio && req.body.activo !== undefined)
+      ) {
+        configEnvio.envioHabilitado =
+          req.body.envioHabilitado ?? req.body.activo;
+      }
+
+      if (req.body.montoMinimoEnvioGratis !== undefined) {
+        configEnvio.montoMinimoEnvioGratis =
+          Number(req.body.montoMinimoEnvioGratis) || 0;
+      }
+
+      if (req.body.mensaje !== undefined) {
+        configEnvio.mensaje = req.body.mensaje;
+      }
+
+      if (req.body.mensajeTicker !== undefined) {
+        configEnvio.mensajeTicker = req.body.mensajeTicker;
+      }
+
+      await configEnvio.save();
+    }
+
     res.json({ mensaje: "Configuración actualizada", config });
   } catch (error) {
     console.error("Error al actualizar configuración de horarios:", error);

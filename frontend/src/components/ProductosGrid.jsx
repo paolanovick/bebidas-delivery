@@ -1,6 +1,11 @@
 import ProductoCard from "./ProductoCard";
 
-export default function ProductosGrid({ productos, fmt, handleAgregar }) {
+export default function ProductosGrid({
+  productos,
+  fmt,
+  handleAgregar,
+  respetarStock = true,
+}) {
   // ✅ ORDENAR PRODUCTOS
   const productosOrdenados = [...productos].sort((a, b) => {
     const ordenA = a.orden && a.orden >= 1 && a.orden <= 10 ? a.orden : 999;
@@ -24,6 +29,7 @@ export default function ProductosGrid({ productos, fmt, handleAgregar }) {
           producto={producto}
           fmt={fmt}
           handleAgregar={handleAgregar}
+          respetarStock={respetarStock}
         />
       ))}
     </div>

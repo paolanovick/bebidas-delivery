@@ -35,21 +35,40 @@ export const crearPedido = async (req, res) => {
       if (!bebida)
         return res.status(404).json({ mensaje: "Bebida no encontrada" });
 
-      if (bebida.stock < item.cantidad)
+      const cantidad = Number(item.cantidad) || 0;
+      const ventaSinControlStock =
+        item.ventaSinControlStock === true || item.origenCarrito === "tienda";
+
+      if (cantidad < 1) {
+        return res.status(400).json({
+          mensaje: `Cantidad inválida para ${bebida.nombre}`,
+        });
+      }
+
+      if (!ventaSinControlStock && bebida.stock < cantidad)
         return res.status(400).json({
           mensaje: `Stock insuficiente para ${bebida.nombre}`,
         });
 
-      bebida.stock -= item.cantidad;
-      await bebida.save();
+      if (ventaSinControlStock) {
+        if (bebida.stock > 0) {
+          bebida.stock = Math.max(0, bebida.stock - cantidad);
+          await bebida.save();
+        }
+      } else {
+        bebida.stock -= cantidad;
+        await bebida.save();
+      }
 
-      total += bebida.precio * item.cantidad;
+      total += bebida.precio * cantidad;
 
       itemsValidados.push({
         bebida: bebida._id,
         nombre: bebida.nombre,
         precio: bebida.precio,
-        cantidad: item.cantidad,
+        cantidad,
+        origenCarrito: item.origenCarrito === "tienda" ? "tienda" : "catalogo",
+        ventaSinControlStock,
       });
     }
 
@@ -60,7 +79,12 @@ export const crearPedido = async (req, res) => {
     };
 
     // 🟢 Determinar costo de envío dinámico
-    const MONTO_ENVIO_GRATIS = 40000;
+    const montoConfiguradoEnvioGratis = Number(config.montoMinimoEnvioGratis);
+    const montoEnvioGratis =
+      Number.isFinite(montoConfiguradoEnvioGratis) &&
+      montoConfiguradoEnvioGratis > 0
+        ? montoConfiguradoEnvioGratis
+        : 40000;
     const direccionNormalizada =
       typeof direccionEntrega === "string" ? direccionEntrega.trim() : "";
     const esEnvio =
@@ -71,8 +95,8 @@ export const crearPedido = async (req, res) => {
     let costoEnvio = 0;
 
     // Es envío + envío habilitado + no supera el mínimo gratis → se cobra
-    if (esEnvio && config.envioHabilitado && total < MONTO_ENVIO_GRATIS) {
-      costoEnvio = config.costoEnvio ?? 0;
+    if (esEnvio && config.envioHabilitado && total < montoEnvioGratis) {
+      costoEnvio = Number(config.costoEnvio) || 0;
     }
 
     const totalFinal = total + costoEnvio;

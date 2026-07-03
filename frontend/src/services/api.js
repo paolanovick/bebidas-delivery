@@ -232,7 +232,7 @@ export const actualizarPublicidad = async (data) => {
 //  envios
 // ============================
 export const getEnvioConfig = async () => {
-  const res = await fetch(`${BASE}/configuracion`);
+  const res = await fetch(`${BASE}/configuracion`, { cache: "no-store" });
   const payload = await res.json().catch(() => ({}));
 
   if (!res.ok) {
@@ -243,7 +243,7 @@ export const getEnvioConfig = async () => {
 };
 
 export const updateEnvioConfig = async (data) => {
-  const res = await fetch("/api/horarios/configuracion", {
+  const res = await fetch(`${BASE}/configuracion`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
