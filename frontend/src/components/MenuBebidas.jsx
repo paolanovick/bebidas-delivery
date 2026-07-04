@@ -11,6 +11,8 @@ import { getEstadoDelivery } from "../utils/horariosDelivery";
 import BannerTicker from "./BannerTicker";
 import { flyProductToCart } from "../utils/flyToCart";
 
+const CARRUSEL_PX_POR_SEGUNDO = 58;
+
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar, puedeAgregar } = useCarrito();
@@ -140,20 +142,34 @@ export default function MenuBebidas() {
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    const interval = setInterval(() => {
+    let frameId;
+    let ultimoTiempo = null;
+
+    const animar = (tiempo) => {
+      if (ultimoTiempo === null) {
+        ultimoTiempo = tiempo;
+      }
+
+      const delta = tiempo - ultimoTiempo;
+      ultimoTiempo = tiempo;
+
       if (!paused) {
-        carousel.scrollLeft += 1;
+        carousel.scrollLeft += (CARRUSEL_PX_POR_SEGUNDO * delta) / 1000;
         if (
           carousel.scrollLeft >=
-          carousel.scrollWidth - carousel.clientWidth
+          carousel.scrollWidth - carousel.clientWidth - 1
         ) {
           carousel.scrollLeft = 0;
         }
       }
-    }, 15);
 
-    return () => clearInterval(interval);
-  }, [paused]);
+      frameId = requestAnimationFrame(animar);
+    };
+
+    frameId = requestAnimationFrame(animar);
+
+    return () => cancelAnimationFrame(frameId);
+  }, [paused, bebidas.length]);
 
   // ============================
   // FILTROS Y DATOS

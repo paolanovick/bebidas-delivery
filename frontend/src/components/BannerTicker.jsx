@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getEnvioConfig } from "../services/api";
+
+const TICKER_PX_POR_SEGUNDO = 78;
+const TICKER_DURACION_MINIMA = 8;
 
 export default function BannerTicker() {
   const mensajeDefault = "📦 Envío gratis en compras mayores a $40.000";
   const [mensaje, setMensaje] = useState(mensajeDefault);
+  const [duracion, setDuracion] = useState(14);
+  const grupoRef = useRef(null);
 
   useEffect(() => {
     let activo = true;
@@ -27,7 +32,23 @@ export default function BannerTicker() {
     };
   }, []);
 
-  const mensajes = Array.from({ length: 4 }, (_, index) => (
+  useEffect(() => {
+    const calcularDuracion = () => {
+      const anchoGrupo = grupoRef.current?.scrollWidth || 0;
+      if (!anchoGrupo) return;
+
+      setDuracion(
+        Math.max(TICKER_DURACION_MINIMA, anchoGrupo / TICKER_PX_POR_SEGUNDO)
+      );
+    };
+
+    calcularDuracion();
+    window.addEventListener("resize", calcularDuracion);
+
+    return () => window.removeEventListener("resize", calcularDuracion);
+  }, [mensaje]);
+
+  const mensajes = Array.from({ length: 8 }, (_, index) => (
     <span key={index} className="text-sm font-semibold text-[#590707]">
       {mensaje}
     </span>
@@ -43,28 +64,44 @@ export default function BannerTicker() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="flex animate-scroll whitespace-nowrap">
-        <div className="flex gap-12 pr-12">
+      <div
+        className="ticker-track whitespace-nowrap"
+        style={{ "--ticker-duration": `${duracion}s` }}
+      >
+        <div ref={grupoRef} className="ticker-group">
+          {mensajes}
+        </div>
+        <div className="ticker-group" aria-hidden="true">
           {mensajes}
         </div>
       </div>
 
       <style>{`
-        @keyframes scroll {
+        @keyframes ticker-scroll {
           0% {
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateX(-25%);
+            transform: translate3d(-50%, 0, 0);
           }
         }
 
-        .animate-scroll {
-          animation: scroll 25s linear infinite;
+        .ticker-track {
+          display: flex;
+          width: max-content;
+          animation: ticker-scroll var(--ticker-duration) linear infinite;
+          will-change: transform;
         }
 
-        .animate-scroll:hover {
+        .ticker-track:hover {
           animation-play-state: paused;
+        }
+
+        .ticker-group {
+          display: flex;
+          flex: 0 0 auto;
+          gap: clamp(2rem, 4vw, 4rem);
+          padding-right: clamp(2rem, 4vw, 4rem);
         }
       `}</style>
     </div>
