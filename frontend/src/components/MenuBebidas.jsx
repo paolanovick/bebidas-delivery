@@ -11,7 +11,8 @@ import { getEstadoDelivery } from "../utils/horariosDelivery";
 import BannerTicker from "./BannerTicker";
 import { flyProductToCart } from "../utils/flyToCart";
 
-const CARRUSEL_PX_POR_SEGUNDO = 58;
+const CARRUSEL_PX_POR_SEGUNDO_DESKTOP = 58;
+const CARRUSEL_PX_POR_SEGUNDO_MOBILE = 96;
 
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
@@ -144,17 +145,35 @@ export default function MenuBebidas() {
 
     let frameId;
     let ultimoTiempo = null;
+    let mobile = window.matchMedia("(max-width: 768px)").matches;
+
+    const actualizarVelocidad = () => {
+      mobile = window.matchMedia("(max-width: 768px)").matches;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        ultimoTiempo = null;
+      }
+    };
+
+    actualizarVelocidad();
+    window.addEventListener("resize", actualizarVelocidad);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const animar = (tiempo) => {
       if (ultimoTiempo === null) {
         ultimoTiempo = tiempo;
       }
 
-      const delta = tiempo - ultimoTiempo;
+      const delta = Math.min(tiempo - ultimoTiempo, 100);
       ultimoTiempo = tiempo;
 
       if (!paused) {
-        carousel.scrollLeft += (CARRUSEL_PX_POR_SEGUNDO * delta) / 1000;
+        const velocidad = mobile
+          ? CARRUSEL_PX_POR_SEGUNDO_MOBILE
+          : CARRUSEL_PX_POR_SEGUNDO_DESKTOP;
+        carousel.scrollLeft += (velocidad * delta) / 1000;
         if (
           carousel.scrollLeft >=
           carousel.scrollWidth - carousel.clientWidth - 1
@@ -168,7 +187,11 @@ export default function MenuBebidas() {
 
     frameId = requestAnimationFrame(animar);
 
-    return () => cancelAnimationFrame(frameId);
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", actualizarVelocidad);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [paused, bebidas.length]);
 
   // ============================
