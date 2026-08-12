@@ -33,6 +33,7 @@ export default function MenuBebidas() {
   const [paused, setPaused] = useState(false);
   const [cargando, setCargando] = useState(true);
   const carouselRef = useRef(null);
+  const pausaCarruselRef = useRef(false);
 
   // ============================
   // CATEGORÍAS Y SUBCATEGORÍAS
@@ -136,6 +137,14 @@ export default function MenuBebidas() {
     }
   }, [location.search]);
 
+  useEffect(() => {
+    setPaused(false);
+  }, []);
+
+  useEffect(() => {
+    pausaCarruselRef.current = paused;
+  }, [paused]);
+
   // ============================
   // AUTOSCROLL CARRUSEL
   // ============================
@@ -159,7 +168,7 @@ export default function MenuBebidas() {
       const delta = tiempo - ultimoTiempo;
       ultimoTiempo = tiempo;
 
-      if (!paused) {
+      if (!pausaCarruselRef.current) {
         carousel.scrollLeft += (velocidad * delta) / 1000;
         if (
           carousel.scrollLeft >=
@@ -177,7 +186,7 @@ export default function MenuBebidas() {
     return () => {
       cancelAnimationFrame(frameId);
     };
-  }, [paused, bebidas.length]);
+  }, [bebidas.length]);
 
   // ============================
   // FILTROS Y DATOS
