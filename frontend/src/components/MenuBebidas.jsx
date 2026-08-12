@@ -145,34 +145,21 @@ export default function MenuBebidas() {
 
     let frameId;
     let ultimoTiempo = null;
-    let mobile = window.matchMedia("(max-width: 768px)").matches;
-
-    const actualizarVelocidad = () => {
-      mobile = window.matchMedia("(max-width: 768px)").matches;
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        ultimoTiempo = null;
-      }
-    };
-
-    actualizarVelocidad();
-    window.addEventListener("resize", actualizarVelocidad);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const mobile =
+      typeof window !== "undefined" && window.innerWidth <= 768;
+    const velocidad = mobile
+      ? CARRUSEL_PX_POR_SEGUNDO_MOBILE
+      : CARRUSEL_PX_POR_SEGUNDO_DESKTOP;
 
     const animar = (tiempo) => {
       if (ultimoTiempo === null) {
         ultimoTiempo = tiempo;
       }
 
-      const delta = Math.min(tiempo - ultimoTiempo, 100);
+      const delta = tiempo - ultimoTiempo;
       ultimoTiempo = tiempo;
 
       if (!paused) {
-        const velocidad = mobile
-          ? CARRUSEL_PX_POR_SEGUNDO_MOBILE
-          : CARRUSEL_PX_POR_SEGUNDO_DESKTOP;
         carousel.scrollLeft += (velocidad * delta) / 1000;
         if (
           carousel.scrollLeft >=
@@ -189,8 +176,6 @@ export default function MenuBebidas() {
 
     return () => {
       cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", actualizarVelocidad);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [paused, bebidas.length]);
 

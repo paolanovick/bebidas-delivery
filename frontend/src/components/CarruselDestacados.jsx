@@ -38,8 +38,6 @@ export default function CarruselDestacados({
             ref={carouselRef}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
-            onTouchStart={() => setPaused(true)}
-            onTouchEnd={() => setPaused(false)}
             className="flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto px-1 md:px-4 lg:px-12 w-full scrollbar-hide"
           >
             {productos
