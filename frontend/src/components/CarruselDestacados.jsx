@@ -6,15 +6,11 @@ export default function CarruselDestacados({
   handleAgregar,
   scrollCarousel,
   carouselRef,
-  paused,
-  setPaused,
   fmt,
   respetarStock = true,
 }) {
   const { carrito } = useCarrito();
   const obtenerId = (item) => item?._id || item?.id;
-  const esDesktop = () => typeof window !== "undefined" && window.innerWidth >= 768;
-
   return (
     <section className="mt-6 mb-8 md:mb-12 w-full">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
@@ -27,8 +23,6 @@ export default function CarruselDestacados({
           {/* BOTÓN IZQUIERDO */}
           <button
             onClick={() => scrollCarousel("left")}
-            onMouseEnter={() => esDesktop() && setPaused(true)}
-            onMouseLeave={() => esDesktop() && setPaused(false)}
             className="hidden lg:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -37,9 +31,7 @@ export default function CarruselDestacados({
           {/* CARRUSEL */}
           <div
             ref={carouselRef}
-            onMouseEnter={() => esDesktop() && setPaused(true)}
-            onMouseLeave={() => esDesktop() && setPaused(false)}
-            className="flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto px-1 md:px-4 lg:px-12 w-full scrollbar-hide"
+            className="destacados-scroll flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto px-1 md:px-4 lg:px-12 w-full"
           >
             {productos
               .filter((p) => p.esEstrella)
@@ -186,8 +178,6 @@ export default function CarruselDestacados({
           {/* BOTÓN DERECHO */}
           <button
             onClick={() => scrollCarousel("right")}
-            onMouseEnter={() => esDesktop() && setPaused(true)}
-            onMouseLeave={() => esDesktop() && setPaused(false)}
             className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-[#590707] p-2 rounded-full shadow-lg transition items-center justify-center"
           >
             <ChevronRight className="w-5 h-5" />

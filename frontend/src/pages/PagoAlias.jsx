@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getPedidoPorId, subirComprobantePago } from "../services/api";
 
 const toBase64 = (file) => {
@@ -13,6 +13,7 @@ const toBase64 = (file) => {
 
 export default function PagoAlias() {
   const { alias, pedidoId } = useParams();
+  const navigate = useNavigate();
   const [pedido, setPedido] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -174,6 +175,16 @@ export default function PagoAlias() {
       });
 
       setStatus("Comprobante enviado. Te avisamos cuando confirmemos el pago.");
+      try {
+        const pendiente = JSON.parse(
+          localStorage.getItem("eldanesPagoPendiente") || "null"
+        );
+        if (pendiente?.pedidoId === pedidoId) {
+          localStorage.removeItem("eldanesPagoPendiente");
+        }
+      } catch {
+        localStorage.removeItem("eldanesPagoPendiente");
+      }
       setReferencia("");
       setComentario("");
       setArchivo(null);
@@ -191,6 +202,19 @@ export default function PagoAlias() {
   return (
     <div className="min-h-screen bg-[#CDC7BD] text-[#04090C] pt-24 md:pt-16 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow p-6 border border-[#e6e2dc] space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/tienda")}
+            className="self-start rounded-lg border-2 border-[#590707] px-4 py-2 text-sm font-bold text-[#590707]"
+          >
+            Volver a la tienda
+          </button>
+          <p className="text-xs text-[#5b5b5b] sm:text-right">
+            Tu pedido ya está guardado. Podés volver y continuar el pago después.
+          </p>
+        </div>
+
         <h1 className="text-2xl font-bold text-[#590707]">
           Pago por transferencia
         </h1>

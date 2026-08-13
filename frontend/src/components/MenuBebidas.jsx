@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useBebidas } from "../context/BebidasContext";
 import { useCarrito } from "../context/CarritoContext";
 import Sidebar from "./Sidebar";
@@ -18,6 +18,13 @@ export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar, puedeAgregar } = useCarrito();
   const location = useLocation();
+  const [pagoPendiente] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("eldanesPagoPendiente") || "null");
+    } catch {
+      return null;
+    }
+  });
 
   // ============================
   // ESTADOS
@@ -314,6 +321,30 @@ export default function MenuBebidas() {
       <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
         <BannerTicker />
 
+        {pagoPendiente?.pedidoId && (
+          <div className="mb-4 rounded-2xl border-2 border-[#590707] bg-white p-4 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="font-bold text-[#590707] text-lg">
+                Tenés un pedido pendiente de pago
+              </p>
+              <p className="text-sm text-[#04090C]">
+                El pedido está guardado. Podés volver a subir el comprobante cuando quieras.
+              </p>
+              {Number(pagoPendiente.total) > 0 && (
+                <p className="text-sm font-bold text-[#590707] mt-1">
+                  Total: ${Number(pagoPendiente.total).toLocaleString("es-AR")}
+                </p>
+              )}
+            </div>
+            <Link
+              to={`/pago/${pagoPendiente.alias || "eldanestandil"}/${pagoPendiente.pedidoId}`}
+              className="shrink-0 rounded-xl bg-[#590707] px-5 py-3 text-center font-bold text-white"
+            >
+              Continuar con el pago
+            </Link>
+          </div>
+        )}
+
         {/* MENSAJE HORARIOS */}
         {!cargandoHorarios && estadoDelivery && (
           <div
@@ -343,8 +374,6 @@ export default function MenuBebidas() {
               }
             }}
             carouselRef={carouselRef}
-            paused={paused}
-            setPaused={setPaused}
             fmt={fmt}
           />
         )}

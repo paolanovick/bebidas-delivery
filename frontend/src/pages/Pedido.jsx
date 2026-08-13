@@ -11,6 +11,13 @@ const ADMIN_WHATSAPP = "5492494252530";
 
 export default function Pedido() {
   const navigate = useNavigate();
+  const [pagoPendiente] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("eldanesPagoPendiente") || "null");
+    } catch {
+      return null;
+    }
+  });
 
   useSEO({
     title: "Tu Pedido",
@@ -230,6 +237,15 @@ ${comentarios || "Sin notas"}
         if (whatsappTab) {
           whatsappTab.close();
         }
+        localStorage.setItem(
+          "eldanesPagoPendiente",
+          JSON.stringify({
+            pedidoId,
+            alias: aliasTransferencia,
+            total: pedidoCreado.total || total,
+            creadoEn: new Date().toISOString(),
+          })
+        );
         navigate(`/pago/${aliasTransferencia}/${pedidoId}`);
         vaciarCarrito();
         return;
@@ -260,8 +276,30 @@ ${comentarios || "Sin notas"}
 
       {/* carrito vacío */}
       {carrito.length === 0 && (
-        <div className="bg-white rounded-2xl shadow p-6 text-center border border-[#e6e2dc] max-w-2xl mx-auto">
-          <p className="text-[#04090C]">Tu carrito está vacío.</p>
+        <div className="bg-white rounded-2xl shadow p-6 text-center border border-[#e6e2dc] max-w-2xl mx-auto mb-6">
+          {pagoPendiente?.pedidoId ? (
+            <>
+              <p className="font-bold text-xl text-[#590707]">
+                Tu pedido ya está guardado
+              </p>
+              <p className="text-[#04090C] mt-2">
+                Falta completar la transferencia y enviar el comprobante.
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(
+                    `/pago/${pagoPendiente.alias || "eldanestandil"}/${pagoPendiente.pedidoId}`
+                  )
+                }
+                className="mt-4 bg-[#590707] text-white px-5 py-3 rounded-xl font-bold"
+              >
+                Continuar con el pago
+              </button>
+            </>
+          ) : (
+            <p className="text-[#04090C]">Tu carrito está vacío.</p>
+          )}
         </div>
       )}
 
@@ -336,6 +374,8 @@ ${comentarios || "Sin notas"}
         );
       })}
 
+      {carrito.length > 0 && (
+        <>
       {/* RESUMEN */}
       <div className="text-right text-xl font-bold text-[#590707] mb-1">
         Subtotal: ${subtotal.toLocaleString("es-AR")}
@@ -461,6 +501,8 @@ ${comentarios || "Sin notas"}
             : "Confirmar y enviar por WhatsApp"}
         </button>
       </div>
+        </>
+      )}
     </div>
   );
 }
