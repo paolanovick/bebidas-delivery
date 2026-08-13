@@ -25,7 +25,7 @@ export default function Sidebar({
 
   return (
     <aside
-     className={`fixed md:sticky md:top-0 md:self-start md:h-screen inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
+     className={`fixed md:sticky md:top-[192px] lg:top-[224px] md:self-start md:h-[calc(100vh-192px)] lg:h-[calc(100vh-224px)] inset-y-0 left-0 w-64 bg-white border-r border-[#CDC7BD]
   p-6 z-[60] md:z-40 shadow transform transition-transform duration-300
   pt-36 md:pt-6 overflow-y-auto ${
     menuAbierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"

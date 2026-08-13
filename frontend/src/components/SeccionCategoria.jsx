@@ -25,7 +25,7 @@ export default function SeccionCategoria({
       </button>
 
       <div
-        className="flex gap-3 overflow-hidden pb-3 w-full"
+        className="destacados-scroll flex gap-3 overflow-hidden pb-3 w-full"
         style={{ overflowX: "auto", overflowY: "hidden" }}
       >
         {productosOrdenados.map((producto) => (

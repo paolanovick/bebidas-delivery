@@ -193,7 +193,7 @@ export default function MenuBebidas() {
     return () => {
       cancelAnimationFrame(frameId);
     };
-  }, [bebidas.length]);
+  }, [bebidas.length, cargando]);
 
   // ============================
   // FILTROS Y DATOS
@@ -277,7 +277,7 @@ export default function MenuBebidas() {
   // ============================
   return (
     <div
-      className="flex min-h-screen relative overflow-x-hidden"
+      className="flex min-h-screen relative"
       style={{
         backgroundImage: "url('/fondo.png')",
         backgroundSize: "200px 200px",
