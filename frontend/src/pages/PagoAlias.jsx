@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPedidoPorId, subirComprobantePago } from "../services/api";
 
@@ -23,6 +23,9 @@ export default function PagoAlias() {
   const [status, setStatus] = useState("");
   const [pasteError, setPasteError] = useState("");
   const [origenTransferencia, setOrigenTransferencia] = useState("banco");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const camaraInputRef = useRef(null);
+  const galeriaInputRef = useRef(null);
 
   useEffect(() => {
     const cargarPedido = async () => {
@@ -40,6 +43,17 @@ export default function PagoAlias() {
       cargarPedido();
     }
   }, [pedidoId]);
+
+  useEffect(() => {
+    if (!archivo || !archivo.type.startsWith("image/")) {
+      setPreviewUrl("");
+      return undefined;
+    }
+
+    const objectUrl = URL.createObjectURL(archivo);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [archivo]);
 
   const copyAlias = async () => {
     try {
@@ -74,11 +88,15 @@ export default function PagoAlias() {
     }
     setArchivo(nextFile);
     setPasteError("");
-    setStatus(`Archivo listo: ${nextFile.name || "captura"} (${(
-      nextFile.size /
-      1024 /
-      1024
-    ).toFixed(2)} MB)`);
+    setStatus("Comprobante listo para enviar");
+  };
+
+  const quitarComprobante = () => {
+    setArchivo(null);
+    setStatus("");
+    setPasteError("");
+    if (camaraInputRef.current) camaraInputRef.current.value = "";
+    if (galeriaInputRef.current) galeriaInputRef.current.value = "";
   };
 
   const pegarDesdePortapapeles = async () => {
@@ -103,7 +121,7 @@ export default function PagoAlias() {
       setArchivoComprobante(file);
     } catch (error) {
       setPasteError(
-        "No se pudo pegar automáticamente. Tocá el recuadro y pegá (Ctrl+V) o usá \"Adjuntar comprobante\"."
+        "No se encontró una captura copiada. Probá con Elegir de galería."
       );
       setTimeout(() => setPasteError(""), 2600);
     }
@@ -132,6 +150,10 @@ export default function PagoAlias() {
 
   const enviarComprobante = async (event) => {
     event.preventDefault();
+    if (!archivo) {
+      setPasteError("Primero sacá una foto o elegí la captura del comprobante.");
+      return;
+    }
     setStatus("");
     setEnviando(true);
 
@@ -252,33 +274,101 @@ export default function PagoAlias() {
             />
           </label>
 
-          <label className="block text-sm">
-            Adjuntar comprobante (foto o captura)
-            <button
-              type="button"
-              onClick={pegarDesdePortapapeles}
-              className="ml-2 text-sm bg-[#736D66] text-white px-3 py-1 rounded"
-            >
-              Pegar comprobante
-            </button>
+          <section className="rounded-2xl border-2 border-[#e2ddd6] bg-[#faf9f7] p-4 space-y-4">
+            <div>
+              <h2 className="font-bold text-[#590707]">Subí el comprobante</h2>
+              <p className="text-xs text-[#5b5b5b] mt-1">
+                Elegí la captura desde tus fotos o sacale una foto al comprobante.
+              </p>
+            </div>
+
             <input
+              ref={camaraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(e) => setArchivoComprobante(e.target.files?.[0] || null)}
+              className="hidden"
+            />
+            <input
+              ref={galeriaInputRef}
               type="file"
               accept="image/*,application/pdf"
               onChange={(e) => setArchivoComprobante(e.target.files?.[0] || null)}
-              className="w-full mt-1 text-sm"
+              className="hidden"
             />
-            <div
-              onPaste={pegarDesdeEvento}
-              tabIndex={0}
-              role="button"
-              className="w-full mt-2 p-3 border-2 border-dashed border-[#A30404] rounded text-xs text-center text-[#5b5b5b] cursor-pointer"
-            >
-              Tocá aquí y pegá la captura (Ctrl + V)
-            </div>
-            {pasteError && (
-              <p className="text-xs text-red-600 mt-1">{pasteError}</p>
+
+            {!archivo ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => camaraInputRef.current?.click()}
+                  className="min-h-[58px] rounded-xl bg-[#590707] text-white px-4 py-3 font-bold shadow-sm"
+                >
+                  Tomar foto
+                </button>
+                <button
+                  type="button"
+                  onClick={() => galeriaInputRef.current?.click()}
+                  className="min-h-[58px] rounded-xl border-2 border-[#590707] bg-white text-[#590707] px-4 py-3 font-bold"
+                >
+                  Elegir de galería
+                </button>
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border-2 border-green-600 bg-white">
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Vista previa del comprobante"
+                    className="w-full max-h-72 object-contain bg-[#eeeae4]"
+                  />
+                ) : (
+                  <div className="min-h-[120px] flex items-center justify-center bg-[#eeeae4] p-5 text-center font-semibold">
+                    PDF listo para enviar
+                  </div>
+                )}
+                <div className="p-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-bold text-green-700">Comprobante listo</p>
+                    <p className="text-xs text-[#5b5b5b] truncate">
+                      {archivo.name || "captura"} · {(archivo.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={quitarComprobante}
+                    className="shrink-0 rounded-lg border border-[#A30404] px-3 py-2 text-xs font-bold text-[#A30404]"
+                  >
+                    Cambiar
+                  </button>
+                </div>
+              </div>
             )}
-          </label>
+
+            <div className="border-t border-[#ddd8d1] pt-3">
+              <button
+                type="button"
+                onClick={pegarDesdePortapapeles}
+                className="text-sm font-semibold text-[#590707] underline"
+              >
+                Pegar una captura copiada
+              </button>
+              <div
+                onPaste={pegarDesdeEvento}
+                tabIndex={0}
+                className="sr-only"
+                aria-label="Zona para pegar comprobante"
+              />
+              <p className="text-xs text-[#736D66] mt-1">
+                Esta opción funciona principalmente en computadora.
+              </p>
+            </div>
+
+            {pasteError && (
+              <p className="text-sm font-semibold text-red-600">{pasteError}</p>
+            )}
+          </section>
 
           <label className="block text-sm">
             Comentario
@@ -293,10 +383,14 @@ export default function PagoAlias() {
 
         <button
             type="submit"
-            disabled={enviando}
-            className="bg-[#590707] text-white px-4 py-2 rounded-lg disabled:opacity-60"
+            disabled={enviando || !archivo}
+            className="w-full min-h-[54px] bg-[#590707] text-white px-4 py-3 rounded-xl font-bold disabled:opacity-40"
           >
-            {enviando ? "Enviando..." : "Subir comprobante"}
+            {enviando
+              ? "Enviando..."
+              : archivo
+              ? "Enviar comprobante"
+              : "Seleccioná un comprobante"}
           </button>
         </form>
       </div>
