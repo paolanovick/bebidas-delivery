@@ -28,6 +28,8 @@ export const crearPedido = async (req, res) => {
       horaEntrega,
       emailCliente,
       modoEntrega,
+      metodoPago,
+      aliasPago,
       dryRun,
       monitorToken,
     } = req.body;
@@ -134,6 +136,9 @@ export const crearPedido = async (req, res) => {
       direccionEntrega: direccionNormalizada,
       telefono,
       notas,
+      metodoPago: metodoPago === "transferencia" ? "transferencia" : "efectivo",
+      aliasPago: metodoPago === "transferencia" ? aliasPago || "eldanestandil" : "",
+      estadoPago: metodoPago === "transferencia" ? "pendiente" : "pendiente",
     };
 
     if (fechaEntrega) pedidoData.fechaEntrega = new Date(fechaEntrega);
@@ -159,6 +164,112 @@ export const crearPedido = async (req, res) => {
   } catch (error) {
     console.error("Error al crear pedido:", error);
     res.status(500).json({ mensaje: "Error al crear pedido" });
+  }
+};
+
+// 🟢 Obtener pedido por ID (público)
+export const obtenerPedidoPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pedido = await Pedido.findById(id).populate("items.bebida", "nombre imagen");
+
+    if (!pedido) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    res.json({
+      _id: pedido._id,
+      total: pedido.total,
+      metodoPago: pedido.metodoPago,
+      estadoPago: pedido.estadoPago,
+      aliasPago: pedido.aliasPago,
+    });
+  } catch (error) {
+    console.error("Error al obtener pedido:", error);
+    res.status(500).json({ mensaje: "Error al obtener el pedido" });
+  }
+};
+
+// 🟢 Registrar comprobante de pago (público)
+export const registrarComprobantePago = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      metodoPago,
+      aliasPago,
+      referenciaPago,
+      comentarioPago,
+      comprobanteBase64,
+      comprobanteNombre,
+      comprobanteTipo,
+    } = req.body;
+
+    const pedido = await Pedido.findById(id);
+
+    if (!pedido) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    pedido.metodoPago = metodoPago || pedido.metodoPago || "transferencia";
+    if (aliasPago) pedido.aliasPago = aliasPago;
+    if (referenciaPago) pedido.referenciaPago = referenciaPago;
+    if (comentarioPago) pedido.notas = `${pedido.notas || ""} [Comprobante] ${comentarioPago}`.trim();
+
+    if (comprobanteBase64) {
+      const tiposPermitidos = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+      if (!tiposPermitidos.includes(comprobanteTipo)) {
+        return res.status(400).json({ mensaje: "El comprobante debe ser una imagen o PDF" });
+      }
+
+      if (comprobanteBase64.length > 4_200_000) {
+        return res.status(413).json({ mensaje: "El comprobante supera el tamaño permitido" });
+      }
+
+      pedido.comprobantePago = {
+        filename: comprobanteNombre || "comprobante",
+        mimetype: comprobanteTipo || "image/jpeg",
+        base64: comprobanteBase64,
+        subidoEn: new Date(),
+      };
+      pedido.estadoPago = "en_revision";
+    }
+
+    await pedido.save();
+
+    res.json({ mensaje: "Comprobante recibido", pedido });
+  } catch (error) {
+    console.error("Error al registrar comprobante:", error);
+    res.status(500).json({ mensaje: "Error al registrar comprobante" });
+  }
+};
+
+// Actualizar la revisión del pago (admin)
+export const actualizarEstadoPago = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estadoPago } = req.body;
+    const estadosPermitidos = ["pendiente", "en_revision", "aprobado", "rechazado"];
+
+    if (!estadosPermitidos.includes(estadoPago)) {
+      return res.status(400).json({ mensaje: "Estado de pago inválido" });
+    }
+
+    const pedido = await Pedido.findById(id);
+    if (!pedido) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    pedido.estadoPago = estadoPago;
+    if (estadoPago === "aprobado" && pedido.estado === "pendiente") {
+      pedido.estado = "confirmado";
+    }
+    await pedido.save();
+
+    res.json({ mensaje: "Estado de pago actualizado", pedido });
+  } catch (error) {
+    console.error("Error al actualizar estado de pago:", error);
+    res.status(500).json({ mensaje: "Error al actualizar estado de pago" });
   }
 };
 

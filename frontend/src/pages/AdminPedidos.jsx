@@ -5,6 +5,7 @@ import {
   eliminarPedido,
   eliminarTodosPedidos,
   actualizarEstadoPedido,
+  actualizarEstadoPago,
 } from "../services/api";
 
 export default function AdminPedidos() {
@@ -70,6 +71,33 @@ export default function AdminPedidos() {
       console.error("Error al actualizar estado:", err);
       alert("No se pudo actualizar el estado del pedido.");
     }
+  };
+
+  const handleCambiarEstadoPago = async (pedido, nuevoEstadoPago) => {
+    try {
+      const data = await actualizarEstadoPago(pedido._id, nuevoEstadoPago);
+      setPedidos((actuales) =>
+        actuales.map((item) =>
+          item._id === pedido._id
+            ? {
+                ...item,
+                estadoPago: data.pedido.estadoPago,
+                estado: data.pedido.estado,
+              }
+            : item
+        )
+      );
+    } catch (err) {
+      alert(err.message || "No se pudo actualizar el estado del pago.");
+    }
+  };
+
+  const whatsappConfirmacion = (pedido) => {
+    const telefono = String(pedido.telefono || "").replace(/\D/g, "");
+    if (!telefono) return "#";
+    const numero = telefono.startsWith("54") ? telefono : `54${telefono.replace(/^0/, "")}`;
+    const texto = `Hola, confirmamos el pago de tu pedido #${pedido._id.slice(-6)} en El Danés. ¡Gracias!`;
+    return `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
   };
 
   const pedidosFiltrados =
@@ -152,6 +180,7 @@ export default function AdminPedidos() {
                 <th className="py-3 px-4 border border-[#CDC7BD]">Productos</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Notas</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Total</th>
+                <th className="py-3 px-4 border border-[#CDC7BD]">Pago</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Fecha</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Estado</th>
                 <th className="py-3 px-4 border border-[#CDC7BD]">Acciones</th>
@@ -189,6 +218,53 @@ export default function AdminPedidos() {
                   
                   <td className="py-3 px-4 border border-[#CDC7BD] font-bold text-[#590707]">
                     ${pedido.total?.toFixed(2) || "0.00"}
+                  </td>
+
+                  <td className="py-3 px-4 border border-[#CDC7BD] text-[#04090C] text-sm min-w-[210px]">
+                    <p className="font-semibold capitalize">
+                      {pedido.metodoPago || "efectivo"}
+                    </p>
+                    {pedido.metodoPago === "transferencia" && (
+                      <div className="mt-2 space-y-2">
+                        <p className="text-xs text-[#736D66]">
+                          {pedido.aliasPago || "eldanestandil"}
+                        </p>
+                        {pedido.comprobantePago?.base64 ? (
+                          <a
+                            href={pedido.comprobantePago.base64}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-block text-blue-700 underline font-semibold"
+                          >
+                            Ver comprobante
+                          </a>
+                        ) : (
+                          <p className="text-xs text-[#736D66]">Sin comprobante</p>
+                        )}
+                        <select
+                          value={pedido.estadoPago || "pendiente"}
+                          onChange={(e) =>
+                            handleCambiarEstadoPago(pedido, e.target.value)
+                          }
+                          className="block w-full border border-[#736D66] rounded px-2 py-1 bg-white"
+                        >
+                          <option value="pendiente">Pendiente</option>
+                          <option value="en_revision">En revisión</option>
+                          <option value="aprobado">Aprobado</option>
+                          <option value="rechazado">Rechazado</option>
+                        </select>
+                        {pedido.estadoPago === "aprobado" && pedido.telefono && (
+                          <a
+                            href={whatsappConfirmacion(pedido)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-block bg-green-600 text-white px-3 py-1.5 rounded text-xs font-semibold"
+                          >
+                            Avisar por WhatsApp
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </td>
                   
                   <td className="py-3 px-4 border border-[#CDC7BD] text-[#736D66] text-sm">

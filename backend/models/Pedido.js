@@ -37,6 +37,37 @@ const PedidoSchema = new mongoose.Schema({
     default: "pendiente",
   },
 
+  metodoPago: {
+    type: String,
+    enum: ["efectivo", "transferencia"],
+    default: "efectivo",
+  },
+
+  estadoPago: {
+    type: String,
+    enum: ["pendiente", "en_revision", "aprobado", "rechazado"],
+    default: "pendiente",
+  },
+
+  aliasPago: {
+    type: String,
+    required: false,
+    default: "",
+  },
+
+  referenciaPago: {
+    type: String,
+    required: false,
+    default: "",
+  },
+
+  comprobantePago: {
+    filename: { type: String, required: false },
+    mimetype: { type: String, required: false },
+    base64: { type: String, required: false },
+    subidoEn: { type: Date, required: false },
+  },
+
   modoEntrega: {
     type: String,
     enum: ["envio", "takeaway"],

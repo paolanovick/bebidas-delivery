@@ -20,6 +20,7 @@ import LoginAdmin from "./components/LoginAdmin";
 import MenuBebidas from "./components/MenuBebidas";
 import AdminPedidos from "./pages/AdminPedidos";
 import Pedido from "./pages/Pedido";
+import PagoAlias from "./pages/PagoAlias";
 import { CarritoProvider } from "./context/CarritoContext";
 import { BebidasProvider } from "./context/BebidasContext";
 import Inicio from "./pages/Inicio";
@@ -261,6 +262,11 @@ function AppContent() {
                 <Pedido />
               </RutaEcommerce>
             }
+          />
+
+          <Route
+            path="/pago/:alias/:pedidoId"
+            element={<PagoAlias />}
           />
         </Routes>
       </div>

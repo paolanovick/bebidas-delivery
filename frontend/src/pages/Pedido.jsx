@@ -100,6 +100,7 @@ export default function Pedido() {
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
+  const [metodoPago, setMetodoPago] = useState("transferencia");
   const [coordenadas, setCoordenadas] = useState(null);
   const [comentarios, setComentarios] = useState("");
   const [procesando, setProcesando] = useState(false);
@@ -138,6 +139,7 @@ export default function Pedido() {
   const confirmarYEnviar = async () => {
     if (!puedeConfirmar) return;
     setProcesando(true);
+    const aliasTransferencia = "eldanestandil";
 
     const pedido = {
       emailCliente: email,
@@ -159,6 +161,8 @@ export default function Pedido() {
       }`.trim(),
       costoEnvio,
       total,
+      metodoPago,
+      aliasPago: metodoPago === "transferencia" ? aliasTransferencia : "",
     };
 
     const ubicacion =
@@ -200,6 +204,7 @@ Modo de entrega: ${
         ? "Envío a domicilio"
         : "Retira en el local (take away)"
     }
+Método de pago: ${metodoPago === "transferencia" ? "Transferencia" : "Efectivo"}
 ${
   modoEntrega === "envio"
     ? `Dirección: ${direccion}\nUbicación: ${ubicacion}\n`
@@ -217,7 +222,18 @@ ${comentarios || "Sin notas"}
     const whatsappTab = window.open("", "_blank");
 
     try {
-      await crearPedido(pedido);
+      const respuesta = await crearPedido(pedido);
+      const pedidoCreado = respuesta?.pedido;
+      const pedidoId = pedidoCreado?._id;
+
+      if (metodoPago === "transferencia" && pedidoId) {
+        if (whatsappTab) {
+          whatsappTab.close();
+        }
+        navigate(`/pago/${aliasTransferencia}/${pedidoId}`);
+        vaciarCarrito();
+        return;
+      }
 
       if (whatsappTab) {
         whatsappTab.location.href = webUrl;
@@ -337,6 +353,31 @@ ${comentarios || "Sin notas"}
 
       {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
+        <p className="font-semibold text-[#04090C] mb-3">Forma de pago</p>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="metodoPago"
+              value="transferencia"
+              checked={metodoPago === "transferencia"}
+              onChange={() => setMetodoPago("transferencia")}
+            />
+            <span className="text-[#04090C]">Transferencia (alias Eldanes)</span>
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="metodoPago"
+              value="efectivo"
+              checked={metodoPago === "efectivo"}
+              onChange={() => setMetodoPago("efectivo")}
+            />
+            <span className="text-[#04090C]">Efectivo</span>
+          </label>
+        </div>
+
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -406,13 +447,18 @@ ${comentarios || "Sin notas"}
 
 
 
-      <div className="flex sm:justify-end max-w-3xl mx-auto">
+        <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
           onClick={confirmarYEnviar}
           className="bg-[#590707] text-white py-3 px-4 rounded-xl flex gap-2 justify-center items-center disabled:opacity-60"
           disabled={!puedeConfirmar}
         >
-          <Send /> {procesando ? "Confirmando..." : "Confirmar y enviar por WhatsApp"}
+          <Send />{" "}
+          {procesando
+            ? "Confirmando..."
+            : metodoPago === "transferencia"
+            ? "Confirmar y pagar por transferencia"
+            : "Confirmar y enviar por WhatsApp"}
         </button>
       </div>
     </div>

@@ -1,6 +1,25 @@
 // src/services/api.js
 
 const BASE = "/api";  // ✅ Usa el mismo dominio que el frontendCon www
+const safeJson = async (res) => {
+  const text = await res.text();
+  const contentType = res.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    throw new Error("La API devolvió HTML en lugar de JSON. Revisá la URL/API route.");
+  }
+
+  if (!res.ok) {
+    try {
+      const errJson = JSON.parse(text);
+      throw new Error(errJson.mensaje || "Error al consultar la API");
+    } catch {
+      throw new Error(`Error ${res.status} al consultar la API`);
+    }
+  }
+
+  return JSON.parse(text);
+};
 
 export const API_URL_BEBIDAS = `${BASE}/bebidas`;
 export const API_URL_USUARIOS = `${BASE}/usuarios`;
@@ -14,7 +33,7 @@ const getToken = () => localStorage.getItem("token");
 ============================ */
 export async function getBebidas() {
   const res = await fetch(API_URL_BEBIDAS);
-  return res.json();
+  return safeJson(res);
 }
 
 export const agregarBebida = async (bebida) => {
@@ -90,12 +109,7 @@ export const crearPedido = async (data) => {
     body: JSON.stringify(data),
   });
 
-  const payload = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    throw new Error(payload.mensaje || "Error al crear el pedido");
-  }
-
+  const payload = await safeJson(res);
   return payload;
 };
 
@@ -129,6 +143,45 @@ export const actualizarEstadoPedido = async (id, estado) => {
     },
     body: JSON.stringify({ estado }),
   });
+  return res.json();
+};
+
+export const actualizarEstadoPago = async (id, estadoPago) => {
+  const res = await fetch(`${API_URL_PEDIDOS}/${id}/estado-pago`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: JSON.stringify({ estadoPago }),
+  });
+
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(payload.mensaje || "No se pudo actualizar el pago");
+  }
+  return payload;
+};
+
+export const getPedidoPorId = async (pedidoId) => {
+  const res = await fetch(`${API_URL_PEDIDOS}/${pedidoId}`);
+  return safeJson(res);
+};
+
+export const subirComprobantePago = async (pedidoId, data) => {
+  const res = await fetch(`${API_URL_PEDIDOS}/${pedidoId}/comprobante`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const texto = await res.json().catch(() => ({}));
+    throw new Error(texto?.mensaje || "Error al subir comprobante");
+  }
+
   return res.json();
 };
 
@@ -188,13 +241,12 @@ export const actualizarConfiguracionHorarios = async (config) => {
 export const getPublicidad = async () => {
   try {
     const res = await fetch("/api/publicidad");
-
     if (!res.ok) {
       console.warn("⚠ Error al obtener publicidad:", res.status);
       return { imagenUrl: null, activo: false };
     }
 
-    return res.json();
+    return safeJson(res);
   } catch (error) {
     console.error("⚠ Error fetch publicidad:", error);
     return { imagenUrl: null, activo: false };
