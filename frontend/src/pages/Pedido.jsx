@@ -138,6 +138,7 @@ export default function Pedido() {
 
   const puedeConfirmar =
     carrito.length > 0 &&
+    !pagoPendiente?.pedidoId &&
     validoTelefono &&
     validoEmail &&
     (!requiereDireccion || validoDireccion) &&
@@ -243,11 +244,17 @@ ${comentarios || "Sin notas"}
             pedidoId,
             alias: aliasTransferencia,
             total: pedidoCreado.total || total,
+            items: carrito.map((item) => ({
+              id: item._id || item.id,
+              nombre: item.nombre || item.titulo,
+              cantidad: Number(item.cantidad) || 0,
+              precio: Number(item.precio) || 0,
+              imagen: item.imagen || "",
+            })),
             creadoEn: new Date().toISOString(),
           })
         );
         navigate(`/pago/${aliasTransferencia}/${pedidoId}`);
-        vaciarCarrito();
         return;
       }
 
@@ -273,6 +280,30 @@ ${comentarios || "Sin notas"}
       <h1 className="text-3xl font-bold text-center text-[#590707] mb-8 flex gap-2 justify-center">
         <ShoppingCart /> Carrito de Compras
       </h1>
+
+      {pagoPendiente?.pedidoId && carrito.length > 0 && (
+        <div className="bg-white rounded-2xl shadow p-5 border-2 border-[#590707] max-w-3xl mx-auto mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="font-bold text-xl text-[#590707]">
+              Este pedido ya está guardado
+            </p>
+            <p className="text-sm text-[#04090C] mt-1">
+              Tus productos no se perdieron. Falta realizar la transferencia y enviar el comprobante.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              navigate(
+                `/pago/${pagoPendiente.alias || "eldanestandil"}/${pagoPendiente.pedidoId}`
+              )
+            }
+            className="shrink-0 bg-[#590707] text-white px-5 py-3 rounded-xl font-bold"
+          >
+            Continuar con el pago
+          </button>
+        </div>
+      )}
 
       {/* carrito vacío */}
       {carrito.length === 0 && (
@@ -496,6 +527,8 @@ ${comentarios || "Sin notas"}
           <Send />{" "}
           {procesando
             ? "Confirmando..."
+            : pagoPendiente?.pedidoId
+            ? "Pedido pendiente de pago"
             : metodoPago === "transferencia"
             ? "Confirmar y pagar por transferencia"
             : "Confirmar y enviar por WhatsApp"}

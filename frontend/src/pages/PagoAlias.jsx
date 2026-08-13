@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPedidoPorId, subirComprobantePago } from "../services/api";
+import { useCarrito } from "../context/CarritoContext";
 
 const toBase64 = (file) => {
   return new Promise((resolve, reject) => {
@@ -14,6 +15,7 @@ const toBase64 = (file) => {
 export default function PagoAlias() {
   const { alias, pedidoId } = useParams();
   const navigate = useNavigate();
+  const { vaciarCarrito } = useCarrito();
   const [pedido, setPedido] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -185,6 +187,7 @@ export default function PagoAlias() {
       } catch {
         localStorage.removeItem("eldanesPagoPendiente");
       }
+      vaciarCarrito();
       setReferencia("");
       setComentario("");
       setArchivo(null);
