@@ -403,7 +403,7 @@ ${comentarios || "Sin notas"}
               checked={metodoPago === "transferencia"}
               onChange={() => setMetodoPago("transferencia")}
             />
-            <span className="text-[#04090C]">Transferencia (alias Eldanes)</span>
+            <span className="text-[#04090C]">Transferencia</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer">
