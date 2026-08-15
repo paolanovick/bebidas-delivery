@@ -35,6 +35,9 @@ export default function PagoAlias() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [comprobanteEnviado, setComprobanteEnviado] = useState(false);
   const [compartiendo, setCompartiendo] = useState(false);
+  const [comprobanteCopiado, setComprobanteCopiado] = useState(false);
+  const [imagenListaParaCopiar, setImagenListaParaCopiar] = useState(null);
+  const [preparandoCopia, setPreparandoCopia] = useState(false);
   const [mercadoPagoAbierto, setMercadoPagoAbierto] = useState(false);
   const [detallePedido] = useState(() => {
     try {
@@ -107,24 +110,74 @@ export default function PagoAlias() {
     });
   };
 
-  const setArchivoComprobante = (nextFile) => {
+  const prepararImagenParaCopiar = async (file) => {
+    if (!file?.type?.startsWith("image/")) return null;
+    if (file.type === "image/png") return file;
+
+    try {
+      const bitmap = await window.createImageBitmap(file);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const context = canvas.getContext("2d");
+      context.drawImage(bitmap, 0, 0);
+      bitmap.close?.();
+
+      return await new Promise((resolve) => {
+        canvas.toBlob(resolve, "image/png");
+      });
+    } catch {
+      return null;
+    }
+  };
+
+  const setArchivoComprobante = async (nextFile) => {
     if (!nextFile) return;
     if (nextFile.size > 3 * 1024 * 1024) {
       setArchivo(null);
+      setImagenListaParaCopiar(null);
       setPasteError("El comprobante debe pesar menos de 3 MB.");
       return;
     }
     setArchivo(nextFile);
+    setImagenListaParaCopiar(null);
     setPasteError("");
     setStatus("Comprobante listo para enviar");
+
+    if (nextFile.type?.startsWith("image/")) {
+      setPreparandoCopia(true);
+      const imagenPreparada = await prepararImagenParaCopiar(nextFile);
+      setImagenListaParaCopiar(imagenPreparada);
+      setPreparandoCopia(false);
+    }
   };
 
   const quitarComprobante = () => {
     setArchivo(null);
+    setImagenListaParaCopiar(null);
+    setPreparandoCopia(false);
     setStatus("");
     setPasteError("");
     if (camaraInputRef.current) camaraInputRef.current.value = "";
     if (galeriaInputRef.current) galeriaInputRef.current.value = "";
+  };
+
+  const copiarComprobanteAlPortapapeles = async (file) => {
+    if (
+      !file?.type?.startsWith("image/") ||
+      !navigator.clipboard?.write ||
+      !window.ClipboardItem
+    ) {
+      return false;
+    }
+
+    try {
+      const item = new window.ClipboardItem({ "image/png": file });
+      await navigator.clipboard.write([item]);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const cancelarYVolver = async () => {
@@ -218,11 +271,13 @@ Total: $${Number(pedido?.total || detallePedido?.total || 0).toLocaleString("es-
 El comprobante también quedó guardado en el panel administrador.`;
   };
 
-  const compartirPorWhatsapp = () => {
+  const compartirPorWhatsapp = (copiado = comprobanteCopiado) => {
     const texto = descripcionPedidoWhatsapp();
     setCompartiendo(true);
     const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
-      `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
+      copiado
+        ? `${texto}\n\nLa captura está copiada. Mantené presionado en el chat y tocá Pegar.`
+        : `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
     )}`;
 
     setStatus(
@@ -237,6 +292,10 @@ El comprobante también quedó guardado en el panel administrador.`;
       setPasteError("Primero sacá una foto o elegí la captura del comprobante.");
       return;
     }
+    const copiado = await copiarComprobanteAlPortapapeles(
+      imagenListaParaCopiar
+    );
+    setComprobanteCopiado(copiado);
     setStatus("");
     setEnviando(true);
 
@@ -269,7 +328,7 @@ El comprobante también quedó guardado en el panel administrador.`;
       }
       vaciarCarrito();
       setComprobanteEnviado(true);
-      compartirPorWhatsapp();
+      compartirPorWhatsapp(copiado);
     } catch (error) {
       setStatus(error.message || "No se pudo enviar el comprobante");
     } finally {
@@ -430,7 +489,7 @@ El comprobante también quedó guardado en el panel administrador.`;
 
             <button
               type="button"
-              onClick={compartirPorWhatsapp}
+              onClick={() => compartirPorWhatsapp()}
               disabled={compartiendo}
               className="w-full min-h-[58px] rounded-xl bg-green-600 px-5 py-3 text-lg font-bold text-white disabled:opacity-60"
             >
@@ -439,7 +498,9 @@ El comprobante también quedó guardado en el panel administrador.`;
                 : "Abrir WhatsApp de El Danés"}
             </button>
             <p className="text-xs text-[#5b5b5b]">
-              Se abrirá directamente el chat de El Danés con la descripción del pedido. Adjuntá allí la captura del comprobante.
+              {comprobanteCopiado
+                ? "La captura quedó copiada. En WhatsApp mantené presionado en el chat y tocá Pegar."
+                : "Se abrirá directamente el chat de El Danés. Si el celular no permite pegar imágenes, adjuntá allí la captura."}
             </p>
             <button
               type="button"
@@ -577,13 +638,15 @@ El comprobante también quedó guardado en el panel administrador.`;
 
         <button
             type="submit"
-            disabled={enviando || !archivo}
+            disabled={enviando || !archivo || preparandoCopia}
             className="w-full min-h-[54px] bg-[#590707] text-white px-4 py-3 rounded-xl font-bold disabled:opacity-40"
           >
-            {enviando
+            {preparandoCopia
+              ? "Preparando captura..."
+              : enviando
               ? "Enviando..."
               : archivo
-              ? "Guardar y abrir WhatsApp"
+              ? "Copiar captura, guardar y abrir WhatsApp"
               : "Seleccioná un comprobante"}
           </button>
         </form>
