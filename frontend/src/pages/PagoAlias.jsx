@@ -213,16 +213,14 @@ El comprobante también quedó guardado en el panel administrador.`;
     setCompartiendo(true);
 
     const abrirChatEmpresa = () => {
-      window.open(
-        `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
-          `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
-        )}`,
-        "_blank",
-        "noopener,noreferrer"
-      );
+      const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
+        `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
+      )}`;
+
       setStatus(
         "Abrimos el WhatsApp de El Danés. Adjuntá allí la misma captura del comprobante."
       );
+      window.location.assign(whatsappUrl);
     };
 
     try {
