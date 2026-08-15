@@ -35,6 +35,7 @@ export default function PagoAlias() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [comprobanteEnviado, setComprobanteEnviado] = useState(false);
   const [compartiendo, setCompartiendo] = useState(false);
+  const [mercadoPagoAbierto, setMercadoPagoAbierto] = useState(false);
   const [detallePedido] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("eldanesPagoPendiente") || "null");
@@ -44,6 +45,7 @@ export default function PagoAlias() {
   });
   const camaraInputRef = useRef(null);
   const galeriaInputRef = useRef(null);
+  const comprobanteSectionRef = useRef(null);
 
   useEffect(() => {
     const cargarPedido = async () => {
@@ -87,6 +89,7 @@ export default function PagoAlias() {
   const abrirMercadoPago = () => {
     navigator.clipboard?.writeText(alias).catch(() => {});
     setOrigenTransferencia("mercadopago");
+    setMercadoPagoAbierto(true);
     setStatus(
       `Alias ${alias} copiado. En Mercado Pago elegí Transferir e ingresá ese alias.`
     );
@@ -95,6 +98,13 @@ export default function PagoAlias() {
       "_blank",
       "noopener,noreferrer"
     );
+  };
+
+  const irASubirComprobante = () => {
+    comprobanteSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   const setArchivoComprobante = (nextFile) => {
@@ -409,6 +419,24 @@ El comprobante también quedó guardado en el panel administrador.`;
           </div>
         </section>
 
+        {mercadoPagoAbierto && !comprobanteEnviado && (
+          <section className="rounded-2xl border-2 border-[#009ee3] bg-[#f1fbff] p-5 shadow-sm">
+            <h2 className="text-lg font-bold text-[#04090C]">
+              Cuando termines de pagar, volvé a esta pantalla
+            </h2>
+            <p className="mt-1 text-sm text-[#425466]">
+              Guardá o sacá una captura del comprobante de Mercado Pago.
+            </p>
+            <button
+              type="button"
+              onClick={irASubirComprobante}
+              className="mt-4 w-full min-h-[56px] rounded-xl bg-[#009ee3] px-5 py-3 text-lg font-bold text-white"
+            >
+              Ya pagué, subir comprobante
+            </button>
+          </section>
+        )}
+
         {status && <p className="text-sm text-[#590707] font-semibold">{status}</p>}
 
         {comprobanteEnviado && (
@@ -467,7 +495,10 @@ El comprobante también quedó guardado en el panel administrador.`;
             />
           </label>
 
-          <section className="rounded-2xl border-2 border-[#e2ddd6] bg-[#faf9f7] p-4 space-y-4">
+          <section
+            ref={comprobanteSectionRef}
+            className="scroll-mt-24 rounded-2xl border-2 border-[#e2ddd6] bg-[#faf9f7] p-4 space-y-4"
+          >
             <div>
               <h2 className="font-bold text-[#590707]">Subí el comprobante</h2>
               <p className="text-xs text-[#5b5b5b] mt-1">
