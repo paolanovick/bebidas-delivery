@@ -218,47 +218,17 @@ Total: $${Number(pedido?.total || detallePedido?.total || 0).toLocaleString("es-
 El comprobante también quedó guardado en el panel administrador.`;
   };
 
-  const compartirPorWhatsapp = async () => {
+  const compartirPorWhatsapp = () => {
     const texto = descripcionPedidoWhatsapp();
     setCompartiendo(true);
+    const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
+      `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
+    )}`;
 
-    const abrirChatEmpresa = () => {
-      const whatsappUrl = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
-        `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
-      )}`;
-
-      setStatus(
-        "Abrimos el WhatsApp de El Danés. Adjuntá allí la misma captura del comprobante."
-      );
-      window.location.assign(whatsappUrl);
-    };
-
-    try {
-      const puedeCompartirArchivo =
-        archivo &&
-        navigator.share &&
-        (!navigator.canShare || navigator.canShare({ files: [archivo] }));
-
-      if (puedeCompartirArchivo) {
-        await navigator.share({
-          title: `Comprobante pedido #${String(pedidoId).slice(-6)}`,
-          text: texto,
-          files: [archivo],
-        });
-        setStatus("Comprobante guardado y compartido. Gracias.");
-        return;
-      }
-
-      abrirChatEmpresa();
-    } catch (shareError) {
-      if (shareError?.name === "NotAllowedError") {
-        abrirChatEmpresa();
-      } else if (shareError?.name !== "AbortError") {
-        setStatus("No se pudo compartir. Tocá el botón de WhatsApp para reintentar.");
-      }
-    } finally {
-      setCompartiendo(false);
-    }
+    setStatus(
+      "Abriendo el WhatsApp de El Danés. Adjuntá allí la misma captura del comprobante."
+    );
+    window.location.assign(whatsappUrl);
   };
 
   const enviarComprobante = async (event) => {
@@ -299,7 +269,7 @@ El comprobante también quedó guardado en el panel administrador.`;
       }
       vaciarCarrito();
       setComprobanteEnviado(true);
-      await compartirPorWhatsapp();
+      compartirPorWhatsapp();
     } catch (error) {
       setStatus(error.message || "No se pudo enviar el comprobante");
     } finally {
@@ -466,10 +436,10 @@ El comprobante también quedó guardado en el panel administrador.`;
             >
               {compartiendo
                 ? "Abriendo WhatsApp..."
-                : "Enviar comprobante por WhatsApp"}
+                : "Abrir WhatsApp de El Danés"}
             </button>
             <p className="text-xs text-[#5b5b5b]">
-              En el celular elegí WhatsApp y después el contacto de El Danés. La imagen y la descripción del pedido se comparten juntas.
+              Se abrirá directamente el chat de El Danés con la descripción del pedido. Adjuntá allí la captura del comprobante.
             </p>
             <button
               type="button"
@@ -613,7 +583,7 @@ El comprobante también quedó guardado en el panel administrador.`;
             {enviando
               ? "Enviando..."
               : archivo
-              ? "Guardar y enviar por WhatsApp"
+              ? "Guardar y abrir WhatsApp"
               : "Seleccioná un comprobante"}
           </button>
         </form>
