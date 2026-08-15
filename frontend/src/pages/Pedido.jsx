@@ -244,6 +244,13 @@ ${comentarios || "Sin notas"}
             pedidoId,
             alias: aliasTransferencia,
             total: pedidoCreado.total || total,
+            modoEntrega,
+            direccion:
+              modoEntrega === "envio"
+                ? direccion
+                : "Retira en el local (take away)",
+            telefono,
+            comentarios,
             items: carrito.map((item) => ({
               id: item._id || item.id,
               nombre: item.nombre || item.titulo,

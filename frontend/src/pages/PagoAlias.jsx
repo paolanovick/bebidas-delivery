@@ -16,6 +16,8 @@ const toBase64 = (file) => {
   });
 };
 
+const ADMIN_WHATSAPP = "5492494252530";
+
 export default function PagoAlias() {
   const { alias, pedidoId } = useParams();
   const navigate = useNavigate();
@@ -31,6 +33,15 @@ export default function PagoAlias() {
   const [pasteError, setPasteError] = useState("");
   const [origenTransferencia, setOrigenTransferencia] = useState("banco");
   const [previewUrl, setPreviewUrl] = useState("");
+  const [comprobanteEnviado, setComprobanteEnviado] = useState(false);
+  const [compartiendo, setCompartiendo] = useState(false);
+  const [detallePedido] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("eldanesPagoPendiente") || "null");
+    } catch {
+      return null;
+    }
+  });
   const camaraInputRef = useRef(null);
   const galeriaInputRef = useRef(null);
 
@@ -168,6 +179,80 @@ export default function PagoAlias() {
     setArchivoComprobante(file);
   };
 
+  const descripcionPedidoWhatsapp = () => {
+    const items = Array.isArray(detallePedido?.items)
+      ? detallePedido.items
+          .map(
+            (item) =>
+              `• ${item.nombre} x${item.cantidad} - $${(
+                Number(item.precio || 0) * Number(item.cantidad || 0)
+              ).toLocaleString("es-AR")}`
+          )
+          .join("\n")
+      : "Detalle disponible en el panel de pedidos";
+
+    const entrega = detallePedido?.direccion
+      ? `\nEntrega: ${detallePedido.direccion}`
+      : "";
+    const telefono = detallePedido?.telefono
+      ? `\nTeléfono: ${detallePedido.telefono}`
+      : "";
+
+    return `COMPROBANTE DE TRANSFERENCIA - EL DANÉS
+Pedido #${String(pedidoId).slice(-6)}
+
+${items}
+
+Total: $${Number(pedido?.total || detallePedido?.total || 0).toLocaleString("es-AR")}${entrega}${telefono}
+
+El comprobante también quedó guardado en el panel administrador.`;
+  };
+
+  const compartirPorWhatsapp = async () => {
+    const texto = descripcionPedidoWhatsapp();
+    setCompartiendo(true);
+
+    const abrirChatEmpresa = () => {
+      window.open(
+        `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
+          `${texto}\n\nAdjuntá en este chat la captura seleccionada.`
+        )}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+      setStatus(
+        "Abrimos el WhatsApp de El Danés. Adjuntá allí la misma captura del comprobante."
+      );
+    };
+
+    try {
+      const puedeCompartirArchivo =
+        archivo &&
+        navigator.share &&
+        (!navigator.canShare || navigator.canShare({ files: [archivo] }));
+
+      if (puedeCompartirArchivo) {
+        await navigator.share({
+          title: `Comprobante pedido #${String(pedidoId).slice(-6)}`,
+          text: texto,
+          files: [archivo],
+        });
+        setStatus("Comprobante guardado y compartido. Gracias.");
+        return;
+      }
+
+      abrirChatEmpresa();
+    } catch (shareError) {
+      if (shareError?.name === "NotAllowedError") {
+        abrirChatEmpresa();
+      } else if (shareError?.name !== "AbortError") {
+        setStatus("No se pudo compartir. Tocá el botón de WhatsApp para reintentar.");
+      }
+    } finally {
+      setCompartiendo(false);
+    }
+  };
+
   const enviarComprobante = async (event) => {
     event.preventDefault();
     if (!archivo) {
@@ -205,9 +290,8 @@ export default function PagoAlias() {
         localStorage.removeItem("eldanesPagoPendiente");
       }
       vaciarCarrito();
-      setReferencia("");
-      setComentario("");
-      setArchivo(null);
+      setComprobanteEnviado(true);
+      await compartirPorWhatsapp();
     } catch (error) {
       setStatus(error.message || "No se pudo enviar el comprobante");
     } finally {
@@ -329,7 +413,52 @@ export default function PagoAlias() {
 
         {status && <p className="text-sm text-[#590707] font-semibold">{status}</p>}
 
-        <form onSubmit={enviarComprobante} className="space-y-3">
+        {comprobanteEnviado && (
+          <section className="rounded-2xl border-2 border-green-600 bg-green-50 p-5 space-y-4">
+            <div>
+              <h2 className="text-xl font-bold text-green-800">
+                Comprobante guardado en la página
+              </h2>
+              <p className="text-sm text-[#04090C] mt-1">
+                Ahora envialo por WhatsApp para que el cadete lo tenga junto con el pedido.
+              </p>
+            </div>
+
+            {previewUrl && (
+              <img
+                src={previewUrl}
+                alt="Comprobante listo para WhatsApp"
+                className="w-full max-h-64 rounded-xl object-contain bg-white border"
+              />
+            )}
+
+            <button
+              type="button"
+              onClick={compartirPorWhatsapp}
+              disabled={compartiendo}
+              className="w-full min-h-[58px] rounded-xl bg-green-600 px-5 py-3 text-lg font-bold text-white disabled:opacity-60"
+            >
+              {compartiendo
+                ? "Abriendo WhatsApp..."
+                : "Enviar comprobante por WhatsApp"}
+            </button>
+            <p className="text-xs text-[#5b5b5b]">
+              En el celular elegí WhatsApp y después el contacto de El Danés. La imagen y la descripción del pedido se comparten juntas.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate("/tienda", { replace: true })}
+              className="w-full rounded-xl border-2 border-[#590707] px-5 py-3 font-bold text-[#590707] bg-white"
+            >
+              Volver a la tienda
+            </button>
+          </section>
+        )}
+
+        <form
+          onSubmit={enviarComprobante}
+          className={comprobanteEnviado ? "hidden" : "space-y-3"}
+        >
           <label className="block text-sm">
             Referencia de transferencia (opcional)
             <input
@@ -455,7 +584,7 @@ export default function PagoAlias() {
             {enviando
               ? "Enviando..."
               : archivo
-              ? "Enviar comprobante"
+              ? "Guardar y enviar por WhatsApp"
               : "Seleccioná un comprobante"}
           </button>
         </form>
