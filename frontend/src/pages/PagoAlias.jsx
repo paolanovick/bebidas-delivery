@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPedidoPorId, subirComprobantePago } from "../services/api";
+import {
+  cancelarPedidoPendiente,
+  getPedidoPorId,
+  subirComprobantePago,
+} from "../services/api";
 import { useCarrito } from "../context/CarritoContext";
 
 const toBase64 = (file) => {
@@ -102,6 +106,19 @@ export default function PagoAlias() {
     if (galeriaInputRef.current) galeriaInputRef.current.value = "";
   };
 
+  const cancelarYVolver = async () => {
+    if (!window.confirm("¿Cancelar este pedido pendiente?")) return;
+
+    try {
+      await cancelarPedidoPendiente(pedidoId);
+      localStorage.removeItem("eldanesPagoPendiente");
+      vaciarCarrito();
+      navigate("/tienda", { replace: true });
+    } catch (cancelError) {
+      alert(cancelError.message || "No se pudo cancelar el pedido");
+    }
+  };
+
   const pegarDesdePortapapeles = async () => {
     setPasteError("");
     setStatus("");
@@ -200,7 +217,21 @@ export default function PagoAlias() {
 
   if (loading) return <p className="p-6 text-center text-white">Cargando...</p>;
   if (error)
-    return <p className="p-6 text-center text-red-300">Error: {error}</p>;
+    return (
+      <div className="min-h-screen bg-[#CDC7BD] pt-28 px-4 text-[#04090C]">
+        <div className="max-w-lg mx-auto bg-white rounded-2xl shadow p-6 text-center">
+          <p className="font-bold text-[#A30404]">No se pudo abrir este pedido</p>
+          <p className="text-sm mt-2">{error}</p>
+          <button
+            type="button"
+            onClick={cancelarYVolver}
+            className="mt-5 rounded-xl bg-[#590707] px-5 py-3 font-bold text-white"
+          >
+            Cancelar aviso y volver a la tienda
+          </button>
+        </div>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-[#CDC7BD] text-[#04090C] pt-24 md:pt-16 px-4">
@@ -217,6 +248,14 @@ export default function PagoAlias() {
             Tu pedido ya está guardado. Podés volver y continuar el pago después.
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={cancelarYVolver}
+          className="text-sm font-bold text-[#A30404] underline"
+        >
+          Cancelar este pedido
+        </button>
 
         <h1 className="text-2xl font-bold text-[#590707]">
           Pago por transferencia

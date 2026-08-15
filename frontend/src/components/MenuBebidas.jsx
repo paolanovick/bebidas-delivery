@@ -6,7 +6,10 @@ import Sidebar from "./Sidebar";
 import CarruselDestacados from "./CarruselDestacados";
 import SeccionCategoria from "./SeccionCategoria";
 import ProductosGrid from "./ProductosGrid";
-import { obtenerConfiguracionHorarios } from "../services/api";
+import {
+  cancelarPedidoPendiente,
+  obtenerConfiguracionHorarios,
+} from "../services/api";
 import { getEstadoDelivery } from "../utils/horariosDelivery";
 import BannerTicker from "./BannerTicker";
 import { flyProductToCart } from "../utils/flyToCart";
@@ -16,9 +19,9 @@ const CARRUSEL_PX_POR_SEGUNDO_MOBILE = 96;
 
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
-  const { agregar, puedeAgregar } = useCarrito();
+  const { agregar, puedeAgregar, vaciarCarrito } = useCarrito();
   const location = useLocation();
-  const [pagoPendiente] = useState(() => {
+  const [pagoPendiente, setPagoPendiente] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("eldanesPagoPendiente") || "null");
     } catch {
@@ -269,6 +272,20 @@ export default function MenuBebidas() {
     setTimeout(() => setMensajeAgregado(""), 2500);
   };
 
+  const handleCancelarPendiente = async () => {
+    if (!pagoPendiente?.pedidoId) return;
+    if (!window.confirm("¿Cancelar este pedido pendiente?")) return;
+
+    try {
+      await cancelarPedidoPendiente(pagoPendiente.pedidoId);
+      localStorage.removeItem("eldanesPagoPendiente");
+      vaciarCarrito();
+      setPagoPendiente(null);
+    } catch (error) {
+      alert(error.message || "No se pudo cancelar el pedido");
+    }
+  };
+
   const fmt = (n) =>
     new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
@@ -336,12 +353,21 @@ export default function MenuBebidas() {
                 </p>
               )}
             </div>
-            <Link
-              to={`/pago/${pagoPendiente.alias || "eldanestandil"}/${pagoPendiente.pedidoId}`}
-              className="shrink-0 rounded-xl bg-[#590707] px-5 py-3 text-center font-bold text-white"
-            >
-              Continuar con el pago
-            </Link>
+            <div className="shrink-0 flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                onClick={handleCancelarPendiente}
+                className="rounded-xl border-2 border-[#A30404] px-5 py-3 text-center font-bold text-[#A30404] bg-white"
+              >
+                Cancelar pedido
+              </button>
+              <Link
+                to={`/pago/${pagoPendiente.alias || "eldanestandil"}/${pagoPendiente.pedidoId}`}
+                className="rounded-xl bg-[#590707] px-5 py-3 text-center font-bold text-white"
+              >
+                Continuar con el pago
+              </Link>
+            </div>
           </div>
         )}
 

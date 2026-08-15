@@ -6,6 +6,7 @@ import {
   listarTodosPedidos,
   actualizarEstadoPedido,
   actualizarEstadoPago,
+  cancelarPedidoPendiente,
   registrarComprobantePago,
   eliminarPedido,
   eliminarTodosPedidos,
@@ -27,6 +28,9 @@ router.get("/:id", obtenerPedidoPorId);
 
 // 🟢 Subir comprobante de pago (público)
 router.put("/:id/comprobante", registrarComprobantePago);
+
+// Cancelar una transferencia antes de enviar el comprobante
+router.put("/:id/cancelar-pendiente", cancelarPedidoPendiente);
 
 // 🔐 ADMIN - Actualizar estado de un pedido
 router.put("/:id/estado", verificarToken, esAdmin, actualizarEstadoPedido);

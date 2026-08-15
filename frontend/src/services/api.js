@@ -185,6 +185,22 @@ export const subirComprobantePago = async (pedidoId, data) => {
   return res.json();
 };
 
+export const cancelarPedidoPendiente = async (pedidoId) => {
+  const res = await fetch(`${API_URL_PEDIDOS}/${pedidoId}/cancelar-pendiente`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+  });
+  const payload = await res.json().catch(() => ({}));
+
+  if (res.status === 404) {
+    return { pedidoNoEncontrado: true };
+  }
+  if (!res.ok) {
+    throw new Error(payload.mensaje || "No se pudo cancelar el pedido");
+  }
+  return payload;
+};
+
 export const eliminarPedido = async (pedidoId) => {
   const res = await fetch(`${API_URL_PEDIDOS}/${pedidoId}`, {  // ✅ CORRECTO
     method: 'DELETE',

@@ -273,6 +273,60 @@ export const actualizarEstadoPago = async (req, res) => {
   }
 };
 
+// Cancelar un pedido de transferencia todavía pendiente
+export const cancelarPedidoPendiente = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const pedido = await Pedido.findOneAndUpdate(
+      {
+        _id: id,
+        metodoPago: "transferencia",
+        estado: "pendiente",
+        estadoPago: "pendiente",
+      },
+      {
+        $set: {
+          estado: "cancelado",
+          estadoPago: "rechazado",
+        },
+      },
+      { new: false }
+    );
+
+    if (!pedido) {
+      const existe = await Pedido.exists({ _id: id });
+      if (!existe) {
+        return res.status(404).json({ mensaje: "Pedido no encontrado" });
+      }
+      return res.status(409).json({
+        mensaje: "Este pedido ya no puede cancelarse desde la tienda",
+      });
+    }
+
+    const operacionesStock = pedido.items
+      .filter((item) => item.bebida && Number(item.cantidad) > 0)
+      .map((item) => ({
+        updateOne: {
+          filter: { _id: item.bebida },
+          update: { $inc: { stock: Number(item.cantidad) } },
+        },
+      }));
+
+    if (operacionesStock.length > 0) {
+      await Bebida.bulkWrite(operacionesStock);
+    }
+
+    res.json({ mensaje: "Pedido cancelado correctamente" });
+  } catch (error) {
+    if (error?.name === "CastError") {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+    console.error("Error al cancelar pedido pendiente:", error);
+    res.status(500).json({ mensaje: "Error al cancelar el pedido" });
+  }
+};
+
 // 🟢 Ver pedidos de un cliente por email
 export const obtenerMisPedidos = async (req, res) => {
   try {

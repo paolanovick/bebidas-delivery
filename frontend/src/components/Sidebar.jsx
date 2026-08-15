@@ -21,6 +21,7 @@ export default function Sidebar({
   const seleccionarYCerrar = (callback) => {
     callback();
     setMenuAbierto(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
