@@ -432,29 +432,42 @@ ${comentarios || "Sin notas"}
       {/* FORMULARIO */}
       <div className="bg-white shadow rounded-xl p-6 mb-6 border border-[#e6e2dc] max-w-3xl mx-auto">
         <p className="font-semibold text-[#04090C] mb-3">Forma de pago</p>
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="metodoPago"
-              value="transferencia"
-              checked={metodoPago === "transferencia"}
-              onChange={() => setMetodoPago("transferencia")}
-            />
-            <span className="text-[#04090C]">Transferencia</span>
-          </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+          <button
+            type="button"
+            aria-pressed={metodoPago === "transferencia"}
+            onClick={() => setMetodoPago("transferencia")}
+            className={`min-h-[64px] rounded-xl border-2 px-4 py-3 text-left font-semibold transition ${
+              metodoPago === "transferencia"
+                ? "border-[#590707] bg-[#fff4f2] text-[#590707]"
+                : "border-[#d8d2ca] bg-white text-[#04090C]"
+            }`}
+          >
+            <span className="block">Transferencia</span>
+            <span className="block text-xs font-normal mt-1">
+              Pagá y subí el comprobante
+            </span>
+          </button>
 
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="metodoPago"
-              value="efectivo"
-              checked={metodoPago === "efectivo"}
-              onChange={() => setMetodoPago("efectivo")}
-            />
-            <span className="text-[#04090C]">Efectivo</span>
-          </label>
+          <button
+            type="button"
+            aria-pressed={metodoPago === "efectivo"}
+            onClick={() => setMetodoPago("efectivo")}
+            className={`min-h-[64px] rounded-xl border-2 px-4 py-3 text-left font-semibold transition ${
+              metodoPago === "efectivo"
+                ? "border-[#590707] bg-[#fff4f2] text-[#590707]"
+                : "border-[#d8d2ca] bg-white text-[#04090C]"
+            }`}
+          >
+            <span className="block">Efectivo</span>
+            <span className="block text-xs font-normal mt-1">
+              Confirmá el pedido por WhatsApp
+            </span>
+          </button>
         </div>
+        <p className="mb-6 rounded-lg bg-[#f3f0eb] px-3 py-2 text-sm font-semibold text-[#590707]">
+          Forma elegida: {metodoPago === "transferencia" ? "Transferencia" : "Efectivo"}
+        </p>
 
         <p className="font-semibold text-[#04090C] mb-2">Modo de entrega</p>
 
@@ -528,7 +541,7 @@ ${comentarios || "Sin notas"}
         <div className="flex sm:justify-end max-w-3xl mx-auto">
         <button
           onClick={confirmarYEnviar}
-          className="bg-[#590707] text-white py-3 px-4 rounded-xl flex gap-2 justify-center items-center disabled:opacity-60"
+          className="w-full sm:w-auto min-h-[54px] bg-[#590707] text-white py-3 px-5 rounded-xl flex gap-2 justify-center items-center font-bold disabled:opacity-60"
           disabled={!puedeConfirmar}
         >
           <Send />{" "}

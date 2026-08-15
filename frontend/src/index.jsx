@@ -4,6 +4,12 @@ import "./index.css";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
