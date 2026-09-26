@@ -1,6 +1,7 @@
 // controllers/bebidasController.js
 import Bebida from "../models/Bebida.js";
 import { CATEGORIAS_OFICIALES, SUBCATEGORIAS } from "../models/Bebida.js";
+import { obtenerBebidasCacheadas } from "../helpers/bebidasCache.js";
 
 /* =====================================================
    NORMALIZADOR DE CATEGORÍA (para productos viejos)
@@ -46,20 +47,38 @@ function normalizarCategoria(cat) {
 /* =====================================================
    GET /api/bebidas
 ===================================================== */
+const cargarBebidas = async () => {
+  const bebidas = await Bebida.find().sort({ creadoEn: -1 });
+
+  return bebidas.map((b) => ({
+    ...b._doc,
+    categoria: normalizarCategoria(b.categoria) || "Sin categoría",
+    subcategoria: b.subcategoria || "",
+    tipoWhisky: b.tipoWhisky || "",
+    esIncentivo: !!b.esIncentivo,
+    esEstrella: !!b.esEstrella,
+  }));
+};
+
 export const getBebidas = async (req, res) => {
   try {
-    const bebidas = await Bebida.find().sort({ creadoEn: -1 });
+    const { json, gzip, etag } = await obtenerBebidasCacheadas(cargarBebidas);
 
-    const corregidas = bebidas.map((b) => ({
-      ...b._doc,
-      categoria: normalizarCategoria(b.categoria) || "Sin categoría",
-      subcategoria: b.subcategoria || "",
-      tipoWhisky: b.tipoWhisky || "",
-      esIncentivo: !!b.esIncentivo,
-      esEstrella: !!b.esEstrella,
-    }));
+    res.set({
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-cache",
+      ETag: etag,
+      Vary: "Accept-Encoding",
+    });
 
-    res.json(corregidas);
+    if (req.fresh) return res.status(304).end();
+
+    if (req.acceptsEncodings("gzip")) {
+      res.set("Content-Encoding", "gzip");
+      return res.send(gzip);
+    }
+
+    res.send(json);
   } catch (error) {
     console.error("Error al obtener bebidas:", error);
     res.status(500).json({ mensaje: "Error al obtener bebidas" });

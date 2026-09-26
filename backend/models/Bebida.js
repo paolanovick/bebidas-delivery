@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { invalidarBebidasCache } from "../helpers/bebidasCache.js";
 
 export const CATEGORIAS_OFICIALES = [
   "Combos",
@@ -65,5 +66,17 @@ esIncentivo: {
 
   creadoEn: { type: Date, default: Date.now },
 });
+
+// Cualquier cambio de bebidas o de stock (ABM, pedidos, cancelaciones,
+// migraciones) descarta el catálogo cacheado de GET /api/bebidas.
+bebidaSchema.post("save", invalidarBebidasCache);
+bebidaSchema.post(
+  ["findOneAndUpdate", "findOneAndDelete", "findOneAndReplace", "updateOne", "updateMany", "deleteOne", "deleteMany", "replaceOne"],
+  { document: false, query: true },
+  invalidarBebidasCache
+);
+bebidaSchema.post("deleteOne", { document: true, query: false }, invalidarBebidasCache);
+bebidaSchema.post("insertMany", invalidarBebidasCache);
+bebidaSchema.post("bulkWrite", invalidarBebidasCache);
 
 export default mongoose.model("Bebida", bebidaSchema);
