@@ -1,0 +1,60 @@
+name: Monitor de tienda y admin
+
+on:
+  schedule:
+    - cron: "17 0,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps --only-shell chromium
+      - name: Comprobar tienda y admin
+        id: monitor
+        shell: bash
+        run: |
+          set +e
+          node backend/monitoring/publicCheck.js > monitor-report.txt 2>&1
+          status=$?
+          cat monitor-report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+      - name: Avisar o registrar recuperación
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STATUS: ${{ steps.monitor.outputs.status }}
+        shell: bash
+        run: |
+          open_issue=$(gh issue list --repo "$REPO" --label site-monitor --state open --json number --jq '.[0].number // empty')
+          if [ "$STATUS" != "0" ]; then
+            printf '\nEjecución: %s\n' "$RUN_URL" >> monitor-report.txt
+            if [ -n "$open_issue" ]; then
+              gh issue comment "$open_issue" --repo "$REPO" --body-file monitor-report.txt
+            else
+              gh issue create --repo "$REPO" --title '[Monitor] Falla en tienda o admin' --body-file monitor-report.txt --label site-monitor --assignee paolanovick
+            fi
+            exit 1
+          fi
+          if [ -n "$open_issue" ]; then
+            gh issue comment "$open_issue" --repo "$REPO" --body "La tienda y el admin volvieron a pasar el control. $RUN_URL"
+            gh issue close "$open_issue" --repo "$REPO"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: monitor-ui-failure
+          path: monitor-ui-failure.png
+          if-no-files-found: ignore

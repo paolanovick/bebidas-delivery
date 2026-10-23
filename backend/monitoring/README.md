@@ -6,7 +6,9 @@ Este módulo incluye controles de API, compra simulada y navegador:
 - `purchase-flow-agent`: valida una compra en modo `dryRun`, sin crear pedido real ni descontar stock.
 - `browser-ui-agent`: abre tienda y admin en Chromium, verifica que carguen productos y que el scroll no salte al achicarse el encabezado. Usa un token de interfaz sin credenciales reales y no modifica datos.
 
-El control diario corre en el servidor con `eldanes-monitor.timer` a las 09:17 y 21:17 de Argentina (UTC-3). Envía un correo a `info@concodigoart.com` si falla algún control. El timer no requiere que esta conversación siga abierta.
+El control diario corre en el servidor con `eldanes-monitor.timer` a las 09:17 y 21:17 de Argentina (UTC-3). Intenta enviar un correo a `info@concodigoart.com` si falla algún control. El timer no requiere que esta conversación siga abierta.
+
+GitHub Actions repite la comprobación pública y del scroll en ese horario. Si falla, abre o actualiza un issue asignado a `paolanovick`, que genera una notificación de GitHub. El correo directo depende de que SendGrid tenga créditos disponibles.
 
 Variables necesarias:
 
