@@ -7,6 +7,8 @@
     "dev": "nodemon server.js",
     "monitor": "node backend/monitoring/monitorRunner.js",
     "monitor:once": "node backend/monitoring/monitorRunner.js --once",
+    "monitor:daily": "node backend/monitoring/dailyCheck.js",
+    "monitor:ui": "node backend/monitoring/browserUiAgent.js",
     "start": "node server.js"
   },
   "keywords": [],
@@ -23,6 +25,7 @@
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "playwright": "^1.64.1"
   }
 }

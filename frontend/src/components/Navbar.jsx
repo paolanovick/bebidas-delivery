@@ -54,7 +54,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:sticky md:left-auto md:right-auto">
+    <>
+    {/* Conserva la altura original al compactar la barra, sin mover el contenido. */}
+    <div className="hidden md:block md:h-48 lg:h-56" aria-hidden="true" />
+    <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg">
       {mostrarBarraCompacta ? (
         <div className="h-14 md:h-16 w-full flex items-center justify-between px-2 sm:px-4 md:px-6">
           <Link
@@ -352,6 +355,7 @@ const Navbar = () => {
       </div>
       )}
     </nav>
+    </>
   );
 };
 

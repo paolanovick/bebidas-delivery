@@ -1,0 +1,10 @@
+[Unit]
+Description=Controlar El Danés cada 12 horas
+
+[Timer]
+OnCalendar=*-*-* 00,12:17:00
+Persistent=true
+Unit=eldanes-monitor.service
+
+[Install]
+WantedBy=timers.target

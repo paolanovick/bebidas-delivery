@@ -1,0 +1,11 @@
+[Unit]
+Description=Control de tienda y admin de El Danés
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/www/bebidas
+ExecStart=/usr/bin/node /var/www/bebidas/backend/monitoring/dailyCheck.js
+TimeoutStartSec=240
+
