@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Mail, Facebook, Instagram, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Footer = () => {
+const Footer = ({ sinMargenSuperior = false }) => {
   // Estado para el email del newsletter
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterLoading, setNewsletterLoading] = useState(false);
@@ -67,7 +67,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#CDC7BD] text-[#04090C] border-t border-[#590707] mt-10">
+    <footer className={`bg-[#CDC7BD] text-[#04090C] border-t border-[#590707] ${sinMargenSuperior ? "mt-10 md:mt-0" : "mt-10"}`}>
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* Columna 1 - Logo + Redes */}
         <div className="flex flex-col items-start gap-4">

@@ -335,7 +335,7 @@ export default function MenuBebidas() {
       />
 
       {/* CONTENIDO */}
-      <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl mx-auto w-full overflow-hidden">
+      <main className="flex-1 p-6 pt-20 md:pt-10 max-w-7xl md:max-w-none mx-auto md:mx-0 w-full min-w-0 overflow-hidden">
         <BannerTicker />
 
         {pagoPendiente?.pedidoId && (

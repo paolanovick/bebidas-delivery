@@ -42,6 +42,7 @@ function AppContent() {
   const { usuario } = useAuth();
   const location = useLocation();
   const ocultarFooter = location.pathname.startsWith("/admin");
+  const esTienda = location.pathname === "/tienda";
 
   const { bebidas, agregar, editar, eliminar } = useBebidas();
   const [editing, setEditing] = useState(null);
@@ -80,7 +81,7 @@ function AppContent() {
     <div className="min-h-screen bg-[#04090C] text-white">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto p-6 pt-28 md:pt-6">
+      <div className={esTienda ? "max-w-7xl mx-auto p-6 pt-28 md:max-w-none md:w-full md:p-0" : "max-w-7xl mx-auto p-6 pt-28 md:pt-6"}>
         <Routes>
           <Route path="/" element={<Inicio />} />
           <Route path="/inicio" element={<Inicio />} />
@@ -271,7 +272,7 @@ function AppContent() {
         </Routes>
       </div>
 
-      {!ocultarFooter && <Footer />}
+      {!ocultarFooter && <Footer sinMargenSuperior={esTienda} />}
       <WhatsAppButton />
     </div>
   );
