@@ -23,7 +23,9 @@ const Navbar = () => {
   const mostrarNavegacionTienda = ingresoHabilitado && !enIngreso;
   const mostrarCarrito =
     mostrarNavegacionTienda && esRutaEcommerce(location.pathname);
-  const mostrarBarraCompacta = compacto && !menuOpen;
+  // En admin, achicar esta barra sticky cambia la altura del documento y puede
+  // alternar el scroll entre ambos estados cerca del inicio.
+  const mostrarBarraCompacta = compacto && !menuOpen && !location.pathname.startsWith("/admin");
 
   useEffect(() => {
     const actualizarBarra = () => setCompacto(window.scrollY > 24);

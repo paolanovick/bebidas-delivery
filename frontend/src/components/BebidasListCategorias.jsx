@@ -151,7 +151,7 @@ export default function BebidasListCategorias({
 
       {/* BOTONES DE CATEGORÍAS */}
       <div className="mb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-2 overflow-x-auto pb-2" style={{ overflowY: "hidden" }}>
           {CATEGORIAS_OFICIALES.map((cat) => (
             <button
               key={cat}
@@ -178,7 +178,7 @@ export default function BebidasListCategorias({
       ) : (
         <>
           {/* TABLA */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" style={{ overflowY: "hidden" }}>
             <table className="min-w-full bg-white border border-[#CDC7BD] rounded-xl shadow-lg text-[#04090C]">
               <thead className="bg-[#590707] text-white">
                 <tr>
