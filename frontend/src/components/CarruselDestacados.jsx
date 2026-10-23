@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
 
@@ -11,6 +12,17 @@ export default function CarruselDestacados({
 }) {
   const { carrito } = useCarrito();
   const obtenerId = (item) => item?._id || item?.id;
+  const destacados = productos.filter((p) => p.esEstrella);
+  const [anchoVentana, setAnchoVentana] = useState(() => window.innerWidth);
+
+  useEffect(() => {
+    const actualizarAncho = () => setAnchoVentana(window.innerWidth);
+    window.addEventListener("resize", actualizarAncho);
+    return () => window.removeEventListener("resize", actualizarAncho);
+  }, []);
+
+  // Hay suficientes copias para cubrir la pantalla mientras se reinicia el ciclo.
+  const copias = Math.max(3, Math.ceil(anchoVentana / (Math.max(1, destacados.length) * 220)) + 2);
   return (
     <section className="mt-6 mb-8 md:mb-12 w-full">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#590707] mb-4 sm:mb-6 md:mb-8">
@@ -33,9 +45,8 @@ export default function CarruselDestacados({
             ref={carouselRef}
             className="destacados-scroll flex gap-3 md:gap-4 lg:gap-6 overflow-x-auto px-1 md:px-4 lg:px-12 w-full"
           >
-            {productos
-              .filter((p) => p.esEstrella)
-              .map((b, i) => {
+            {Array.from({ length: copias }, (_, copia) =>
+              destacados.map((b, i) => {
                 const itemEnCarrito = carrito.find(
                   (item) => obtenerId(item) === obtenerId(b)
                 );
@@ -59,8 +70,10 @@ export default function CarruselDestacados({
 
                 return (
                   <div
-                    key={`carousel-${b._id}-${i}`}
+                    key={`carousel-${copia}-${b._id}-${i}`}
                     data-product-card
+                    data-cycle-start={copia === 1 && i === 0 ? "true" : undefined}
+                    aria-hidden={copia > 0}
                     className="
         relative
         bg-white rounded-xl border border-[#CDC7BD]
@@ -154,6 +167,7 @@ export default function CarruselDestacados({
                       </p>
 
                       <button
+                        tabIndex={copia > 0 ? -1 : undefined}
                         onClick={(event) =>
                           handleAgregar(
                             b,
@@ -172,7 +186,7 @@ export default function CarruselDestacados({
                     </div>
                   </div>
                 );
-              })}
+              }))}
           </div>
 
           {/* BOTÓN DERECHO */}

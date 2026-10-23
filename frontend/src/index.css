@@ -10,6 +10,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (min-width: 768px) {
+  body.nav-compact .sidebar-categorias {
+    top: 64px;
+    height: calc(100vh - 64px);
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

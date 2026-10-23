@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ShoppingCart, Facebook, Instagram, Share2 } from "lucide-react";
+import { ShoppingCart, Facebook, Instagram, Share2, Store } from "lucide-react";
 import { useCarrito } from "../context/CarritoContext";
 import {
   esRutaEcommerce,
@@ -16,12 +16,26 @@ const Navbar = () => {
   const { carrito, vaciarCarrito } = useCarrito();
   const total = carrito.reduce((sum, el) => sum + (el.cantidad || 0), 0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [compacto, setCompacto] = useState(false);
   const location = useLocation();
   const ingresoHabilitado = tieneIngresoTienda();
   const enIngreso = esRutaIngreso(location.pathname);
   const mostrarNavegacionTienda = ingresoHabilitado && !enIngreso;
   const mostrarCarrito =
     mostrarNavegacionTienda && esRutaEcommerce(location.pathname);
+  const mostrarBarraCompacta = compacto && !menuOpen;
+
+  useEffect(() => {
+    const actualizarBarra = () => setCompacto(window.scrollY > 24);
+    actualizarBarra();
+    window.addEventListener("scroll", actualizarBarra, { passive: true });
+    return () => window.removeEventListener("scroll", actualizarBarra);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("nav-compact", mostrarBarraCompacta);
+    return () => document.body.classList.remove("nav-compact");
+  }, [mostrarBarraCompacta]);
 
   const handleShare = () => {
     const url = window.location.origin;
@@ -39,6 +53,30 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#04090C] text-white fixed top-0 left-0 right-0 z-50 shadow-lg md:sticky md:left-auto md:right-auto">
+      {mostrarBarraCompacta ? (
+        <div className="h-14 md:h-16 w-full flex items-center justify-between px-2 sm:px-4 md:px-6">
+          <Link
+            to={mostrarNavegacionTienda ? "/tienda?reset=true" : "/"}
+            onClick={mostrarNavegacionTienda ? habilitarIngresoTienda : undefined}
+            aria-label="El Danés, inicio de la tienda"
+            className="shrink-0"
+          >
+            <img src={`${process.env.PUBLIC_URL}/logoSF.png`} alt="El Danés" className="h-12 w-12 md:h-14 md:w-14 object-contain" />
+          </Link>
+          <div className="flex items-center gap-0.5 sm:gap-2 md:gap-3">
+            <a href="https://www.facebook.com/ivanito10?locale=es_LA" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="h-9 w-9 md:h-10 md:w-10 grid place-items-center text-[#CDC7BD] hover:text-white"><Facebook size={20} /></a>
+            <a href="https://www.instagram.com/bebidaseldanes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="h-9 w-9 md:h-10 md:w-10 grid place-items-center text-[#CDC7BD] hover:text-white"><Instagram size={20} /></a>
+            <button type="button" onClick={handleShare} aria-label="Compartir" className="h-9 w-9 md:h-10 md:w-10 grid place-items-center text-[#CDC7BD] hover:text-white"><Share2 size={20} /></button>
+            <Link to="/tienda" onClick={habilitarIngresoTienda} aria-label="Tienda" className="h-9 w-9 md:h-10 md:w-10 grid place-items-center text-[#CDC7BD] hover:text-white"><Store size={20} /></Link>
+            {mostrarCarrito && (
+              <Link to="/pedido" aria-label={`Carrito, ${total} productos`} data-cart-target className="relative h-9 w-9 md:h-10 md:w-10 grid place-items-center text-[#CDC7BD] hover:text-white">
+                <ShoppingCart size={22} />
+                {total > 0 && <span className="absolute -top-1 -right-1 bg-[#A30404] text-white text-xs rounded-full min-w-4 h-4 px-0.5 flex items-center justify-center">{total}</span>}
+              </Link>
+            )}
+          </div>
+        </div>
+      ) : (
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
         {/* ✅ LOGO Y TÍTULO - Van a /tienda reseteando filtros SIN perder carrito */}
         <div className="flex items-center gap-4">
@@ -310,6 +348,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
+      )}
     </nav>
   );
 };

@@ -17,6 +17,13 @@ import { flyProductToCart } from "../utils/flyToCart";
 const CARRUSEL_PX_POR_SEGUNDO_DESKTOP = 58;
 const CARRUSEL_PX_POR_SEGUNDO_MOBILE = 96;
 
+const anchoCicloDestacados = (carousel) => {
+  const inicioSegundoCiclo = carousel?.querySelector('[data-cycle-start="true"]');
+  return inicioSegundoCiclo && carousel.firstElementChild
+    ? inicioSegundoCiclo.offsetLeft - carousel.firstElementChild.offsetLeft
+    : 0;
+};
+
 export default function MenuBebidas() {
   const { bebidas } = useBebidas();
   const { agregar, puedeAgregar, vaciarCarrito } = useCarrito();
@@ -179,12 +186,10 @@ export default function MenuBebidas() {
       ultimoTiempo = tiempo;
 
       if (!pausaCarruselRef.current) {
-        carousel.scrollLeft += (velocidad * delta) / 1000;
-        if (
-          carousel.scrollLeft >=
-          carousel.scrollWidth - carousel.clientWidth - 1
-        ) {
-          carousel.scrollLeft = 0;
+        const anchoCiclo = anchoCicloDestacados(carousel);
+        if (anchoCiclo > 0) {
+          carousel.scrollLeft =
+            (carousel.scrollLeft + (velocidad * delta) / 1000) % anchoCiclo;
         }
       }
 
@@ -393,10 +398,10 @@ export default function MenuBebidas() {
             scrollCarousel={(dir) => {
               const c = carouselRef.current;
               if (c) {
-                c.scrollBy({
-                  left: dir === "left" ? -300 : 300,
-                  behavior: "smooth",
-                });
+                const anchoCiclo = anchoCicloDestacados(c);
+                if (!anchoCiclo) return;
+                if (dir === "left" && c.scrollLeft < 300) c.scrollLeft += anchoCiclo;
+                c.scrollLeft = (c.scrollLeft + (dir === "left" ? -300 : 300) + anchoCiclo) % anchoCiclo;
               }
             }}
             carouselRef={carouselRef}
